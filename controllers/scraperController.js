@@ -9,7 +9,6 @@ const scrapeVeterinarias = async (req, res) => {
 
     console.log(`🔍 Scraping: ${searchQuery}`);
 
-    // Step 1: Text search
     const searchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&key=${apiKey}`;
     const searchRes = await fetch(searchUrl);
     const searchData = await searchRes.json();
@@ -23,28 +22,26 @@ const scrapeVeterinarias = async (req, res) => {
     let details = [];
 
     for (const place of places) {
-      // Step 2: Get details for each place
-      const detailUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=name,formatted_phone_number,website,formatted_address,rating,user_ratings_total&key=${apiKey}`;
-      const detailRes = await fetch(detailUrl);
-      const detailData = await detailRes.json();
-      const detail = detailData.result;
-
-      const business = {
-        business_name: place.name,
-        phone: detail.formatted_phone_number || null,
-        website: detail.website || null,
-        address: detail.formatted_address || null,
-        city: city || 'San José',
-        country: country || 'Costa Rica',
-        niche: niche || 'veterinaria',
-        google_rating: place.rating || null,
-        google_reviews: place.user_ratings_total || null
-      };
-
-      details.push(business);
-
-      // Save to DB
       try {
+        const detailUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=name,formatted_phone_number,website,formatted_address,rating,user_ratings_total&key=${apiKey}`;
+        const detailRes = await fetch(detailUrl);
+        const detailData = await detailRes.json();
+        const detail = detailData.result || {};
+
+        const business = {
+          business_name: place.name,
+          phone: detail.formatted_phone_number || null,
+          website: detail.website || null,
+          address: detail.formatted_address || place.formatted_address || null,
+          city: city || 'San José',
+          country: country || 'Costa Rica',
+          niche: niche || 'veterinaria',
+          google_rating: place.rating || null,
+          google_reviews: place.user_ratings_total || null
+        };
+
+        details.push(business);
+
         await pool.query(`
           INSERT INTO external_leads_pool 
           (business_name, phone, website, address, city, country, niche, google_rating, google_reviews, source, status)
@@ -56,8 +53,8 @@ const scrapeVeterinarias = async (req, res) => {
           business.niche, business.google_rating, business.google_reviews
         ]);
         saved++;
-      } catch(dbErr) {
-        console.log('DB insert skipped:', dbErr.message);
+      } catch(itemErr) {
+        console.log('Skipping place:', place.name, itemErr.message);
       }
     }
 
