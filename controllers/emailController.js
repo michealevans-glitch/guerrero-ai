@@ -1,29 +1,13 @@
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 require('dotenv').config();
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.log('❌ EMAIL ERROR:', error.message);
-  } else {
-    console.log('📧 EMAIL LISTO');
-  }
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendLeadAlert = async (lead) => {
   try {
-    const info = await transporter.sendMail({
-      from: `"Guerrero AI" <${process.env.EMAIL_USER}>`,
+    await sgMail.send({
       to: process.env.EMAIL_ALERT_TO,
+      from: process.env.EMAIL_USER,
       subject: `⚔️ NUEVO LEAD — ${lead.service_type}`,
       html: `
         <div style="background:#0a0a0f;color:white;padding:20px;border-radius:10px;border:1px solid #00ff88;font-family:sans-serif;">
@@ -35,24 +19,22 @@ const sendLeadAlert = async (lead) => {
           <p style="color:#888;font-size:12px;">guerreroai.com</p>
         </div>`
     });
-    console.log('✅ Email enviado! ID:', info.messageId);
+    console.log('✅ Email enviado via SendGrid!');
   } catch (err) {
-    console.error('❌ Email FAILED:', err.message);
+    console.error('❌ SendGrid error:', err.message);
   }
 };
 
 const testEmail = async (req, res) => {
   try {
-    const info = await transporter.sendMail({
-      from: `"Guerrero AI" <${process.env.EMAIL_USER}>`,
+    await sgMail.send({
       to: process.env.EMAIL_ALERT_TO,
-      subject: '✅ Guerrero AI — Test',
-      text: 'Email funcionando correctamente.'
+      from: process.env.EMAIL_USER,
+      subject: '✅ Guerrero AI — Test SendGrid',
+      text: 'Email funcionando via SendGrid!'
     });
-    console.log('✅ Test email enviado!');
     res.json({ success: true, message: 'Email enviado a ' + process.env.EMAIL_ALERT_TO });
   } catch (err) {
-    console.error('❌ Test FAILED:', err.message);
     res.status(500).json({ error: err.message });
   }
 };
