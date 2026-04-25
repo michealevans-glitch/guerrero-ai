@@ -2,7 +2,9 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
@@ -18,9 +20,6 @@ transporter.verify((error, success) => {
 });
 
 const sendLeadAlert = async (lead) => {
-  console.log('📧 Intentando enviar email...');
-  console.log('📧 USER:', process.env.EMAIL_USER);
-  console.log('📧 TO:', process.env.EMAIL_ALERT_TO);
   try {
     const info = await transporter.sendMail({
       from: `"Guerrero AI" <${process.env.EMAIL_USER}>`,
@@ -39,12 +38,10 @@ const sendLeadAlert = async (lead) => {
     console.log('✅ Email enviado! ID:', info.messageId);
   } catch (err) {
     console.error('❌ Email FAILED:', err.message);
-    console.error('❌ Full error:', JSON.stringify(err, null, 2));
   }
 };
 
 const testEmail = async (req, res) => {
-  console.log('🧪 Test email iniciado...');
   try {
     const info = await transporter.sendMail({
       from: `"Guerrero AI" <${process.env.EMAIL_USER}>`,
@@ -52,7 +49,7 @@ const testEmail = async (req, res) => {
       subject: '✅ Guerrero AI — Test',
       text: 'Email funcionando correctamente.'
     });
-    console.log('✅ Test email enviado! ID:', info.messageId);
+    console.log('✅ Test email enviado!');
     res.json({ success: true, message: 'Email enviado a ' + process.env.EMAIL_ALERT_TO });
   } catch (err) {
     console.error('❌ Test FAILED:', err.message);
