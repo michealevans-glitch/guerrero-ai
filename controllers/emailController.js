@@ -18,8 +18,11 @@ transporter.verify((error, success) => {
 });
 
 const sendLeadAlert = async (lead) => {
+  console.log('📧 Intentando enviar email...');
+  console.log('📧 USER:', process.env.EMAIL_USER);
+  console.log('📧 TO:', process.env.EMAIL_ALERT_TO);
   try {
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"Guerrero AI" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_ALERT_TO,
       subject: `⚔️ NUEVO LEAD — ${lead.service_type}`,
@@ -33,22 +36,26 @@ const sendLeadAlert = async (lead) => {
           <p style="color:#888;font-size:12px;">guerreroai.com</p>
         </div>`
     });
-    console.log('📧 Email enviado!');
+    console.log('✅ Email enviado! ID:', info.messageId);
   } catch (err) {
-    console.error('❌ Email error:', err.message);
+    console.error('❌ Email FAILED:', err.message);
+    console.error('❌ Full error:', JSON.stringify(err, null, 2));
   }
 };
 
 const testEmail = async (req, res) => {
+  console.log('🧪 Test email iniciado...');
   try {
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"Guerrero AI" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_ALERT_TO,
       subject: '✅ Guerrero AI — Test',
-      text: 'Email funcionando correctamente. ⚔️'
+      text: 'Email funcionando correctamente.'
     });
+    console.log('✅ Test email enviado! ID:', info.messageId);
     res.json({ success: true, message: 'Email enviado a ' + process.env.EMAIL_ALERT_TO });
   } catch (err) {
+    console.error('❌ Test FAILED:', err.message);
     res.status(500).json({ error: err.message });
   }
 };
