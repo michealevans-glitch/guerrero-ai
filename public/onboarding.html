@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Onboarding - Robot Alerts II</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #1e1e1e; padding: 40px; border-radius: 15px; border: 1px solid #333; width: 400px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #444; color: white; border-radius: 5px; }
+        button { width: 100%; padding: 15px; background: #00ff88; color: black; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>🚀 Configura tu Negocio</h2>
+        <form id="onboardingForm">
+            <input type="text" id="bizName" placeholder="Nombre de tu Negocio" required>
+            <select id="industry">
+                <option value="cremation">Cremación / Funeraria</option>
+                <option value="hotel">Hotel / Hospedaje</option>
+                <option value="logistics">Paquetería / Logistics</option>
+            </select>
+            <input type="email" id="adminEmail" placeholder="Email del Dueño" required>
+            <input type="password" id="adminPass" placeholder="Crea tu contraseña" required>
+            <button type="submit">ACTIVAR MI ROBOT</button>
+        </form>
+    </div>
+</body>
+</html>

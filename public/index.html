@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUERRERO AI — War Room</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI',sans-serif; background:#0a0a0f; color:white; padding:20px; }
+        
+        .topbar { 
+            background:#0d0d1a; border-bottom:1px solid #333; 
+            padding:15px 25px; display:flex; 
+            justify-content:space-between; align-items:center;
+            margin-bottom: 25px; border-radius: 12px;
+        }
+        .logo h1 { color:#00ff88; font-size:22px; font-weight:900; letter-spacing: 1px; }
+        .logo span { color:#888; font-size:12px; }
+
+        .btn { padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; font-size:13px; }
+        .btn-primary { background:#00ff88; color:#000; width: 100%; margin-top: 10px; transition: 0.3s; }
+        .btn-primary:hover { background: #00cc6e; transform: scale(1.01); }
+        .btn-logout { background:#333; color:white; }
+        .btn-siren { background:#ff4444; color:white; animation: pulse 1.5s infinite; }
+
+        .card-form {
+            background:#1a1a2e; border:1px solid #00ff88; 
+            border-radius:12px; padding:25px; margin-bottom:25px;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.1);
+        }
+        .form-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; }
+        .form-group { display:flex; flex-direction:column; gap:6px; }
+        .form-group label { font-size:11px; color:#888; font-weight:bold; text-transform: uppercase; }
+        .form-group input, .form-group select {
+            background:#0a0a0f; border:1px solid #333; color:white;
+            padding:12px; border-radius:8px; font-size:14px;
+        }
+
+        .grid { display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+        @media(max-width:768px) { .grid { grid-template-columns: 1fr; } }
+        .card { background:#1a1a2e; border:1px solid #333; border-radius:12px; padding:20px; }
+        .card h2 { margin-bottom:15px; font-size:18px; color: #00ff88; border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+        .notification {
+            position:fixed; top:20px; right:20px; padding:15px 25px;
+            border-radius:10px; font-weight:bold; z-index:10000; animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,68,68,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255,68,68,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,68,68,0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="logo">
+        <h1>⚔️ GUERRERO AI</h1>
+        <span>SISTEMA DE CONTROL — ALBA LUMEN</span>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button id="sound-btn" class="btn btn-siren" onclick="enableSound()">🔔 ACTIVAR SIRENA</button>
+        <button class="btn btn-logout" onclick="logout()">🚪 SALIR</button>
+    </div>
+</div>
+
+<audio id="siren-sound" src="siren.mp3" preload="auto" loop></audio>
+
+<div class="card-form">
+    <h2>➕ Registro de Cliente Nuevo (Manual)</h2>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Nombre Completo</label>
+            <input type="text" id="f-name" placeholder="Ej: Juan Pérez">
+        </div>
+        <div class="form-group">
+            <label>Teléfono de Contacto</label>
+            <input type="text" id="f-phone" placeholder="Ej: +506 8888-1111">
+        </div>
+        <div class="form-group">
+            <label>Tipo de Servicio</label>
+            <select id="f-service">
+                <option value="Cremación Mascota Pequeña">🐾 Mascota Pequeña</option>
+                <option value="Cremación Mascota Grande">🐾 Mascota Grande</option>
+                <option value="Cremación Humana">🕊️ Cremación Humana</option>
+                <option value="URGENTE">🚨 CASO URGENTE</option>
+            </select>
+        </div>
+    </div>
+    <button class="btn btn-primary" onclick="createLead()">⚔️ REGISTRAR LEAD Y DISPARAR ALERTA</button>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h2>🚨 Embudo Activo</h2>
+        <div id="active-leads"><p style="color:#888;">Monitoreando entrada de leads...</p></div>
+    </div>
+    <div class="card">
+        <h2>📊 Rendimiento</h2>
+        <div id="stats-area"><p style="color:#888;">Cargando estadísticas...</p></div>
+    </div>
+</div>
+
+<script>
+    // --- TODO EL JAVASCRIPT VA AQUÍ ADENTRO ---
+
+    function logout() {
+        localStorage.removeItem('ra2_token');
+        window.location.href = '/login.html';
+    }
+
+    function enableSound() {
+        const s = document.getElementById('siren-sound');
+        s.play().then(() => {
+            s.pause(); s.currentTime = 0;
+            const btn = document.getElementById('sound-btn');
+            btn.textContent = '✅ SIRENA LISTA';
+            btn.style.background = '#00ff88';
+            btn.style.color = '#000';
+            btn.style.animation = 'none';
+        });
+    }
+
+    async function createLead() {
+        const name = document.getElementById('f-name').value;
+        const phone = document.getElementById('f-phone').value;
+        const service = document.getElementById('f-service').value;
+
+        if (!phone) {
+            showNotification('⚠️ El teléfono es obligatorio', 'warning');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/leads/new', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contact_name: name || 'No especificado',
+                    phone: phone,
+                    service_type: service,
+                    source: 'WarRoom-Manual'
+                })
+            });
+
+            if (res.ok) {
+                showNotification('✅ ¡ALERTA DISPARADA EXITOSAMENTE!', 'success');
+                document.getElementById('f-name').value = '';
+                document.getElementById('f-phone').value = '';
+                loadActiveLeads();
+            } else {
+                const errorData = await res.json();
+                showNotification(`❌ Error: ${errorData.error}`, 'error');
+            }
+        } catch (e) {
+            showNotification('❌ El servidor no responde', 'error');
+        }
+    }
+
+    async function loadActiveLeads() {
+        try {
+            const res = await fetch('/api/leads/active');
+            const data = await res.json();
+            const container = document.getElementById('active-leads');
+            
+            if (data.length > 0) {
+                container.innerHTML = data.map(l => `
+                    <div style="background:#262626; padding:10px; border-radius:8px; margin-bottom:10px; border-left:4px solid #00ff88;">
+                        <strong>${l.contact_name}</strong><br>
+                        <small>${l.service_type} | ${l.phone}</small>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p style="color:#00ff88;">✅ Todo al día. Sin pendientes.</p>';
+            }
+        } catch(e) {}
+    }
+
+    function showNotification(msg, type) {
+        const colors = { success:'#00ff88', warning:'#ffaa00', error:'#ff4444' };
+        const n = document.createElement('div');
+        n.className = 'notification';
+        n.style.background = colors[type];
+        n.style.color = '#000';
+        n.textContent = msg;
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 4000);
+    }
+
+    setInterval(loadActiveLeads, 5000);
+    loadActiveLeads();
+</script>
+</body>
+</html>

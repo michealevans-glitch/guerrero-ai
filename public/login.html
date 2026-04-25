@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Robot Alerts II - Login</title>
+    <style>
+        body { background: #0a0a0f; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: #1a1a2e; padding: 40px; border-radius: 12px; border: 1px solid #333; width: 320px; text-align: center; }
+        h2 { color: #00ff88; margin-bottom: 25px; font-size: 22px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #0a0a0f; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        input:focus { outline: none; border-color: #00ff88; }
+        button { width: 100%; padding: 12px; background: #00ff88; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { opacity: 0.9; }
+        .error { color: #ff4444; font-size: 13px; margin-bottom: 10px; display: none; padding: 10px; background: rgba(255,68,68,0.1); border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2>🤖 Robot Alerts II</h2>
+        <p style="color:#888; margin-bottom:20px; font-size:13px;">AI Business Command Center</p>
+        <div id="error" class="error">Invalid credentials</div>
+        <input type="email" id="email" placeholder="Email" onkeypress="if(event.key==='Enter') handleLogin()">
+        <input type="password" id="password" placeholder="Password" onkeypress="if(event.key==='Enter') handleLogin()">
+        <button onclick="handleLogin()" id="btn">ENTER WAR ROOM</button>
+    </div>
+
+    <script>
+        // If already logged in go straight to dashboard
+        if (localStorage.getItem('ra2_token')) {
+            window.location.href = '/index.html';
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('btn');
+            const error = document.getElementById('error');
+
+            if (!email || !password) {
+                error.textContent = 'Please enter email and password';
+                error.style.display = 'block';
+                return;
+            }
+
+            btn.textContent = 'Logging in...';
+            btn.disabled = true;
+            error.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    localStorage.setItem('ra2_token', data.token);
+                    localStorage.setItem('ra2_user', JSON.stringify(data.user));
+                    window.location.href = '/index.html';
+                } else {
+                    error.textContent = data.error || 'Invalid credentials';
+                    error.style.display = 'block';
+                }
+            } catch(e) {
+                error.textContent = 'Connection error. Is server running?';
+                error.style.display = 'block';
+            }
+
+            btn.textContent = 'ENTER WAR ROOM';
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
