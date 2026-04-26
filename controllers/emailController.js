@@ -6,9 +6,26 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const TWILIO_PHONE = process.env.TWILIO_PHONE;
-const PAPA_PHONE = '+50685281312';
+const ALBALUMEN_PHONE = '+50685281312';
+const HUELLITAS_PHONE = '+50670469290';
 
 const sendWhatsAppAlert = async (message) => {
+  try {
+    await twilioClient.messages.create({
+      from: `whatsapp:${TWILIO_PHONE}`,
+      to: `whatsapp:${ALBALUMEN_PHONE}`,
+      body: message
+    });
+    await twilioClient.messages.create({
+      from: `whatsapp:${TWILIO_PHONE}`,
+      to: `whatsapp:${HUELLITAS_PHONE}`,
+      body: message
+    });
+    console.log('📱 WhatsApp alerts sent to both!');
+  } catch (err) {
+    console.error('❌ WhatsApp error:', err.message);
+  }
+};
   try {
     await twilioClient.messages.create({
       from: `whatsapp:${TWILIO_PHONE}`,
