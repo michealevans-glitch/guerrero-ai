@@ -1,105 +1,463 @@
-<script>
-    const API_URL = window.location.origin;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guerrero AI — War Room</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI',sans-serif; background:#0a0a0f; color:white; }
+        .topbar { background:#0d0d1a; border-bottom:1px solid #333; padding:15px 25px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; }
+        .logo h1 { color:#00ff88; font-size:20px; font-weight:900; }
+        .logo span { color:#888; font-size:12px; }
+        .btn { padding:8px 16px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; font-size:13px; }
+        .btn-logout { background:#333; color:white; }
+        .btn-logout:hover { background:#ff4444; }
+        .main { padding:25px; max-width:1400px; margin:0 auto; }
+        .tabs { display:flex; gap:10px; margin-bottom:25px; }
+        .tab { padding:12px 25px; border-radius:8px; border:2px solid #333; background:transparent; color:#888; cursor:pointer; font-weight:bold; font-size:14px; }
+        .tab.active-alba { border-color:#00ff88; color:#00ff88; background:rgba(0,255,136,0.1); }
+        .tab.active-huellitas { border-color:#ff88ff; color:#ff88ff; background:rgba(255,136,255,0.1); }
+        .tab.active-prospectos { border-color:#ffaa00; color:#ffaa00; background:rgba(255,170,0,0.1); }
+        .new-lead-form { border-radius:12px; padding:25px; margin-bottom:25px; }
+        .alba-form { background:#1a1a2e; border:1px solid #00ff88; }
+        .huellitas-form { background:#1a1a2e; border:1px solid #ff88ff; }
+        .form-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-bottom:15px; }
+        @media(max-width:768px) { .form-grid { grid-template-columns:1fr; } }
+        .form-group { display:flex; flex-direction:column; gap:6px; }
+        .form-group label { font-size:12px; color:#888; font-weight:bold; }
+        .form-group input, .form-group select { background:#0a0a0f; border:1px solid #333; color:white; padding:10px; border-radius:8px; font-size:14px; }
+        .btn-register-alba { width:100%; padding:14px; background:#00ff88; color:#000; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
+        .btn-register-huellitas { width:100%; padding:14px; background:#ff88ff; color:#000; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
+        .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        @media(max-width:768px) { .grid { grid-template-columns:1fr; } }
+        .card { background:#1a1a2e; border:1px solid #333; border-radius:12px; padding:20px; }
+        .card h2 { margin-bottom:15px; font-size:16px; }
+        .lead-card { background:#262626; border-radius:10px; padding:15px; margin:10px 0; }
+        .lead-actions { display:flex; gap:8px; margin-top:10px; }
+        .lead-actions button { flex:1; padding:8px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px; }
+        .stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:25px; }
+        @media(max-width:768px) { .stat-grid { grid-template-columns:repeat(2,1fr); } }
+        .stat-card { border-radius:12px; padding:20px; text-align:center; }
+        .stat-card .number { font-size:32px; font-weight:900; }
+        .stat-card .label { font-size:12px; color:#888; margin-top:5px; }
+        .notification { position:fixed; top:20px; right:20px; padding:15px 25px; border-radius:10px; font-weight:bold; z-index:10000; }
+        .prospect-table { width:100%; border-collapse:collapse; font-size:13px; }
+        .prospect-table th { padding:10px; text-align:left; color:#888; border-bottom:1px solid #333; }
+        .prospect-table td { padding:10px; border-bottom:1px solid #222; }
+        .prospect-table tr:hover { background:#1a1a2e; }
+        @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(255,68,68,0.4)} 70%{box-shadow:0 0 0 10px rgba(255,68,68,0)} 100%{box-shadow:0 0 0 0 rgba(255,68,68,0)} }
+        .urgent { animation:pulse 1.5s infinite; }
+        select option { background:#1a1a2e; }
+    </style>
+</head>
+<body>
 
-    // Reloj con lógica de horario comercial CR
+<div class="topbar">
+    <div class="logo">
+        <h1>⚔️ GUERRERO AI</h1>
+        <span id="clock-display">guerreroai.com | War Room v2.0</span>
+    </div>
+    <button class="btn btn-logout" onclick="logout()">🚪 Salir</button>
+</div>
+
+<audio id="siren" src="siren.mp3" loop preload="auto"></audio>
+
+<div class="main">
+
+    <div class="tabs">
+        <button class="tab active-alba" id="tab-alba" onclick="switchTab('alba')">🕊️ ALBA LUMEN</button>
+        <button class="tab" id="tab-huellitas" onclick="switchTab('huellitas')">🐾 HUELLITAS AL CIELO</button>
+        <button class="tab" id="tab-prospectos" onclick="switchTab('prospectos')">🎯 PROSPECTOS</button>
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-card" style="background:#1a1a2e;border:1px solid #333;">
+            <div class="number" id="stat-total" style="color:#00ff88;">0</div>
+            <div class="label">Total Leads Hoy</div>
+        </div>
+        <div class="stat-card" style="background:#1a1a2e;border:1px solid #333;">
+            <div class="number" id="stat-active" style="color:#ffaa00;">0</div>
+            <div class="label">Pendientes</div>
+        </div>
+        <div class="stat-card" style="background:#1a1a2e;border:1px solid #333;">
+            <div class="number" id="stat-claimed" style="color:#00ff88;">0</div>
+            <div class="label">Atendidos</div>
+        </div>
+        <div class="stat-card" style="background:#1a1a2e;border:1px solid #333;">
+            <div class="number" id="stat-lost" style="color:#ff4444;">0</div>
+            <div class="label">Perdidos</div>
+        </div>
+    </div>
+
+    <!-- ALBA LUMEN FORM -->
+    <div class="new-lead-form alba-form" id="form-alba">
+        <h2 style="color:#00ff88;margin-bottom:20px;">🕊️ Registrar Cliente — Albalumen</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Nombre del Familiar</label>
+                <input type="text" id="alba-name" placeholder="Ej: María Rodríguez">
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="text" id="alba-phone" placeholder="+506 8888-1111">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Servicio</label>
+                <select id="alba-service">
+                    <option value="Paquete Emergencias">🕊️ Paquete Emergencias — ₡350,000</option>
+                    <option value="Paquete Completo">🕊️ Paquete Completo — ₡650,000</option>
+                    <option value="Sepultura">⚰️ Sepultura — ₡400,000</option>
+                    <option value="Cremación Con Autopsia">🕊️ Cremación Con Autopsia — ₡210,000</option>
+                    <option value="Cremación Medicatura">🕊️ Cremación Medicatura — ₡175,000</option>
+                    <option value="Bebé Óbito Fetal">🕊️ Bebé/Óbito Fetal — ₡115,000</option>
+                    <option value="Exhumación">🕊️ Exhumación — ₡125,000</option>
+                    <option value="Columbario">🏛️ Columbario — ₡910,000</option>
+                    <option value="Consulta de Precio">💰 Consulta de Precio</option>
+                    <option value="URGENTE">🚨 URGENTE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fuente</label>
+                <select id="alba-source">
+                    <option value="telefono">📞 Teléfono</option>
+                    <option value="whatsapp">💬 WhatsApp</option>
+                    <option value="referido">👥 Referido</option>
+                    <option value="google">🔍 Google</option>
+                    <option value="walk-in">🚶 Walk-in</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notas</label>
+                <input type="text" id="alba-notes" placeholder="Información adicional...">
+            </div>
+        </div>
+        <button class="btn-register-alba" onclick="createLead('alba')">🕊️ REGISTRAR LEAD ALBALUMEN Y ENVIAR ALERTA</button>
+    </div>
+
+    <!-- HUELLITAS FORM -->
+    <div class="new-lead-form huellitas-form" id="form-huellitas" style="display:none;">
+        <h2 style="color:#ff88ff;margin-bottom:20px;">🐾 Registrar Cliente — Huellitas al Cielo</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Nombre del Dueño</label>
+                <input type="text" id="huellitas-name" placeholder="Ej: Carlos Pérez">
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="text" id="huellitas-phone" placeholder="+506 8888-1111">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Servicio</label>
+                <select id="huellitas-service">
+                    <option value="Cremación Mascota Pequeña">🐱 Mascota Pequeña 0-15kg — ₡40,000</option>
+                    <option value="Cremación Mascota Grande">🐕 Mascota Grande 16-30kg — ₡59,000</option>
+                    <option value="Plan Preventivo">📋 Plan Preventivo — 18 cuotas ₡4,900</option>
+                    <option value="Eutanasia">💉 Eutanasia</option>
+                    <option value="Consulta de Precio">💰 Consulta de Precio</option>
+                    <option value="URGENTE - Mascota Fallecida">🚨 URGENTE — Mascota Fallecida</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fuente</label>
+                <select id="huellitas-source">
+                    <option value="telefono">📞 Teléfono</option>
+                    <option value="whatsapp">💬 WhatsApp</option>
+                    <option value="veterinaria">🏥 Veterinaria Aliada</option>
+                    <option value="referido">👥 Referido</option>
+                    <option value="google">🔍 Google</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nombre de la Mascota</label>
+                <input type="text" id="huellitas-notes" placeholder="Ej: Firulais, Golden Retriever">
+            </div>
+        </div>
+        <button class="btn-register-huellitas" onclick="createLead('huellitas')">🐾 REGISTRAR LEAD HUELLITAS Y ENVIAR ALERTA</button>
+    </div>
+
+    <!-- PROSPECTOS PANEL -->
+    <div id="panel-prospectos" style="display:none;">
+        <div class="card" style="margin-bottom:20px;">
+            <h2 style="color:#ffaa00;margin-bottom:15px;">🎯 Panel de Prospectos — Veterinarias y Hospitales</h2>
+            <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
+                <select id="filter-city" onchange="loadProspects()" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;">
+                    <option value="">Todas las ciudades</option>
+                    <option value="San Jose">San José</option>
+                    <option value="Heredia">Heredia</option>
+                    <option value="Alajuela">Alajuela</option>
+                    <option value="Cartago">Cartago</option>
+                </select>
+                <select id="filter-niche" onchange="loadProspects()" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;">
+                    <option value="">Todos los nichos</option>
+                    <option value="veterinaria">Veterinarias</option>
+                    <option value="hospital clinica medica">Hospitales/Clínicas</option>
+                </select>
+                <div id="horario-indicator" style="padding:8px 15px;border-radius:6px;font-weight:bold;font-size:13px;"></div>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="prospect-table">
+                    <thead>
+                        <tr>
+                            <th>Negocio</th>
+                            <th>Ciudad</th>
+                            <th>Teléfono</th>
+                            <th>Rating</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prospects-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- WAR ROOM -->
+    <div class="grid" id="war-room-grid">
+        <div class="card">
+            <h2>🚨 Embudo Activo <span id="active-count" style="background:#ff4444;color:white;padding:2px 8px;border-radius:10px;font-size:12px;margin-left:8px;">0</span></h2>
+            <div id="active-leads"><p style="color:#00ff88;">✅ Sin leads pendientes.</p></div>
+        </div>
+        <div class="card">
+            <h2>📊 Leads Recientes</h2>
+            <div id="recent-leads"><p style="color:#888;">Cargando...</p></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentTab = 'alba';
+
     function updateClock() {
         const now = new Date();
         const crTime = new Intl.DateTimeFormat('es-CR', {
             timeZone: 'America/Costa_Rica',
             hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
         }).format(now);
-        
         const hour = parseInt(crTime.split(':')[0]);
         const isOpen = hour >= 8 && hour < 19;
-        const status = isOpen ? '🟢 HORARIO OPERATIVO' : '🔴 FUERA DE HORARIO (Pausa)';
-        document.getElementById('clock-cr').innerHTML = `${crTime} CR<br><span class="text-xs">${status}</span>`;
+        document.getElementById('clock-display').textContent = `${crTime} CR | ${isOpen ? '🟢 OPERATIVO' : '🔴 FUERA DE HORARIO'}`;
         return isOpen;
     }
     setInterval(updateClock, 1000);
+    updateClock();
 
-    // Navegación entre pestañas
-    function showTab(id) {
-        document.getElementById('leads-real').classList.add('hidden');
-        document.getElementById('prospectos-pool').classList.add('hidden');
-        document.getElementById('tab-leads').classList.remove('active-tab');
-        document.getElementById('tab-prospectos').classList.remove('active-tab');
-        
-        document.getElementById(id).classList.remove('hidden');
-        if(id === 'leads-real') {
-            document.getElementById('tab-leads').classList.add('active-tab');
-            fetchLeadsReales(); // Cargar leads de la otra tabla
-        } else {
-            document.getElementById('tab-prospectos').classList.add('active-tab');
-            fetchProspects();
+    function switchTab(tab) {
+        currentTab = tab;
+        document.getElementById('form-alba').style.display = 'none';
+        document.getElementById('form-huellitas').style.display = 'none';
+        document.getElementById('panel-prospectos').style.display = 'none';
+        document.getElementById('war-room-grid').style.display = 'none';
+        document.getElementById('tab-alba').className = 'tab';
+        document.getElementById('tab-huellitas').className = 'tab';
+        document.getElementById('tab-prospectos').className = 'tab';
+
+        if (tab === 'alba') {
+            document.getElementById('form-alba').style.display = 'block';
+            document.getElementById('war-room-grid').style.display = 'grid';
+            document.getElementById('tab-alba').className = 'tab active-alba';
+        } else if (tab === 'huellitas') {
+            document.getElementById('form-huellitas').style.display = 'block';
+            document.getElementById('war-room-grid').style.display = 'grid';
+            document.getElementById('tab-huellitas').className = 'tab active-huellitas';
+        } else if (tab === 'prospectos') {
+            document.getElementById('panel-prospectos').style.display = 'block';
+            document.getElementById('tab-prospectos').className = 'tab active-prospectos';
+            loadProspects();
         }
     }
 
-    // Cargar Prospectos (De la tabla external_leads_pool)
-    async function fetchProspects() {
-        try {
-            const res = await fetch(`${API_URL}/api/scraper/prospects`);
-            const data = await res.json();
-            const body = document.getElementById('prospects-body');
-            body.innerHTML = '';
+    function logout() { window.location.href = '/login.html'; }
 
-            data.forEach(p => {
-                const tr = document.createElement('tr');
-                tr.className = 'border-b border-slate-700 hover:bg-slate-750 transition';
-                
-                // Limpieza de teléfono para WhatsApp (quitar todo lo que no sea número)
+    const REASONS = ['No contestó el teléfono','Precio muy alto','Eligió a la competencia','Familiar tomó la decisión','Lead falso/spam','Fuera de área','Respuesta muy lenta','Sin dinero','Otro'];
+
+    async function createLead(business) {
+        let name, phone, service, source, notes;
+        if (business === 'alba') {
+            name = document.getElementById('alba-name').value;
+            phone = document.getElementById('alba-phone').value;
+            service = document.getElementById('alba-service').value;
+            source = document.getElementById('alba-source').value;
+            notes = document.getElementById('alba-notes').value;
+        } else {
+            name = document.getElementById('huellitas-name').value;
+            phone = document.getElementById('huellitas-phone').value;
+            service = document.getElementById('huellitas-service').value;
+            source = document.getElementById('huellitas-source').value;
+            notes = document.getElementById('huellitas-notes').value;
+        }
+        if (!phone) { showNotification('⚠️ Teléfono requerido', 'warning'); return; }
+        try {
+            const res = await fetch('/api/leads/new', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contact_name: name, phone, service_type: service, source: `${business}-${source}`, notes, business })
+            });
+            if (res.ok) {
+                showNotification('✅ Lead registrado y alerta enviada!', 'success');
+                document.getElementById(`${business}-name`).value = '';
+                document.getElementById(`${business}-phone`).value = '';
+                document.getElementById(`${business}-notes`).value = '';
+                loadActiveLeads();
+                loadStats();
+                loadRecentLeads();
+            }
+        } catch(e) { showNotification('❌ Error de conexión', 'error'); }
+    }
+
+    async function loadProspects() {
+        try {
+            const res = await fetch('/api/scraper/prospects');
+            const data = await res.json();
+            const city = document.getElementById('filter-city').value;
+            const niche = document.getElementById('filter-niche').value;
+            const filtered = data.filter(p => (!city || p.city === city) && (!niche || p.niche === niche));
+            const isOpen = updateClock();
+            const indicator = document.getElementById('horario-indicator');
+            indicator.textContent = isOpen ? '🟢 Horario operativo — puede contactar' : '🔴 Fuera de horario (8am-7pm CR)';
+            indicator.style.background = isOpen ? 'rgba(0,255,136,0.1)' : 'rgba(255,68,68,0.1)';
+            indicator.style.color = isOpen ? '#00ff88' : '#ff4444';
+            indicator.style.border = `1px solid ${isOpen ? '#00ff88' : '#ff4444'}`;
+
+            const body = document.getElementById('prospects-body');
+            body.innerHTML = filtered.map(p => {
                 const cleanPhone = p.phone ? p.phone.replace(/\D/g, '') : '';
-                const msgHuellitas = encodeURIComponent(`Estimados colegas de ${p.business_name}, reciban un saludo de Huellitas al Cielo. Deseamos proponerles una alianza de acompañamiento integral... Para no recibir más mensajes responda STOP.`);
-                
-                tr.innerHTML = `
-                    <td class="p-3 font-bold text-sm md:text-base">${p.business_name}<br><span class="text-xs text-slate-400 font-normal">${p.niche} | ⭐ ${p.google_rating || 'N/A'}</span></td>
-                    <td class="p-3 text-sm">${p.city}</td>
-                    <td class="p-3 font-mono text-sm">${p.phone || 'No tel'}<br><span class="text-xs text-blue-300">${p.email || ''}</span></td>
-                    <td class="p-3">
-                        <div class="flex space-x-2">
-                            <a href="https://wa.me/${cleanPhone}?text=${msgHuellitas}" target="_blank" class="bg-green-600 hover:bg-green-700 p-2 rounded text-[10px] font-bold uppercase transition">WA</a>
-                            <a href="tel:${p.phone}" class="bg-blue-600 hover:bg-blue-700 p-2 rounded text-[10px] font-bold uppercase transition">Llamar</a>
-                            <button onclick="markContacted(${p.id})" class="bg-slate-600 hover:bg-slate-500 p-2 rounded text-[10px] font-bold">✅</button>
+                const fullPhone = cleanPhone.length === 8 ? `506${cleanPhone}` : cleanPhone;
+                const msgVet = encodeURIComponent(`Estimados colegas de ${p.business_name}, somos Huellitas al Cielo, crematorio certificado de mascotas en San José. Cuando llega ese momento difícil con sus pacientes, nosotros estamos aquí para apoyarles. 🐾 WhatsApp: +506 7046 9290. Para no recibir más mensajes responda STOP.`);
+                return `<tr>
+                    <td style="padding:10px;font-weight:bold;">${p.business_name}<br><span style="color:#888;font-size:11px;">${p.niche}</span></td>
+                    <td style="padding:10px;">${p.city}</td>
+                    <td style="padding:10px;font-family:monospace;">${p.phone || 'N/A'}</td>
+                    <td style="padding:10px;">⭐ ${p.google_rating || 'N/A'}</td>
+                    <td style="padding:10px;">
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            ${p.phone ? `<a href="https://wa.me/${fullPhone}?text=${msgVet}" target="_blank" style="background:#25d366;color:white;padding:5px 10px;border-radius:5px;text-decoration:none;font-size:11px;font-weight:bold;">💬 WA</a>` : ''}
+                            ${p.phone ? `<a href="tel:${p.phone}" style="background:#0066cc;color:white;padding:5px 10px;border-radius:5px;text-decoration:none;font-size:11px;font-weight:bold;">📞</a>` : ''}
+                            <button onclick="markProspectContacted(${p.id})" style="background:#333;color:white;padding:5px 10px;border-radius:5px;border:none;cursor:pointer;font-size:11px;">✅</button>
                         </div>
                     </td>
-                `;
-                body.appendChild(tr);
-            });
-        } catch (err) {
-            console.error("Error cargando prospectos:", err);
-        }
+                </tr>`;
+            }).join('');
+        } catch(e) { console.error('Error loading prospects:', e); }
     }
 
-    // Cargar Leads Reales (De la tabla leads principal)
-    async function fetchLeadsReales() {
+    async function markProspectContacted(id) {
+        await fetch('/api/outreach/mark-contacted', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, channel: 'manual' })
+        });
+        showNotification('✅ Prospecto marcado como contactado', 'success');
+        loadProspects();
+    }
+
+    async function loadStats() {
         try {
-            const res = await fetch(`${API_URL}/api/leads`);
+            const res = await fetch('/api/leads/active');
+            const active = await res.json();
+            document.getElementById('stat-active').textContent = active.length;
+            document.getElementById('active-count').textContent = active.length;
+        } catch(e) {}
+    }
+
+    async function loadActiveLeads() {
+        try {
+            const res = await fetch('/api/leads/active');
             const data = await res.json();
-            const container = document.getElementById('leads-container');
-            container.innerHTML = data.length === 0 ? '<p class="col-span-full text-slate-500 italic">No hay leads activos aún...</p>' : '';
-
-            data.forEach(lead => {
-                const card = document.createElement('div');
-                card.className = 'bg-slate-800 p-4 rounded-lg border-l-4 border-blue-500 shadow-lg';
-                card.innerHTML = `
-                    <h3 class="font-bold text-lg">${lead.business_name || 'Sin Nombre'}</h3>
-                    <p class="text-sm text-slate-400 mb-2">${lead.city || ''}</p>
-                    <div class="flex justify-between items-center mt-4">
-                        <span class="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded uppercase font-bold">${lead.status || 'NEW'}</span>
-                        <a href="tel:${lead.phone}" class="text-blue-400 font-mono">${lead.phone || ''}</a>
+            const container = document.getElementById('active-leads');
+            if (!data.length) { container.innerHTML = '<p style="color:#00ff88;">✅ Sin leads pendientes.</p>'; stopSiren(); return; }
+            startSiren();
+            container.innerHTML = data.map(lead => {
+                const mins = Math.floor((lead.seconds_waiting || 0) / 60);
+                const urgent = mins > 3;
+                const color = urgent ? '#ff4444' : '#ffaa00';
+                const isHuellitas = lead.service_type?.toLowerCase().includes('mascota');
+                const brandColor = isHuellitas ? '#ff88ff' : '#00ff88';
+                const brandIcon = isHuellitas ? '🐾' : '🕊️';
+                return `<div class="lead-card ${urgent ? 'urgent' : ''}" style="border:2px solid ${color};" id="lead-${lead.id}">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                        <div>
+                            <span style="background:${brandColor};color:#000;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:bold;">${brandIcon} ${isHuellitas ? 'HUELLITAS' : 'ALBALUMEN'}</span>
+                            <h3 style="color:${color};margin:5px 0;">${lead.service_type}</h3>
+                            <p style="color:#ccc;margin:3px 0;">👤 ${lead.contact_name || 'Sin nombre'}</p>
+                            <p style="color:#ccc;margin:3px 0;">📞 ${lead.phone}</p>
+                            <p style="color:#888;font-size:11px;">⏱️ ${mins}m esperando | ${lead.source || 'manual'}</p>
+                        </div>
+                        <span style="color:${color};font-size:22px;font-weight:900;">${mins}m</span>
                     </div>
-                `;
-                container.appendChild(card);
-            });
-        } catch (err) {
-            console.error("Error cargando leads:", err);
-        }
+                    <div class="lead-actions">
+                        <button onclick="claimLead(${lead.id})" style="background:#00ff88;color:#000;">✅ RECLAMAR</button>
+                        <button onclick="markLost(${lead.id})" style="background:#ff4444;color:white;">❌ PERDIDO</button>
+                    </div>
+                </div>`;
+            }).join('');
+        } catch(e) {}
     }
 
-    async function markContacted(id) {
-        // En la siguiente misión crearemos este endpoint en el backend
-        alert('ID ' + id + ' marcado como contactado localmente.');
+    async function claimLead(id) {
+        const name = prompt('Tu nombre para reclamar este lead:');
+        if (!name) return;
+        const res = await fetch(`/api/leads/claim/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ staff_name: name }) });
+        if (res.ok) { showNotification(`✅ Lead reclamado por ${name}`, 'success'); loadActiveLeads(); loadStats(); }
     }
 
-    // Inicializar
-    showTab('leads-real');
+    async function markLost(id) {
+        const popup = document.createElement('div');
+        popup.id = 'lost-popup';
+        popup.innerHTML = `<div onclick="document.getElementById('lost-popup').remove()" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9998;"></div>
+        <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:2px solid #ff4444;border-radius:12px;padding:25px;z-index:9999;min-width:320px;">
+            <h3 style="color:#ff4444;margin-bottom:15px;">¿Por qué se perdió?</h3>
+            <select id="lost-reason" style="width:100%;padding:10px;background:#0a0a0f;color:white;border:1px solid #333;border-radius:6px;margin-bottom:15px;">
+                ${REASONS.map(r => `<option value="${r}">${r}</option>`).join('')}
+            </select>
+            <div style="display:flex;gap:10px;">
+                <button onclick="confirmLost(${id})" style="flex:1;background:#ff4444;color:white;border:none;padding:12px;border-radius:6px;cursor:pointer;font-weight:bold;">Confirmar</button>
+                <button onclick="document.getElementById('lost-popup').remove()" style="flex:1;background:#333;color:white;border:none;padding:12px;border-radius:6px;cursor:pointer;">Cancelar</button>
+            </div>
+        </div>`;
+        document.body.appendChild(popup);
+    }
+
+    async function confirmLost(id) {
+        const reason = document.getElementById('lost-reason').value;
+        const res = await fetch(`/api/leads/lost/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason_lost: reason }) });
+        if (res.ok) { document.getElementById('lost-popup').remove(); showNotification(`📊 Lead perdido: ${reason}`, 'warning'); loadActiveLeads(); loadStats(); }
+    }
+
+    async function loadRecentLeads() {
+        try {
+            const res = await fetch('/api/leads/recent');
+            const data = await res.json();
+            if (!data?.length) { document.getElementById('recent-leads').innerHTML = '<p style="color:#888;">Sin leads aún.</p>'; return; }
+            document.getElementById('recent-leads').innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <tr style="color:#888;"><th style="padding:6px;text-align:left;">Cliente</th><th style="padding:6px;text-align:left;">Servicio</th><th style="padding:6px;text-align:left;">Estado</th></tr>
+                ${data.slice(0,10).map(l => `<tr style="border-bottom:1px solid #333;">
+                    <td style="padding:6px;">${l.contact_name || 'N/A'}</td>
+                    <td style="padding:6px;font-size:11px;">${(l.service_type||'').substring(0,20)}</td>
+                    <td style="padding:6px;"><span style="color:${l.status==='New'?'#ffaa00':l.status==='In-Progress'?'#00ff88':'#ff4444'};font-size:11px;">${l.status}</span></td>
+                </tr>`).join('')}
+            </table>`;
+        } catch(e) {}
+    }
+
+    let sirenPlaying = false;
+    function startSiren() { if (!sirenPlaying) { document.getElementById('siren').play().catch(()=>{}); sirenPlaying = true; } }
+    function stopSiren() { const s = document.getElementById('siren'); s.pause(); s.currentTime = 0; sirenPlaying = false; }
+
+    function showNotification(msg, type) {
+        const colors = { success:'#00ff88', warning:'#ffaa00', error:'#ff4444' };
+        const n = document.createElement('div');
+        n.className = 'notification';
+        n.style.background = colors[type] || '#333';
+        n.style.color = type === 'success' ? '#000' : 'white';
+        n.textContent = msg;
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 4000);
+    }
+
+    loadStats();
+    loadActiveLeads(); setInterval(loadActiveLeads, 3000);
+    loadRecentLeads(); setInterval(loadRecentLeads, 10000);
 </script>
+</body>
+</html>
