@@ -42,21 +42,17 @@ const scrapeVeterinarias = async (req, res) => {
 
         details.push(business);
 
-        await pool.query(`
-await pool.query(`
-  INSERT INTO external_leads_pool 
-  (business_name, phone, website, address, city, country, niche, google_rating, google_reviews, source, status)
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'google_maps', 'new')
-  ON CONFLICT (business_name, phone) DO NOTHING
-`, [
+        await pool.query(
+          `INSERT INTO external_leads_pool 
           (business_name, phone, website, address, city, country, niche, google_rating, google_reviews, source, status)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'google_maps', 'new')
-          ON CONFLICT DO NOTHING
-        `, [
-          business.business_name, business.phone, business.website,
-          business.address, business.city, business.country,
-          business.niche, business.google_rating, business.google_reviews
-        ]);
+          ON CONFLICT (business_name, phone) DO NOTHING`,
+          [
+            business.business_name, business.phone, business.website,
+            business.address, business.city, business.country,
+            business.niche, business.google_rating, business.google_reviews
+          ]
+        );
         saved++;
       } catch(itemErr) {
         console.log('Skipping place:', place.name, itemErr.message);
