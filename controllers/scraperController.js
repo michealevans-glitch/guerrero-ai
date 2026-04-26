@@ -43,7 +43,12 @@ const scrapeVeterinarias = async (req, res) => {
         details.push(business);
 
         await pool.query(`
-          INSERT INTO external_leads_pool 
+await pool.query(`
+  INSERT INTO external_leads_pool 
+  (business_name, phone, website, address, city, country, niche, google_rating, google_reviews, source, status)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'google_maps', 'new')
+  ON CONFLICT (business_name, phone) DO NOTHING
+`, [
           (business_name, phone, website, address, city, country, niche, google_rating, google_reviews, source, status)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'google_maps', 'new')
           ON CONFLICT DO NOTHING
