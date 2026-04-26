@@ -7,7 +7,7 @@ const scrapeVeterinarias = async (req, res) => {
     const searchQuery = `${niche || 'veterinaria'} en ${city || 'San José'} ${country || 'Costa Rica'}`;
     const apiKey = process.env.MAPS_API_KEY;
 
-    console.log(`🔍 Scraping: ${searchQuery}`);
+    console.log(`🔍 Scraping Google Maps: ${searchQuery}`);
 
     const searchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&key=${apiKey}`;
     const searchRes = await fetch(searchUrl);
@@ -60,15 +60,82 @@ const scrapeVeterinarias = async (req, res) => {
     }
 
     console.log(`✅ Scraped ${places.length} places, saved ${saved}`);
-    res.json({
-      success: true,
-      total_found: places.length,
-      saved,
-      results: details
-    });
+    res.json({ success: true, total_found: places.length, saved, results: details });
 
   } catch (err) {
     console.error('❌ Scraper error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const scrapePaginasAmarillas = async (req, res) => {
+  try {
+    const { niche, provincia } = req.body;
+    const searchTerm = niche || 'veterinaria';
+    const location = provincia || 'san-jose';
+
+    console.log(`🔍 Scraping Páginas Amarillas: ${searchTerm} en ${location}`);
+
+    const url = `https://www.paginasamarillas.cr/search/${encodeURIComponent(searchTerm)}?where=${encodeURIComponent(location)}`;
+    
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'es-CR,es;q=0.9,en;q=0.8'
+      }
+    });
+
+    const html = await response.text();
+    
+    const results = [];
+    const businessPattern = /<h2[^>]*class="[^"]*business-name[^"]*"[^>]*>(.*?)<\/h2>/gs;
+    const phonePattern = /tel:(\+?[0-9\s\-]{7,15})/g;
+    const emailPattern = /href="mailto:([^"]+)"/g;
+    const websitePattern = /href="(https?:\/\/(?!www\.paginasamarillas)[^"]+)"/g;
+
+    let businessMatches = [...html.matchAll(businessPattern)];
+    let phoneMatches = [...html.matchAll(phonePattern)];
+    let emailMatches = [...html.matchAll(emailPattern)];
+
+    let saved = 0;
+
+    for (let i = 0; i < Math.min(businessMatches.length, 20); i++) {
+      const business = {
+        business_name: businessMatches[i][1].replace(/<[^>]*>/g, '').trim(),
+        phone: phoneMatches[i] ? phoneMatches[i][1].trim() : null,
+        email: emailMatches[i] ? emailMatches[i][1] : null,
+        city: location,
+        country: 'Costa Rica',
+        niche: searchTerm,
+        source: 'paginas_amarillas',
+        status: 'new'
+      };
+
+      if (business.business_name) {
+        results.push(business);
+        try {
+          await pool.query(
+            `INSERT INTO external_leads_pool 
+            (business_name, phone, email, city, country, niche, source, status)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ON CONFLICT (business_name, phone) DO NOTHING`,
+            [business.business_name, business.phone, business.email,
+             business.city, business.country, business.niche,
+             business.source, business.status]
+          );
+          saved++;
+        } catch(dbErr) {
+          console.log('DB skip:', dbErr.message);
+        }
+      }
+    }
+
+    console.log(`✅ Páginas Amarillas: found ${results.length}, saved ${saved}`);
+    res.json({ success: true, total_found: results.length, saved, results });
+
+  } catch (err) {
+    console.error('❌ Páginas Amarillas error:', err.message);
     res.status(500).json({ error: err.message });
   }
 };
@@ -78,7 +145,7 @@ const getProspects = async (req, res) => {
     const result = await pool.query(`
       SELECT * FROM external_leads_pool
       ORDER BY google_rating DESC NULLS LAST, created_at DESC
-      LIMIT 100
+      LIMIT 200
     `);
     res.json(result.rows);
   } catch (err) {
@@ -86,4 +153,4 @@ const getProspects = async (req, res) => {
   }
 };
 
-module.exports = { scrapeVeterinarias, getProspects };
+module.exports = { scrapeVeterinarias, scrapePaginasAmarillas, getProspects };
