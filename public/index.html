@@ -1,87 +1,42 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WAR ROOM - GUERRERO AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .active-tab { border-bottom: 4px solid #facc15; color: #facc15; }
-        .hidden { display: none; }
-    </style>
-</head>
-<body class="bg-slate-900 text-white font-sans">
-    <header class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800 shadow-xl">
-        <h1 class="text-3xl font-bold tracking-tighter text-yellow-400">⚔️ GUERRERO AI <span class="text-xs text-slate-400 font-normal">v2.0</span></h1>
-        <div id="clock-cr" class="text-right font-mono text-lg text-emerald-400">Cargando hora CR...</div>
-    </header>
+<script>
+    const API_URL = window.location.origin;
 
-    <nav class="flex bg-slate-800 border-b border-slate-700">
-        <button onclick="showTab('leads-real')" id="tab-leads" class="flex-1 py-4 font-bold active-tab">WAR ROOM (LEADS)</button>
-        <button onclick="showTab('prospectos-pool')" id="tab-prospectos" class="flex-1 py-4 font-bold">PROSPECTOS (OUTREACH)</button>
-    </nav>
+    // Reloj con lógica de horario comercial CR
+    function updateClock() {
+        const now = new Date();
+        const crTime = new Intl.DateTimeFormat('es-CR', {
+            timeZone: 'America/Costa_Rica',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        }).format(now);
+        
+        const hour = parseInt(crTime.split(':')[0]);
+        const isOpen = hour >= 8 && hour < 19;
+        const status = isOpen ? '🟢 HORARIO OPERATIVO' : '🔴 FUERA DE HORARIO (Pausa)';
+        document.getElementById('clock-cr').innerHTML = `${crTime} CR<br><span class="text-xs">${status}</span>`;
+        return isOpen;
+    }
+    setInterval(updateClock, 1000);
 
-    <main class="p-4">
-        <div id="leads-real">
-            <h2 class="text-xl mb-4 font-bold text-blue-400">CLIENTES EN CURSO (Albalumen / Huellitas)</h2>
-            <div id="leads-container" class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"></div>
-        </div>
-
-        <div id="prospectos-pool" class="hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-yellow-400">POOL DE PROSPECTOS (GAM)</h2>
-                <button onclick="fetchProspects()" class="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded font-bold">RECARGAR LISTA</button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse bg-slate-800 rounded-lg overflow-hidden">
-                    <thead class="bg-slate-700 text-yellow-400">
-                        <tr>
-                            <th class="p-3">NEGOCIO</th>
-                            <th class="p-3">CIUDAD</th>
-                            <th class="p-3">CONTACTO</th>
-                            <th class="p-3">ACCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody id="prospects-body"></tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        const API_URL = window.location.origin;
-
-        function updateClock() {
-            const now = new Date();
-            const crTime = new Intl.DateTimeFormat('es-CR', {
-                timeZone: 'America/Costa_Rica',
-                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-            }).format(now);
-            
-            const hour = parseInt(crTime.split(':')[0]);
-            const isOpen = hour >= 8 && hour < 19;
-            const status = isOpen ? '🟢 HORARIO OPERATIVO' : '🔴 FUERA DE HORARIO (Pausa)';
-            document.getElementById('clock-cr').innerHTML = `${crTime} CR<br><span class="text-xs">${status}</span>`;
-            return isOpen;
+    // Navegación entre pestañas
+    function showTab(id) {
+        document.getElementById('leads-real').classList.add('hidden');
+        document.getElementById('prospectos-pool').classList.add('hidden');
+        document.getElementById('tab-leads').classList.remove('active-tab');
+        document.getElementById('tab-prospectos').classList.remove('active-tab');
+        
+        document.getElementById(id).classList.remove('hidden');
+        if(id === 'leads-real') {
+            document.getElementById('tab-leads').classList.add('active-tab');
+            fetchLeadsReales(); // Cargar leads de la otra tabla
+        } else {
+            document.getElementById('tab-prospectos').classList.add('active-tab');
+            fetchProspects();
         }
-        setInterval(updateClock, 1000);
+    }
 
-        function showTab(id) {
-            document.getElementById('leads-real').classList.add('hidden');
-            document.getElementById('prospectos-pool').classList.add('hidden');
-            document.getElementById('tab-leads').classList.remove('active-tab');
-            document.getElementById('tab-prospectos').classList.remove('active-tab');
-            
-            document.getElementById(id).classList.remove('hidden');
-            if(id === 'leads-real') {
-                document.getElementById('tab-leads').classList.add('active-tab');
-            } else {
-                document.getElementById('tab-prospectos').classList.add('active-tab');
-                fetchProspects();
-            }
-        }
-
-        async function fetchProspects() {
+    // Cargar Prospectos (De la tabla external_leads_pool)
+    async function fetchProspects() {
+        try {
             const res = await fetch(`${API_URL}/api/scraper/prospects`);
             const data = await res.json();
             const body = document.getElementById('prospects-body');
@@ -91,27 +46,60 @@
                 const tr = document.createElement('tr');
                 tr.className = 'border-b border-slate-700 hover:bg-slate-750 transition';
                 
+                // Limpieza de teléfono para WhatsApp (quitar todo lo que no sea número)
+                const cleanPhone = p.phone ? p.phone.replace(/\D/g, '') : '';
                 const msgHuellitas = encodeURIComponent(`Estimados colegas de ${p.business_name}, reciban un saludo de Huellitas al Cielo. Deseamos proponerles una alianza de acompañamiento integral... Para no recibir más mensajes responda STOP.`);
                 
                 tr.innerHTML = `
-                    <td class="p-3 font-bold">${p.business_name}<br><span class="text-xs text-slate-400">${p.niche} | ⭐ ${p.google_rating || 'N/A'}</span></td>
+                    <td class="p-3 font-bold text-sm md:text-base">${p.business_name}<br><span class="text-xs text-slate-400 font-normal">${p.niche} | ⭐ ${p.google_rating || 'N/A'}</span></td>
                     <td class="p-3 text-sm">${p.city}</td>
                     <td class="p-3 font-mono text-sm">${p.phone || 'No tel'}<br><span class="text-xs text-blue-300">${p.email || ''}</span></td>
-                    <td class="p-3 space-x-2">
-                        <a href="https://wa.me/${p.phone?.replace(/\s/g,'')}?text=${msgHuellitas}" target="_blank" class="bg-green-600 p-2 rounded text-xs font-bold">WA</a>
-                        <a href="tel:${p.phone}" class="bg-blue-600 p-2 rounded text-xs font-bold">CALL</a>
-                        <button onclick="markContacted(${p.id})" class="bg-slate-600 p-2 rounded text-xs font-bold">✅</button>
+                    <td class="p-3">
+                        <div class="flex space-x-2">
+                            <a href="https://wa.me/${cleanPhone}?text=${msgHuellitas}" target="_blank" class="bg-green-600 hover:bg-green-700 p-2 rounded text-[10px] font-bold uppercase transition">WA</a>
+                            <a href="tel:${p.phone}" class="bg-blue-600 hover:bg-blue-700 p-2 rounded text-[10px] font-bold uppercase transition">Llamar</a>
+                            <button onclick="markContacted(${p.id})" class="bg-slate-600 hover:bg-slate-500 p-2 rounded text-[10px] font-bold">✅</button>
+                        </div>
                     </td>
                 `;
                 body.appendChild(tr);
             });
+        } catch (err) {
+            console.error("Error cargando prospectos:", err);
         }
+    }
 
-        async function markContacted(id) {
-            alert('Prospecto marcado como contactado. (Pendiente endpoint)');
+    // Cargar Leads Reales (De la tabla leads principal)
+    async function fetchLeadsReales() {
+        try {
+            const res = await fetch(`${API_URL}/api/leads`);
+            const data = await res.json();
+            const container = document.getElementById('leads-container');
+            container.innerHTML = data.length === 0 ? '<p class="col-span-full text-slate-500 italic">No hay leads activos aún...</p>' : '';
+
+            data.forEach(lead => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-800 p-4 rounded-lg border-l-4 border-blue-500 shadow-lg';
+                card.innerHTML = `
+                    <h3 class="font-bold text-lg">${lead.business_name || 'Sin Nombre'}</h3>
+                    <p class="text-sm text-slate-400 mb-2">${lead.city || ''}</p>
+                    <div class="flex justify-between items-center mt-4">
+                        <span class="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded uppercase font-bold">${lead.status || 'NEW'}</span>
+                        <a href="tel:${lead.phone}" class="text-blue-400 font-mono">${lead.phone || ''}</a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (err) {
+            console.error("Error cargando leads:", err);
         }
+    }
 
-        showTab('leads-real');
-    </script>
-</body>
-</html>
+    async function markContacted(id) {
+        // En la siguiente misión crearemos este endpoint en el backend
+        alert('ID ' + id + ' marcado como contactado localmente.');
+    }
+
+    // Inicializar
+    showTab('leads-real');
+</script>
