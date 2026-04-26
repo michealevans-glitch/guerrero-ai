@@ -5,7 +5,7 @@ const scrapeVeterinarias = async (req, res) => {
   try {
     const { city, country, niche } = req.body;
     const searchQuery = `${niche || 'veterinaria'} en ${city || 'San José'} ${country || 'Costa Rica'}`;
-    const apiKey = process.env.MAPS_API_KEY;
+const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
     console.log(`🔍 Scraping Google Maps: ${searchQuery}`);
 
