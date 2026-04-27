@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guerrero AI — Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #F5F0E8;
+            --cream-dark: #EDE7D9;
+            --cream-darker: #E0D8C8;
+            --alba-green: #2D6A4F;
+            --alba-light: #B7E4C7;
+            --huellitas-pink: #C9184A;
+            --huellitas-light: #FFB3C6;
+            --text-dark: #2C2416;
+            --text-mid: #6B5E4E;
+            --text-light: #9C8E7E;
+            --white: #FFFFFF;
+            --shadow: 0 2px 20px rgba(44,36,22,0.08);
+            --shadow-lg: 0 8px 40px rgba(44,36,22,0.12);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--text-dark);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* LOGIN */
+        #login-screen {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: var(--cream);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 40px;
+            width: 360px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .login-card h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .login-card p {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--cream-darker);
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: var(--text-dark);
+            background: var(--cream);
+            margin-bottom: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus { border-color: var(--alba-green); }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--text-dark);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .login-btn:hover { opacity: 0.85; }
+        #login-error { color: var(--huellitas-pink); font-size: 13px; margin-top: 10px; }
+
+        /* TOPBAR */
+        .topbar {
+            background: white;
+            border-bottom: 1px solid var(--cream-darker);
+            padding: 0 20px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .topbar-left { display: flex; align-items: center; gap: 16px; }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: var(--text-dark);
+        }
+
+        .business-tabs {
+            display: flex;
+            gap: 6px;
+        }
+
+        .biz-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1.5px solid transparent;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--cream);
+            color: var(--text-mid);
+        }
+
+        .biz-tab.active-alba {
+            background: var(--alba-green);
+            color: white;
+            border-color: var(--alba-green);
+        }
+
+        .biz-tab.active-huellitas {
+            background: var(--huellitas-pink);
+            color: white;
+            border-color: var(--huellitas-pink);
+        }
+
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+        .user-pill {
+            background: var(--cream-dark);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-mid);
+            font-weight: 500;
+        }
+
+        .nav-btn {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1.5px solid var(--cream-darker);
+            background: white;
+            color: var(--text-mid);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover { background: var(--cream); }
+
+        /* MAIN LAYOUT */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 320px;
+            background: white;
+            border-right: 1px solid var(--cream-darker);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--cream-darker);
+        }
+
+        .sidebar-header h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--cream-darker);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            background: var(--cream);
+            color: var(--text-dark);
+            outline: none;
+        }
+
+        .search-box:focus { border-color: var(--alba-green); }
+
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .conversations-list::-webkit-scrollbar { width: 4px; }
+        .conversations-list::-webkit-scrollbar-track { background: transparent; }
+        .conversations-list::-webkit-scrollbar-thumb { background: var(--cream-darker); border-radius: 2px; }
+
+        .conv-item {
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        .conv-item:hover { background: var(--cream); }
+
+        .conv-item.active {
+            background: var(--cream-dark);
+            border-left-color: var(--alba-green);
+        }
+
+        .conv-item.active.huellitas { border-left-color: var(--huellitas-pink); }
+
+        .conv-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .conv-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .conv-time {
+            font-size: 11px;
+            color: var(--text-light);
+            flex-shrink: 0;
+        }
+
+        .conv-preview {
+            font-size: 13px;
+            color: var(--text-mid);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conv-badges {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-new { background: #FFF3CD; color: #856404; }
+        .badge-alba { background: #D8F3DC; color: var(--alba-green); }
+        .badge-huellitas { background: #FFD6E0; color: var(--huellitas-pink); }
+        .badge-claimed { background: #E8F4FD; color: #0066cc; }
+
+        .unread-dot {
+            width: 8px; height: 8px;
+            background: var(--huellitas-pink);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* CHAT AREA */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--cream);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: white;
+            border-bottom: 1px solid var(--cream-darker);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .chat-header-left { display: flex; align-items: center; gap: 12px; }
+
+        .avatar {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .avatar-alba { background: var(--alba-light); }
+        .avatar-huellitas { background: var(--huellitas-light); }
+
+        .chat-client-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-dark);
+        }
+
+        .chat-client-phone {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .chat-header-right { display: flex; gap: 8px; }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1.5px solid var(--cream-darker);
+            background: white;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dark);
+        }
+
+        .action-btn:hover { background: var(--cream); }
+        .action-btn.green { background: var(--alba-green); color: white; border-color: var(--alba-green); }
+        .action-btn.pink { background: var(--huellitas-pink); color: white; border-color: var(--huellitas-pink); }
+        .action-btn.red { background: #dc3545; color: white; border-color: #dc3545; }
+
+        /* MESSAGES */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .messages-area::-webkit-scrollbar { width: 4px; }
+        .messages-area::-webkit-scrollbar-thumb { background: var(--cream-darker); border-radius: 2px; }
+
+        .msg-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .msg-wrapper.outgoing { align-items: flex-end; }
+        .msg-wrapper.incoming { align-items: flex-start; }
+
+        .msg-bubble {
+            max-width: 65%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .msg-wrapper.outgoing .msg-bubble {
+            background: var(--alba-green);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg-wrapper.outgoing.huellitas .msg-bubble {
+            background: var(--huellitas-pink);
+        }
+
+        .msg-wrapper.incoming .msg-bubble {
+            background: white;
+            color: var(--text-dark);
+            border-bottom-left-radius: 4px;
+            box-shadow: var(--shadow);
+        }
+
+        .msg-meta {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+
+        .msg-wrapper.outgoing .msg-meta { text-align: right; }
+
+        .date-divider {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-light);
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .date-divider::before, .date-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--cream-darker);
+        }
+
+        /* QUICK REPLIES */
+        .quick-replies {
+            background: white;
+            border-top: 1px solid var(--cream-darker);
+            padding: 12px 20px;
+            flex-shrink: 0;
+        }
+
+        .quick-replies-label {
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .quick-replies-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .qr-btn {
+            padding: 7px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--cream-darker);
+            background: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .qr-btn:hover {
+            border-color: var(--alba-green);
+            background: #D8F3DC;
+            color: var(--alba-green);
+        }
+
+        .qr-btn.huellitas:hover {
+            border-color: var(--huellitas-pink);
+            background: #FFD6E0;
+            color: var(--huellitas-pink);
+        }
+
+        /* INPUT AREA */
+        .input-area {
+            background: white;
+            border-top: 1px solid var(--cream-darker);
+            padding: 16px 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        .msg-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid var(--cream-darker);
+            border-radius: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text-dark);
+            background: var(--cream);
+            outline: none;
+            resize: none;
+            max-height: 120px;
+            line-height: 1.5;
+            transition: border-color 0.2s;
+        }
+
+        .msg-input:focus { border-color: var(--alba-green); }
+
+        .send-btn {
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            border: none;
+            background: var(--alba-green);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover { opacity: 0.85; }
+        .send-btn.huellitas { background: var(--huellitas-pink); }
+
+        /* EMPTY STATE */
+        .empty-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            gap: 12px;
+        }
+
+        .empty-chat .icon { font-size: 48px; opacity: 0.4; }
+        .empty-chat p { font-size: 15px; }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            top: 80px; right: 20px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            z-index: 10000;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .notification.success { background: var(--alba-green); color: white; }
+        .notification.warning { background: #FF9500; color: white; }
+        .notification.error { background: var(--huellitas-pink); color: white; }
+
+        /* NO CONVERSATION SELECTED */
+        .no-conv { 
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            flex: 1; gap: 16px;
+            color: var(--text-light);
+        }
+        .no-conv .big-icon { font-size: 64px; opacity: 0.3; }
+        .no-conv h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-mid); }
+        .no-conv p { font-size: 14px; }
+
+        @media(max-width: 768px) {
+            .sidebar { width: 100%; display: none; }
+            .sidebar.mobile-show { display: flex; position: fixed; top: 64px; left: 0; height: calc(100vh - 64px); z-index: 50; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+    <div class="login-card">
+        <h1>⚔️ Guerrero AI</h1>
+        <p>Centro de Mensajes</p>
+        <input type="text" class="login-input" id="login-user" placeholder="Usuario">
+        <input type="password" class="login-input" id="login-pass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="login-btn" onclick="doLogin()">Entrar</button>
+        <p id="login-error"></p>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;flex-direction:column;height:100vh;">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <span class="logo">⚔️ Guerrero AI</span>
+            <div class="business-tabs">
+                <button class="biz-tab active-alba" id="tab-alba" onclick="switchBusiness('alba')">🕊️ Albalumen</button>
+                <button class="biz-tab" id="tab-huellitas" onclick="switchBusiness('huellitas')">🐾 Huellitas</button>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <span class="user-pill" id="user-pill"></span>
+            <a href="/" class="nav-btn">⚔️ War Room</a>
+            <button class="nav-btn" onclick="logout()">Salir</button>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-layout" id="main-layout">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 id="sidebar-title">💬 Conversaciones — Albalumen</h2>
+                <input type="text" class="search-box" placeholder="Buscar cliente..." oninput="filterConversations(this.value)">
+            </div>
+            <div class="conversations-list" id="conversations-list">
+                <p style="padding:20px;color:var(--text-light);font-size:14px;text-align:center;">Cargando conversaciones...</p>
+            </div>
+        </div>
+
+        <!-- CHAT -->
+        <div class="chat-area" id="chat-area">
+            <div class="no-conv" id="no-conv">
+                <div class="big-icon">💬</div>
+                <h3>Seleccioná una conversación</h3>
+                <p>Los mensajes de clientes aparecerán aquí</p>
+            </div>
+
+            <div id="active-chat" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+                <!-- CHAT HEADER -->
+                <div class="chat-header">
+                    <div class="chat-header-left">
+                        <div class="avatar avatar-alba" id="chat-avatar">👤</div>
+                        <div>
+                            <div class="chat-client-name" id="chat-name">Cliente</div>
+                            <div class="chat-client-phone" id="chat-phone">+506 ****</div>
+                        </div>
+                    </div>
+                    <div class="chat-header-right">
+                        <button class="action-btn" onclick="callClient()">📞 Llamar</button>
+                        <button class="action-btn green" id="claim-btn" onclick="claimCurrentLead()">✅ Reclamar</button>
+                        <button class="action-btn red" onclick="markCurrentLost()">❌ Perdido</button>
+                    </div>
+                </div>
+
+                <!-- MESSAGES -->
+                <div class="messages-area" id="messages-area"></div>
+
+                <!-- QUICK REPLIES -->
+                <div class="quick-replies" id="quick-replies">
+                    <div class="quick-replies-label">⚡ Respuestas rápidas</div>
+                    <div class="quick-replies-grid" id="qr-grid"></div>
+                </div>
+
+                <!-- INPUT -->
+                <div class="input-area">
+                    <textarea class="msg-input" id="msg-input" placeholder="Escribí tu mensaje..." rows="1"
+                        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"
+                        oninput="autoResize(this)"></textarea>
+                    <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const USERS = {
+    'oscar':   { pass: 'Albalumen2024#', role: 'admin',    name: 'Oscar Evans' },
+    'micheal': { pass: 'Guerrero2024#',  role: 'admin',    name: 'Micheal Evans' },
+    'soledad': { pass: 'Soledad2024',    role: 'operador', name: 'Soledad' },
+    'manuel':  { pass: 'Manuel2024',     role: 'operador', name: 'Manuel' }
+};
+
+const QUICK_REPLIES = {
+    alba: [
+        'Buenos días, gracias por contactar Albalumen. ¿En qué le podemos ayudar?',
+        'Con mucho respeto, ¿podría indicarnos el nombre del familiar?',
+        'Nuestro servicio está disponible 24 horas. ¿Desea que le llamemos?',
+        'El Paquete Emergencias tiene un costo de ₡350,000 + IVA.',
+        'El Paquete Completo incluye todos los servicios por ₡650,000 + IVA.',
+        'Manejamos cuotas quincenales desde ₡13,000. ¿Le interesa?',
+        'Estamos ubicados 150m oeste de Clínica Bíblica. ¿Necesita indicaciones?',
+        'Le acompañamos en este momento difícil. Estamos aquí para ayudarle.'
+    ],
+    huellitas: [
+        'Buenos días, gracias por contactar Huellitas al Cielo. ¿En qué le ayudamos?',
+        '¿Podría indicarnos el nombre y la especie de su mascota?',
+        'La cremación para mascotas de 0-15kg tiene un costo de ₡40,000.',
+        'Para mascotas de 16-30kg el costo es ₡59,000.',
+        'Contamos con Plan Preventivo en 18 cuotas de ₡4,900.',
+        'No incluimos traslado en el servicio básico. ¿Desea más información?',
+        'Lamentamos la pérdida de su mascota. Estamos aquí para ayudarle.',
+        'También ofrecemos servicio de eutanasia. ¿Desea información?'
+    ]
+};
+
+let currentUser = null;
+let currentRole = null;
+let currentBusiness = 'alba';
+let currentLeadId = null;
+let currentLeadPhone = null;
+let allConversations = [];
+
+function doLogin() {
+    const user = document.getElementById('login-user').value.toLowerCase().trim();
+    const pass = document.getElementById('login-pass').value;
+    const ud = USERS[user];
+    if (ud && ud.pass === pass) {
+        currentUser = ud.name;
+        currentRole = ud.role;
+        document.getElementById('login-screen').style.display = 'none';
+        const app = document.getElementById('app');
+        app.style.display = 'flex';
+        document.getElementById('user-pill').textContent = `👤 ${currentUser}`;
+        loadConversations();
+        setInterval(loadConversations, 5000);
+    } else {
+        document.getElementById('login-error').textContent = '❌ Usuario o contraseña incorrectos';
+    }
+}
+
+function logout() {
+    currentUser = null;
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+}
+
+function switchBusiness(biz) {
+    currentBusiness = biz;
+    currentLeadId = null;
+    document.getElementById('tab-alba').className = 'biz-tab' + (biz === 'alba' ? ' active-alba' : '');
+    document.getElementById('tab-huellitas').className = 'biz-tab' + (biz === 'huellitas' ? ' active-huellitas' : '');
+    document.getElementById('sidebar-title').textContent = biz === 'alba' ? '💬 Conversaciones — Albalumen' : '💬 Conversaciones — Huellitas';
+    document.getElementById('no-conv').style.display = 'flex';
+    document.getElementById('active-chat').style.display = 'none';
+    loadConversations();
+    loadQuickReplies();
+}
+
+function loadQuickReplies() {
+    const replies = QUICK_REPLIES[currentBusiness];
+    const grid = document.getElementById('qr-grid');
+    grid.innerHTML = replies.map(r => `
+        <button class="qr-btn ${currentBusiness === 'huellitas' ? 'huellitas' : ''}" onclick="useQuickReply(\`${r.replace(/`/g, '\\`')}\`)">
+            ${r.substring(0, 40)}${r.length > 40 ? '...' : ''}
+        </button>
+    `).join('');
+}
+
+function useQuickReply(text) {
+    document.getElementById('msg-input').value = text;
+    document.getElementById('msg-input').focus();
+    autoResize(document.getElementById('msg-input'));
+}
+
+async function loadConversations() {
+    try {
+        const res = await fetch('/api/leads/recent');
+        const data = await res.json();
+        allConversations = data;
+        renderConversations(data);
+    } catch(e) {}
+}
+
+function renderConversations(data) {
+    const list = document.getElementById('conversations-list');
+    const filtered = data.filter(l => {
+        if (currentBusiness === 'alba') return !l.source?.includes('huellitas');
+        return l.source?.includes('huellitas');
+    });
+
+    if (!filtered.length) {
+        list.innerHTML = '<p style="padding:20px;color:var(--text-light);font-size:14px;text-align:center;">Sin conversaciones aún</p>';
+        return;
+    }
+
+    list.innerHTML = filtered.map(lead => {
+        const isHuellitas = lead.source?.includes('huellitas');
+        const time = new Date(lead.created_at).toLocaleTimeString('es-CR', {hour:'2-digit', minute:'2-digit'});
+        const isActive = lead.id === currentLeadId;
+        return `<div class="conv-item ${isActive ? 'active' : ''} ${isHuellitas ? 'huellitas' : ''}" onclick="openConversation(${lead.id}, '${lead.phone}', '${lead.contact_name}', ${isHuellitas})">
+            <div class="conv-top">
+                <span class="conv-name">${lead.contact_name || 'Sin nombre'}</span>
+                <span class="conv-time">${time}</span>
+            </div>
+            <div class="conv-preview">${lead.service_type || 'Consulta'}</div>
+            <div class="conv-badges">
+                <span class="badge ${isHuellitas ? 'badge-huellitas' : 'badge-alba'}">${isHuellitas ? '🐾 Huellitas' : '🕊️ Albalumen'}</span>
+                <span class="badge ${lead.status === 'New' ? 'badge-new' : lead.status === 'In-Progress' ? 'badge-claimed' : ''}">${lead.status}</span>
+                ${lead.status === 'New' ? '<div class="unread-dot"></div>' : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function filterConversations(query) {
+    const filtered = allConversations.filter(l =>
+        (l.contact_name || '').toLowerCase().includes(query.toLowerCase()) ||
+        (l.phone || '').includes(query)
+    );
+    renderConversations(filtered);
+}
+
+function openConversation(id, phone, name, isHuellitas) {
+    currentLeadId = id;
+    currentLeadPhone = phone;
+
+    document.getElementById('no-conv').style.display = 'none';
+    const activeChat = document.getElementById('active-chat');
+    activeChat.style.display = 'flex';
+
+    document.getElementById('chat-name').textContent = name || 'Sin nombre';
+    document.getElementById('chat-phone').textContent = phone ? phone.slice(0,-4) + '****' : 'N/A';
+    document.getElementById('chat-avatar').textContent = isHuellitas ? '🐾' : '🕊️';
+    document.getElementById('chat-avatar').className = `avatar ${isHuellitas ? 'avatar-huellitas' : 'avatar-alba'}`;
+
+    const sendBtn = document.getElementById('send-btn');
+    sendBtn.className = `send-btn ${isHuellitas ? 'huellitas' : ''}`;
+
+    loadQuickReplies();
+    loadMessages(id);
+    renderConversations(allConversations);
+}
+
+async function loadMessages(leadId) {
+    const area = document.getElementById('messages-area');
+    area.innerHTML = '';
+
+    try {
+        const res = await fetch(`/api/leads/messages/${leadId}`);
+        const messages = await res.json();
+        const isHuellitas = currentBusiness === 'huellitas';
+
+        if (!messages.length) {
+            area.innerHTML = `<div class="date-divider">Inicio de la conversación</div>`;
+            return;
+        }
+
+        let lastDate = '';
+        messages.forEach(msg => {
+            const msgDate = new Date(msg.created_at).toLocaleDateString('es-CR');
+            if (msgDate !== lastDate) {
+                lastDate = msgDate;
+                area.innerHTML += `<div class="date-divider">${msgDate}</div>`;
+            }
+            const time = new Date(msg.created_at).toLocaleTimeString('es-CR', {hour:'2-digit', minute:'2-digit'});
+            const isOut = msg.direction === 'outgoing';
+            area.innerHTML += `
+                <div class="msg-wrapper ${isOut ? 'outgoing' : 'incoming'} ${isHuellitas ? 'huellitas' : ''}">
+                    <div class="msg-bubble">${msg.message_text}</div>
+                    <div class="msg-meta">${isOut ? (msg.sent_by || 'Sistema') + ' · ' : ''}${time}</div>
+                </div>`;
+        });
+
+        area.scrollTop = area.scrollHeight;
+    } catch(e) {
+        area.innerHTML = `<div class="date-divider">Inicio de la conversación</div>
+            <div class="msg-wrapper incoming">
+                <div class="msg-bubble">Cliente contactó por WhatsApp</div>
+                <div class="msg-meta">Nuevo mensaje</div>
+            </div>`;
+    }
+}
+
+async function sendMessage() {
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if (!text || !currentLeadId) return;
+
+    const area = document.getElementById('messages-area');
+    const isHuellitas = currentBusiness === 'huellitas';
+    const time = new Date().toLocaleTimeString('es-CR', {hour:'2-digit', minute:'2-digit'});
+
+    area.innerHTML += `
+        <div class="msg-wrapper outgoing ${isHuellitas ? 'huellitas' : ''}">
+            <div class="msg-bubble">${text}</div>
+            <div class="msg-meta">${currentUser} · ${time}</div>
+        </div>`;
+    area.scrollTop = area.scrollHeight;
+    input.value = '';
+    input.style.height = 'auto';
+
+    try {
+        await fetch('/api/leads/send-message', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                lead_id: currentLeadId,
+                message: text,
+                sent_by: currentUser,
+                phone: currentLeadPhone,
+                business: currentBusiness
+            })
+        });
+        showNotification('✅ Mensaje enviado', 'success');
+    } catch(e) {
+        showNotification('❌ Error al enviar', 'error');
+    }
+}
+
+async function claimCurrentLead() {
+    if (!currentLeadId) return;
+    const res = await fetch(`/api/leads/claim/${currentLeadId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ staff_name: currentUser })
+    });
+    if (res.ok) {
+        document.getElementById('chat-phone').textContent = currentLeadPhone;
+        document.getElementById('claim-btn').textContent = `✅ Reclamado`;
+        document.getElementById('claim-btn').disabled = true;
+        showNotification(`✅ Lead reclamado por ${currentUser}`, 'success');
+        loadConversations();
+    }
+}
+
+function callClient() {
+    if (currentLeadPhone) window.open(`tel:${currentLeadPhone}`);
+}
+
+async function markCurrentLost() {
+    if (!currentLeadId) return;
+    if (!confirm('¿Marcar como perdido?')) return;
+    await fetch(`/api/leads/lost/${currentLeadId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ reason_lost: 'Marcado desde chat', competitor_name: null })
+    });
+    showNotification('📊 Lead marcado como perdido', 'warning');
+    loadConversations();
+    document.getElementById('no-conv').style.display = 'flex';
+    document.getElementById('active-chat').style.display = 'none';
+}
+
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function showNotification(msg, type) {
+    const n = document.createElement('div');
+    n.className = `notification ${type}`;
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(() => n.remove(), 3500);
+}
+
+loadQuickReplies();
+</script>
+</body>
+</html>
