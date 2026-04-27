@@ -12,7 +12,6 @@ router.put('/lost/:id', markLost);
 router.get('/my-leads', getMyLeads);
 router.get('/test-email', testEmail);
 
-// Mensajes del chat
 router.get('/messages/:leadId', async (req, res) => {
   try {
     const result = await pool.query(
@@ -25,21 +24,21 @@ router.get('/messages/:leadId', async (req, res) => {
 
 router.post('/send-message', async (req, res) => {
   try {
-    const { lead_id, message, sent_by, business } = req.body;
+    const { lead_id, message, sent_by, business, message_type, call_result, call_duration } = req.body;
     const result = await pool.query(
-      `INSERT INTO messages (lead_id, message_text, direction, sent_by) VALUES ($1, $2, 'outgoing', $3) RETURNING *`,
-      [lead_id, message, sent_by]
+      `INSERT INTO messages (lead_id, message_text, direction, sent_by, message_type, call_result, call_duration)
+       VALUES ($1, $2, 'outgoing', $3, $4, $5, $6) RETURNING *`,
+      [lead_id, message, sent_by, message_type || 'text', call_result || null, call_duration || null]
     );
     res.json(result.rows[0]);
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
 
-// Quick replies personalizadas
 router.get('/quick-replies/:business/:user', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT * FROM quick_replies WHERE business = $1 AND user_name = $2 ORDER BY id ASC`,
-      [req.params.business, req.params.user]
+      [req.params.business, decodeURIComponent(req.params.user)]
     );
     res.json(result.rows);
   } catch(err) { res.status(500).json({ error: err.message }); }
@@ -63,15 +62,11 @@ router.delete('/quick-replies/:id', async (req, res) => {
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
 
-// Contador de no leídos
 router.get('/unread-count', async (req, res) => {
   try {
-    const alba = await pool.query(`SELECT COUNT(*) FROM leads WHERE status = 'New' AND source NOT LIKE '%huellitas%'`);
+    const alba = await pool.query(`SELECT COUNT(*) FROM leads WHERE status = 'New' AND (source NOT LIKE '%huellitas%' OR source IS NULL)`);
     const huellitas = await pool.query(`SELECT COUNT(*) FROM leads WHERE status = 'New' AND source LIKE '%huellitas%'`);
-    res.json({
-      alba: parseInt(alba.rows[0].count),
-      huellitas: parseInt(huellitas.rows[0].count)
-    });
+    res.json({ alba: parseInt(alba.rows[0].count), huellitas: parseInt(huellitas.rows[0].count) });
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
 

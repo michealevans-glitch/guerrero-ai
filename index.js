@@ -13,29 +13,31 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/leads', require('./routes/leads'));
 app.use('/api/scraper', require('./routes/scraper'));
 app.use('/api/outreach', require('./routes/outreach'));
+app.use('/api/webhook', require('./routes/webhook'));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/chat', (req, res) => res.sendFile(path.join(__dirname, 'public', 'chat.html')));
+app.get('/api/health', (req, res) => res.json({ system: 'Guerrero AI', status: 'ONLINE', domain: 'guerreroai.com' }));
 
-app.get('/api/health', (req, res) => {
-  res.json({ system: 'Guerrero AI', status: 'ONLINE' });
-});
-
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`⚔️  GUERRERO AI — ONLINE — port ${PORT}`);
-  console.log(`🌐 http://localhost:${PORT}`);
+  console.log(`🌐 https://guerreroai.com`);
+  
+  const pool = require('./config/database');
+  try {
+    await pool.query('SELECT 1');
+    console.log('✅ Database connected');
+  } catch(e) {
+    console.error('❌ DB error:', e.message);
+  }
 
   const { send3MinuteAlert } = require('./controllers/emailController');
-  const pool = require('./config/database');
 
   setInterval(async () => {
     try {
       const now = new Date();
       const crHour = parseInt(new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/Costa_Rica',
-        hour: 'numeric',
-        hour12: false
+        timeZone: 'America/Costa_Rica', hour: 'numeric', hour12: false
       }).format(now));
       if (crHour < 8 || crHour >= 19) return;
 
@@ -55,4 +57,3 @@ app.listen(PORT, () => {
     }
   }, 60000);
 });
-app.use('/api/webhook', require('./routes/webhook'));

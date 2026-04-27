@@ -2,7 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Guerrero AI">
+    <meta name="theme-color" content="#2D6A4F">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon.svg">
     <title>Guerrero AI — Chat</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
     <style>
@@ -19,202 +25,200 @@
             --text-dark: #2C2416;
             --text-mid: #6B5E4E;
             --text-light: #9C8E7E;
-            --white: #FFFFFF;
             --shadow: 0 2px 20px rgba(44,36,22,0.08);
             --shadow-lg: 0 8px 40px rgba(44,36,22,0.12);
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text-dark); height:100vh; overflow:hidden; display:flex; flex-direction:column; }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        html, body { height:100%; overflow:hidden; }
+        body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text-dark); display:flex; flex-direction:column; }
 
-        /* LOGIN */
         #login-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:var(--cream); z-index:99999; display:flex; align-items:center; justify-content:center; }
-        .login-card { background:white; border-radius:24px; padding:48px 40px; width:360px; box-shadow:var(--shadow-lg); text-align:center; }
-        .login-card h1 { font-family:'Playfair Display',serif; font-size:28px; color:var(--text-dark); margin-bottom:6px; }
-        .login-card p { color:var(--text-light); font-size:14px; margin-bottom:32px; }
-        .login-input { width:100%; padding:14px 16px; border:1.5px solid var(--cream-darker); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text-dark); background:var(--cream); margin-bottom:12px; outline:none; transition:border-color 0.2s; }
+        .login-card { background:white; border-radius:24px; padding:40px 32px; width:90%; max-width:360px; box-shadow:var(--shadow-lg); text-align:center; }
+        .login-card h1 { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:6px; }
+        .login-card p { color:var(--text-light); font-size:14px; margin-bottom:28px; }
+        .login-input { width:100%; padding:13px 16px; border:1.5px solid var(--cream-darker); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text-dark); background:var(--cream); margin-bottom:10px; outline:none; }
         .login-input:focus { border-color:var(--alba-green); }
-        .login-btn { width:100%; padding:14px; background:var(--text-dark); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; margin-top:8px; }
-        #login-error { color:var(--huellitas-pink); font-size:13px; margin-top:10px; }
+        .login-btn { width:100%; padding:13px; background:var(--text-dark); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; margin-top:6px; }
+        #login-error { color:var(--huellitas-pink); font-size:13px; margin-top:8px; min-height:20px; }
 
-        /* TOPBAR */
-        .topbar { background:white; border-bottom:1px solid var(--cream-darker); padding:0 16px; height:60px; display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow); z-index:100; flex-shrink:0; }
-        .logo { font-family:'Playfair Display',serif; font-size:18px; color:var(--text-dark); }
-        .business-tabs { display:flex; gap:6px; }
-        .biz-tab { padding:8px 14px; border-radius:20px; border:1.5px solid transparent; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; background:var(--cream); color:var(--text-mid); display:flex; align-items:center; gap:6px; position:relative; }
+        .topbar { background:white; border-bottom:1px solid var(--cream-darker); padding:0 12px; height:56px; display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow); z-index:100; flex-shrink:0; }
+        .logo { font-family:'Playfair Display',serif; font-size:16px; color:var(--text-dark); }
+        .business-tabs { display:flex; gap:5px; }
+        .biz-tab { padding:7px 12px; border-radius:18px; border:1.5px solid transparent; font-size:12px; font-weight:600; cursor:pointer; background:var(--cream); color:var(--text-mid); display:flex; align-items:center; gap:5px; }
         .biz-tab.active-alba { background:var(--alba-green); color:white; }
         .biz-tab.active-huellitas { background:var(--huellitas-pink); color:white; }
-        .badge-count { background:var(--green-badge); color:white; border-radius:10px; padding:2px 7px; font-size:11px; font-weight:700; min-width:20px; text-align:center; }
-        .topbar-right { display:flex; align-items:center; gap:8px; }
-        .user-pill { background:var(--cream-dark); padding:6px 12px; border-radius:20px; font-size:12px; color:var(--text-mid); font-weight:500; }
-        .nav-btn { padding:7px 12px; border-radius:10px; border:1.5px solid var(--cream-darker); background:white; color:var(--text-mid); font-size:12px; font-weight:500; cursor:pointer; text-decoration:none; }
+        .badge-count { background:var(--green-badge); color:white; border-radius:10px; padding:1px 6px; font-size:11px; font-weight:700; min-width:18px; text-align:center; }
+        .topbar-right { display:flex; align-items:center; gap:6px; }
+        .nav-btn { padding:6px 10px; border-radius:8px; border:1.5px solid var(--cream-darker); background:white; color:var(--text-mid); font-size:11px; font-weight:500; cursor:pointer; text-decoration:none; white-space:nowrap; }
 
-        /* LAYOUT */
-        .main-layout { display:flex; flex:1; overflow:hidden; }
+        .main-layout { display:flex; flex:1; overflow:hidden; height:calc(100vh - 56px); }
 
-        /* SIDEBAR */
-        .sidebar { width:300px; background:white; border-right:1px solid var(--cream-darker); display:flex; flex-direction:column; flex-shrink:0; }
-        @media(max-width:768px) { .sidebar { width:100%; position:fixed; top:60px; left:0; height:calc(100vh - 60px); z-index:50; transform:translateX(-100%); transition:transform 0.3s; } .sidebar.open { transform:translateX(0); } }
-        .sidebar-header { padding:14px 16px; border-bottom:1px solid var(--cream-darker); }
-        .sidebar-header h2 { font-size:14px; font-weight:600; color:var(--text-dark); margin-bottom:10px; }
-        .search-box { width:100%; padding:10px 14px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; background:var(--cream); color:var(--text-dark); outline:none; }
+        .sidebar { width:280px; background:white; border-right:1px solid var(--cream-darker); display:flex; flex-direction:column; flex-shrink:0; transition:transform 0.3s; }
+        @media(max-width:768px) {
+            .sidebar { position:fixed; top:56px; left:0; width:100%; height:calc(100% - 56px); z-index:50; transform:translateX(-100%); }
+            .sidebar.open { transform:translateX(0); }
+        }
+        .sidebar-header { padding:12px 14px; border-bottom:1px solid var(--cream-darker); }
+        .sidebar-header h2 { font-size:13px; font-weight:600; margin-bottom:8px; }
+        .search-box { width:100%; padding:9px 12px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; background:var(--cream); outline:none; }
         .conversations-list { flex:1; overflow-y:auto; }
         .conversations-list::-webkit-scrollbar { width:3px; }
         .conversations-list::-webkit-scrollbar-thumb { background:var(--cream-darker); }
-        .conv-item { padding:14px 16px; cursor:pointer; transition:background 0.15s; border-left:3px solid transparent; }
+        .conv-item { padding:12px 14px; cursor:pointer; border-left:3px solid transparent; transition:background 0.15s; }
         .conv-item:hover { background:var(--cream); }
         .conv-item.active { background:var(--cream-dark); border-left-color:var(--alba-green); }
         .conv-item.active.huellitas { border-left-color:var(--huellitas-pink); }
-        .conv-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:3px; }
-        .conv-name { font-weight:600; font-size:14px; color:var(--text-dark); }
+        .conv-top { display:flex; justify-content:space-between; margin-bottom:3px; }
+        .conv-name { font-weight:600; font-size:13px; }
         .conv-time { font-size:11px; color:var(--text-light); }
-        .conv-preview { font-size:13px; color:var(--text-mid); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .conv-badges { display:flex; gap:5px; margin-top:5px; align-items:center; }
-        .badge { padding:2px 7px; border-radius:8px; font-size:11px; font-weight:600; }
+        .conv-preview { font-size:12px; color:var(--text-mid); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .conv-badges { display:flex; gap:4px; margin-top:4px; align-items:center; flex-wrap:wrap; }
+        .badge { padding:2px 6px; border-radius:6px; font-size:10px; font-weight:600; }
         .badge-new { background:#FFF3CD; color:#856404; }
         .badge-alba { background:#D8F3DC; color:var(--alba-green); }
         .badge-huellitas { background:#FFD6E0; color:var(--huellitas-pink); }
         .badge-claimed { background:#E8F4FD; color:#0066cc; }
-        .unread-dot { width:8px; height:8px; background:var(--orange); border-radius:50%; flex-shrink:0; }
+        .badge-lost { background:#FFE0E0; color:#dc3545; }
+        .unread-dot { width:7px; height:7px; background:var(--orange); border-radius:50%; }
+        .attended-by { font-size:10px; color:var(--text-light); font-style:italic; }
 
-        /* CHAT AREA */
         .chat-area { flex:1; display:flex; flex-direction:column; background:var(--cream); overflow:hidden; }
-        .chat-header { background:white; border-bottom:1px solid var(--cream-darker); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-        .chat-header-left { display:flex; align-items:center; gap:10px; }
-        .mobile-back { display:none; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-mid); }
+        .chat-header { background:white; border-bottom:1px solid var(--cream-darker); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+        .chat-header-left { display:flex; align-items:center; gap:8px; }
+        .mobile-back { display:none; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-mid); padding:4px; }
         @media(max-width:768px) { .mobile-back { display:block; } }
-        .avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+        .avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
         .avatar-alba { background:var(--alba-light); }
         .avatar-huellitas { background:var(--huellitas-light); }
-        .chat-client-name { font-weight:600; font-size:15px; color:var(--text-dark); }
-        .chat-client-phone { font-size:12px; color:var(--text-light); }
-        .chat-header-right { display:flex; gap:6px; flex-wrap:wrap; }
-        .action-btn { padding:7px 12px; border-radius:10px; border:1.5px solid var(--cream-darker); background:white; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; cursor:pointer; color:var(--text-dark); }
+        .chat-client-name { font-weight:600; font-size:14px; }
+        .chat-client-info { font-size:11px; color:var(--text-light); }
+        .chat-header-right { display:flex; gap:5px; flex-wrap:wrap; justify-content:flex-end; }
+        .action-btn { padding:6px 10px; border-radius:8px; border:1.5px solid var(--cream-darker); background:white; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; cursor:pointer; color:var(--text-dark); white-space:nowrap; }
         .action-btn.green { background:var(--alba-green); color:white; border-color:var(--alba-green); }
         .action-btn.pink { background:var(--huellitas-pink); color:white; border-color:var(--huellitas-pink); }
         .action-btn.red { background:#dc3545; color:white; border-color:#dc3545; }
+        .action-btn.blue { background:#0066cc; color:white; border-color:#0066cc; }
+        .action-btn.orange { background:var(--orange); color:white; border-color:var(--orange); }
+        .action-btn:disabled { opacity:0.5; cursor:not-allowed; }
 
-        /* MESSAGES */
-        .messages-area { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+        .messages-area { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:8px; }
         .messages-area::-webkit-scrollbar { width:3px; }
         .messages-area::-webkit-scrollbar-thumb { background:var(--cream-darker); }
         .msg-wrapper { display:flex; flex-direction:column; }
         .msg-wrapper.outgoing { align-items:flex-end; }
         .msg-wrapper.incoming { align-items:flex-start; }
-        .msg-bubble { max-width:70%; padding:11px 15px; border-radius:18px; font-size:14px; line-height:1.5; }
+        .msg-bubble { max-width:72%; padding:10px 14px; border-radius:16px; font-size:13px; line-height:1.5; word-break:break-word; }
         .msg-wrapper.outgoing .msg-bubble { background:var(--alba-green); color:white; border-bottom-right-radius:4px; }
         .msg-wrapper.outgoing.huellitas .msg-bubble { background:var(--huellitas-pink); }
         .msg-wrapper.incoming .msg-bubble { background:white; color:var(--text-dark); border-bottom-left-radius:4px; box-shadow:var(--shadow); }
-        .msg-meta { font-size:11px; color:var(--text-light); margin-top:3px; padding:0 4px; }
+        .msg-wrapper.system .msg-bubble { background:var(--cream-darker); color:var(--text-mid); font-size:12px; font-style:italic; border-radius:10px; max-width:90%; }
+        .msg-wrapper.system { align-items:center; }
+        .msg-meta { font-size:10px; color:var(--text-light); margin-top:2px; padding:0 3px; }
         .msg-wrapper.outgoing .msg-meta { text-align:right; }
-        .date-divider { text-align:center; font-size:12px; color:var(--text-light); padding:8px 0; display:flex; align-items:center; gap:10px; }
+        .date-divider { text-align:center; font-size:11px; color:var(--text-light); padding:6px 0; display:flex; align-items:center; gap:8px; }
         .date-divider::before,.date-divider::after { content:''; flex:1; height:1px; background:var(--cream-darker); }
+        .call-bubble { background:white; border:1.5px solid var(--cream-darker); border-radius:12px; padding:10px 14px; max-width:72%; box-shadow:var(--shadow); }
+        .call-bubble .call-icon { font-size:16px; margin-bottom:4px; }
+        .call-bubble .call-result { font-size:12px; font-weight:600; color:var(--text-dark); }
+        .call-bubble .call-note { font-size:11px; color:var(--text-mid); margin-top:3px; }
+        .call-bubble .call-duration { font-size:11px; color:var(--text-light); }
 
-        /* QUICK REPLIES */
-        .quick-replies { background:white; border-top:1px solid var(--cream-darker); padding:10px 16px; flex-shrink:0; }
-        .qr-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-        .qr-label { font-size:11px; color:var(--text-light); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
-        .qr-edit-btn { font-size:12px; color:var(--text-light); background:none; border:none; cursor:pointer; padding:2px 8px; border-radius:6px; }
-        .qr-edit-btn:hover { background:var(--cream); color:var(--text-dark); }
-        .quick-replies-grid { display:flex; gap:6px; flex-wrap:nowrap; overflow-x:auto; padding-bottom:4px; }
-        .quick-replies-grid::-webkit-scrollbar { height:3px; }
-        .quick-replies-grid::-webkit-scrollbar-thumb { background:var(--cream-darker); }
-        .qr-btn { padding:7px 12px; border-radius:16px; border:1.5px solid var(--cream-darker); background:var(--cream); font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-dark); cursor:pointer; white-space:nowrap; flex-shrink:0; transition:all 0.15s; }
-        .qr-btn:hover { border-color:var(--alba-green); background:#D8F3DC; color:var(--alba-green); }
-        .qr-btn.huellitas:hover { border-color:var(--huellitas-pink); background:#FFD6E0; color:var(--huellitas-pink); }
+        .quick-replies { background:white; border-top:1px solid var(--cream-darker); padding:8px 14px; flex-shrink:0; }
+        .qr-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+        .qr-label { font-size:10px; color:var(--text-light); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+        .qr-edit-btn { font-size:11px; color:var(--text-light); background:none; border:none; cursor:pointer; padding:2px 6px; border-radius:5px; }
+        .quick-replies-grid { display:flex; gap:5px; flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px; }
+        .quick-replies-grid::-webkit-scrollbar { height:2px; }
+        .qr-btn { padding:6px 11px; border-radius:14px; border:1.5px solid var(--cream-darker); background:var(--cream); font-family:'DM Sans',sans-serif; font-size:11px; color:var(--text-dark); cursor:pointer; white-space:nowrap; flex-shrink:0; }
+        .qr-btn:active { opacity:0.7; }
 
-        /* INPUT */
-        .input-area { background:white; border-top:1px solid var(--cream-darker); padding:12px 16px; display:flex; gap:10px; align-items:flex-end; flex-shrink:0; }
-        .msg-input { flex:1; padding:11px 15px; border:1.5px solid var(--cream-darker); border-radius:16px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-dark); background:var(--cream); outline:none; resize:none; max-height:100px; line-height:1.5; }
+        .input-area { background:white; border-top:1px solid var(--cream-darker); padding:10px 14px; display:flex; gap:8px; align-items:flex-end; flex-shrink:0; padding-bottom:max(10px, env(safe-area-inset-bottom)); }
+        .msg-input { flex:1; padding:10px 14px; border:1.5px solid var(--cream-darker); border-radius:14px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-dark); background:var(--cream); outline:none; resize:none; max-height:90px; line-height:1.4; }
         .msg-input:focus { border-color:var(--alba-green); }
-        .send-btn { width:44px; height:44px; border-radius:50%; border:none; background:var(--alba-green); color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .send-btn { width:42px; height:42px; border-radius:50%; border:none; background:var(--alba-green); color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         .send-btn.huellitas { background:var(--huellitas-pink); }
 
-        /* EMPTY */
-        .no-conv { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-light); gap:12px; }
-        .no-conv .big-icon { font-size:56px; opacity:0.3; }
-        .no-conv h3 { font-family:'Playfair Display',serif; font-size:20px; color:var(--text-mid); }
-        .no-conv p { font-size:14px; }
+        .no-conv { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-light); gap:10px; padding:20px; text-align:center; }
+        .no-conv .big-icon { font-size:48px; opacity:0.3; }
+        .no-conv h3 { font-family:'Playfair Display',serif; font-size:18px; color:var(--text-mid); }
+        .no-conv p { font-size:13px; }
 
-        /* NOTIFICATION */
-        .notification { position:fixed; top:70px; right:16px; padding:12px 18px; border-radius:12px; font-weight:500; font-size:14px; z-index:10000; box-shadow:var(--shadow-lg); animation:slideIn 0.3s ease; }
-        @keyframes slideIn { from{transform:translateX(100px);opacity:0} to{transform:translateX(0);opacity:1} }
+        .notification { position:fixed; top:66px; right:12px; left:12px; padding:12px 16px; border-radius:12px; font-weight:500; font-size:13px; z-index:10000; box-shadow:var(--shadow-lg); animation:slideIn 0.3s ease; }
+        @media(min-width:480px) { .notification { left:auto; width:320px; } }
+        @keyframes slideIn { from{transform:translateY(-20px);opacity:0} to{transform:translateY(0);opacity:1} }
         .notification.success { background:var(--alba-green); color:white; }
         .notification.warning { background:#FF9500; color:white; }
         .notification.error { background:var(--huellitas-pink); color:white; }
 
-        /* MODAL EDIT QR */
-        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; }
-        .modal-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:20px; padding:24px; z-index:9999; width:90%; max-width:480px; max-height:80vh; overflow-y:auto; box-shadow:var(--shadow-lg); }
-        .modal-box h3 { font-family:'Playfair Display',serif; font-size:18px; margin-bottom:16px; color:var(--text-dark); }
-        .qr-edit-item { display:flex; gap:8px; align-items:center; padding:8px 0; border-bottom:1px solid var(--cream-darker); }
-        .qr-edit-text { flex:1; font-size:13px; color:var(--text-dark); }
-        .qr-delete-btn { background:none; border:none; color:var(--huellitas-pink); cursor:pointer; font-size:16px; padding:4px; }
-        .qr-add-area { margin-top:16px; }
-        .qr-add-input { width:100%; padding:10px 14px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; background:var(--cream); outline:none; margin-bottom:8px; }
-        .qr-add-btn { width:100%; padding:11px; background:var(--text-dark); color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9998; }
+        .modal-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:20px; padding:22px; z-index:9999; width:92%; max-width:440px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow-lg); }
+        .modal-box h3 { font-family:'Playfair Display',serif; font-size:17px; margin-bottom:14px; }
         .modal-close { float:right; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-light); }
+        .modal-select { width:100%; padding:10px 12px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; background:var(--cream); margin-bottom:10px; outline:none; }
+        .modal-input { width:100%; padding:10px 12px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; background:var(--cream); margin-bottom:10px; outline:none; resize:none; }
+        .modal-btn { width:100%; padding:12px; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; margin-bottom:6px; }
+        .modal-btn.primary { background:var(--text-dark); color:white; }
+        .modal-btn.secondary { background:var(--cream); color:var(--text-mid); }
+        .modal-btn.danger { background:#dc3545; color:white; }
+        .qr-edit-item { display:flex; gap:8px; align-items:center; padding:7px 0; border-bottom:1px solid var(--cream-darker); }
+        .qr-edit-text { flex:1; font-size:13px; color:var(--text-dark); }
+        .qr-delete-btn { background:none; border:none; color:var(--huellitas-pink); cursor:pointer; font-size:15px; padding:3px; }
+        .qr-add-input { width:100%; padding:9px 12px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; background:var(--cream); outline:none; margin-bottom:8px; }
+        .qr-add-btn { width:100%; padding:10px; background:var(--text-dark); color:white; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; }
+        .transfer-item { padding:10px; border:1.5px solid var(--cream-darker); border-radius:10px; margin-bottom:6px; cursor:pointer; display:flex; align-items:center; gap:10px; }
+        .transfer-item:hover { background:var(--cream); border-color:var(--alba-green); }
     </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
     <div class="login-card">
         <h1>⚔️ Guerrero AI</h1>
         <p>Centro de Mensajes</p>
-        <input type="text" class="login-input" id="login-user" placeholder="Usuario">
-        <input type="password" class="login-input" id="login-pass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="text" class="login-input" id="login-user" placeholder="Usuario" autocomplete="username">
+        <input type="password" class="login-input" id="login-pass" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
         <button class="login-btn" onclick="doLogin()">Entrar</button>
         <p id="login-error"></p>
     </div>
 </div>
 
-<!-- APP -->
-<div id="app" style="display:none;flex-direction:column;height:100vh;">
-
-    <!-- TOPBAR -->
+<div id="app" style="display:none;flex-direction:column;height:100%;height:100dvh;">
     <div class="topbar">
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
             <span class="logo">⚔️</span>
             <div class="business-tabs">
                 <button class="biz-tab active-alba" id="tab-alba" onclick="switchBusiness('alba')">
-                    🕊️ Albalumen
-                    <span class="badge-count" id="count-alba">0</span>
+                    🕊️ Albalumen <span class="badge-count" id="count-alba">0</span>
                 </button>
                 <button class="biz-tab" id="tab-huellitas" onclick="switchBusiness('huellitas')">
-                    🐾 Huellitas
-                    <span class="badge-count" id="count-huellitas">0</span>
+                    🐾 Huellitas <span class="badge-count" id="count-huellitas">0</span>
                 </button>
             </div>
         </div>
         <div class="topbar-right">
-            <span class="user-pill" id="user-pill"></span>
+            <span id="user-pill" style="font-size:11px;color:var(--text-mid);"></span>
             <a href="/" class="nav-btn">⚔️ War Room</a>
             <button class="nav-btn" onclick="logout()">Salir</button>
         </div>
     </div>
 
-    <!-- MAIN -->
-    <div class="main-layout" id="main-layout">
-
-        <!-- SIDEBAR -->
+    <div class="main-layout">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2 id="sidebar-title">💬 Albalumen</h2>
-                <input type="text" class="search-box" placeholder="🔍 Buscar cliente..." oninput="filterConversations(this.value)">
+                <input type="search" class="search-box" placeholder="🔍 Buscar..." oninput="filterConversations(this.value)">
             </div>
             <div class="conversations-list" id="conversations-list">
-                <p style="padding:20px;color:var(--text-light);font-size:14px;text-align:center;">Cargando...</p>
+                <p style="padding:16px;color:var(--text-light);font-size:13px;text-align:center;">Cargando...</p>
             </div>
         </div>
 
-        <!-- CHAT -->
         <div class="chat-area" id="chat-area">
             <div class="no-conv" id="no-conv">
                 <div class="big-icon">💬</div>
                 <h3>Seleccioná una conversación</h3>
-                <p>Los mensajes aparecerán aquí</p>
-                <button class="nav-btn" id="mobile-show-list" onclick="showSidebar()" style="display:none;">Ver conversaciones</button>
+                <p>Los mensajes de clientes aparecerán aquí</p>
+                <button class="nav-btn" onclick="showSidebar()" style="margin-top:8px;">Ver conversaciones</button>
             </div>
 
             <div id="active-chat" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
@@ -224,19 +228,21 @@
                         <div class="avatar avatar-alba" id="chat-avatar">👤</div>
                         <div>
                             <div class="chat-client-name" id="chat-name">Cliente</div>
-                            <div class="chat-client-phone" id="chat-phone">+506 ****</div>
+                            <div class="chat-client-info" id="chat-info">Sin información</div>
                         </div>
                     </div>
                     <div class="chat-header-right">
-                        <button class="action-btn" onclick="callClient()">📞</button>
+                        <button class="action-btn blue" onclick="callClient()" id="call-btn">📞</button>
+                        <button class="action-btn orange" onclick="openCallModal()">📝 Llamada</button>
+                        <button class="action-btn" onclick="openTransferModal()">🔄</button>
                         <button class="action-btn green" id="claim-btn" onclick="claimCurrentLead()">✅ Reclamar</button>
-                        <button class="action-btn red" onclick="markCurrentLost()">❌</button>
+                        <button class="action-btn red" id="lost-btn" onclick="openLostModal()">❌</button>
                     </div>
                 </div>
 
                 <div class="messages-area" id="messages-area"></div>
 
-                <div class="quick-replies" id="quick-replies-panel">
+                <div class="quick-replies">
                     <div class="qr-header">
                         <span class="qr-label">⚡ Respuestas rápidas</span>
                         <button class="qr-edit-btn" onclick="openEditModal()">✏️ Editar</button>
@@ -255,21 +261,91 @@
     </div>
 </div>
 
-<!-- MODAL EDITAR RESPUESTAS -->
+<!-- MODAL PERDIDO -->
+<div id="lost-modal" style="display:none;">
+    <div class="modal-overlay" onclick="closeLostModal()"></div>
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeLostModal()">✕</button>
+        <h3>❌ ¿Por qué se perdió?</h3>
+        <select class="modal-select" id="lost-reason-sel" onchange="toggleLostCompetitor()">
+            <option value="No contestó">No contestó el teléfono</option>
+            <option value="Precio muy alto">Precio muy alto</option>
+            <option value="Eligió a la competencia">Eligió a la competencia</option>
+            <option value="Solo cotización">Solo cotización / No decidió</option>
+            <option value="Fuera de área">Fuera de área de servicio</option>
+            <option value="Respuesta lenta">Respuesta muy lenta</option>
+            <option value="Sin dinero">Sin dinero por ahora</option>
+            <option value="Otro">Otro</option>
+        </select>
+        <div id="competitor-field" style="display:none;">
+            <input type="text" class="modal-input" id="competitor-input" placeholder="Nombre del competidor">
+        </div>
+        <div id="other-field" style="display:none;">
+            <textarea class="modal-input" id="other-input" placeholder="Explicá el motivo..." rows="3"></textarea>
+        </div>
+        <button class="modal-btn primary" onclick="confirmLost()">Confirmar pérdida</button>
+        <button class="modal-btn secondary" onclick="closeLostModal()">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL REGISTRAR LLAMADA -->
+<div id="call-modal" style="display:none;">
+    <div class="modal-overlay" onclick="closeCallModal()"></div>
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeCallModal()">✕</button>
+        <h3>📞 Registrar Llamada</h3>
+        <label style="font-size:12px;color:var(--text-light);font-weight:600;">Resultado:</label>
+        <select class="modal-select" id="call-result-sel">
+            <option value="Interesado">✅ Interesado — quiere el servicio</option>
+            <option value="Cita agendada">📅 Cita agendada</option>
+            <option value="Venta cerrada">💰 Venta cerrada</option>
+            <option value="Solo información">ℹ️ Solo quería información</option>
+            <option value="No interesado">❌ No interesado</option>
+            <option value="No contestó">📵 No contestó</option>
+            <option value="Llamó equivocado">🔀 Llamó equivocado</option>
+        </select>
+        <label style="font-size:12px;color:var(--text-light);font-weight:600;">Duración (minutos):</label>
+        <input type="number" class="modal-input" id="call-duration-input" placeholder="Ej: 5" min="0" max="120" style="margin-top:6px;">
+        <label style="font-size:12px;color:var(--text-light);font-weight:600;">Notas de la llamada:</label>
+        <textarea class="modal-input" id="call-notes-input" placeholder="¿De qué habló el cliente? ¿Qué necesita?" rows="3" style="margin-top:6px;"></textarea>
+        <button class="modal-btn primary" onclick="saveCallRecord()">💾 Guardar registro</button>
+        <button class="modal-btn secondary" onclick="closeCallModal()">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL TRANSFERIR -->
+<div id="transfer-modal" style="display:none;">
+    <div class="modal-overlay" onclick="closeTransferModal()"></div>
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeTransferModal()">✕</button>
+        <h3>🔄 Transferir conversación</h3>
+        <p style="font-size:13px;color:var(--text-mid);margin-bottom:14px;">¿A quién transferís este cliente?</p>
+        <div id="transfer-list"></div>
+        <textarea class="modal-input" id="transfer-note" placeholder="Nota de transferencia (opcional)..." rows="2" style="margin-top:10px;"></textarea>
+        <button class="modal-btn secondary" onclick="closeTransferModal()">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL EDITAR QR -->
 <div id="qr-modal" style="display:none;">
     <div class="modal-overlay" onclick="closeEditModal()"></div>
     <div class="modal-box">
         <button class="modal-close" onclick="closeEditModal()">✕</button>
-        <h3 id="modal-title">✏️ Editar Respuestas Rápidas</h3>
+        <h3 id="modal-title">✏️ Respuestas Rápidas</h3>
+        <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">Tus respuestas personalizadas se agregan a las predeterminadas.</p>
         <div id="qr-edit-list"></div>
-        <div class="qr-add-area">
-            <textarea class="qr-add-input" id="new-qr-text" placeholder="Escribí una nueva respuesta rápida..." rows="3"></textarea>
-            <button class="qr-add-btn" onclick="addQuickReply()">+ Agregar Respuesta</button>
+        <div style="margin-top:14px;">
+            <textarea class="qr-add-input" id="new-qr-text" placeholder="Nueva respuesta rápida..." rows="3"></textarea>
+            <button class="qr-add-btn" onclick="addQuickReply()">+ Agregar</button>
         </div>
     </div>
 </div>
 
 <script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(e => console.log('SW error:', e));
+}
+
 const USERS = {
     'oscar':   { pass:'Albalumen2024#', role:'admin',    name:'Oscar Evans' },
     'micheal': { pass:'Guerrero2024#',  role:'admin',    name:'Micheal Evans' },
@@ -301,8 +377,11 @@ let currentRole = null;
 let currentBusiness = 'alba';
 let currentLeadId = null;
 let currentLeadPhone = null;
+let currentLeadStatus = null;
 let allConversations = [];
 let customQR = { alba: [], huellitas: [] };
+let alertSounded = false;
+let refreshInterval = null;
 
 function doLogin() {
     const user = document.getElementById('login-user').value.toLowerCase().trim();
@@ -311,42 +390,64 @@ function doLogin() {
     if (ud && ud.pass === pass) {
         currentUser = ud.name;
         currentRole = ud.role;
-        document.getElementById('login-screen').style.display = 'none';
-        const app = document.getElementById('app');
-        app.style.display = 'flex';
-        document.getElementById('user-pill').textContent = `👤 ${currentUser}`;
-        checkMobile();
-        loadConversations();
-        loadUnreadCounts();
-        loadUserQuickReplies();
-        setInterval(loadConversations, 5000);
-        setInterval(loadUnreadCounts, 10000);
+        sessionStorage.setItem('ga_user', user);
+        sessionStorage.setItem('ga_pass', pass);
+        showApp();
     } else {
         document.getElementById('login-error').textContent = '❌ Usuario o contraseña incorrectos';
     }
 }
 
+function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    const app = document.getElementById('app');
+    app.style.display = 'flex';
+    document.getElementById('user-pill').textContent = `👤 ${currentUser}`;
+    if (window.innerWidth <= 768) showSidebar();
+    loadConversations();
+    loadUnreadCounts();
+    loadUserQuickReplies();
+    refreshInterval = setInterval(() => { loadConversations(); loadUnreadCounts(); }, 5000);
+    requestNotificationPermission();
+}
+
 function logout() {
+    sessionStorage.clear();
+    clearInterval(refreshInterval);
     currentUser = null;
     document.getElementById('app').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('login-pass').value = '';
 }
 
-function checkMobile() {
-    if (window.innerWidth <= 768) {
-        document.getElementById('mobile-show-list').style.display = 'block';
-        showSidebar();
+window.addEventListener('load', () => {
+    const savedUser = sessionStorage.getItem('ga_user');
+    const savedPass = sessionStorage.getItem('ga_pass');
+    if (savedUser && savedPass) {
+        document.getElementById('login-user').value = savedUser;
+        document.getElementById('login-pass').value = savedPass;
+        doLogin();
     }
-}
+});
 
 function showSidebar() {
     document.getElementById('sidebar').classList.add('open');
-    document.getElementById('no-conv').style.display = 'flex';
-    document.getElementById('active-chat').style.display = 'none';
 }
 
 function hideSidebar() {
     document.getElementById('sidebar').classList.remove('open');
+}
+
+async function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        await Notification.requestPermission();
+    }
+}
+
+function sendBrowserNotification(title, body) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(title, { body, icon: '/icon.svg', tag: 'guerrero-msg', renotify: true });
+    }
 }
 
 async function loadUnreadCounts() {
@@ -355,30 +456,47 @@ async function loadUnreadCounts() {
         const data = await res.json();
         document.getElementById('count-alba').textContent = data.alba || 0;
         document.getElementById('count-huellitas').textContent = data.huellitas || 0;
+        if ((data.alba > 0 || data.huellitas > 0) && !alertSounded) {
+            playAlert();
+            alertSounded = true;
+            setTimeout(() => { alertSounded = false; }, 60000);
+        }
+    } catch(e) {}
+}
+
+function playAlert() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.value = 0.3;
+        osc.start();
+        setTimeout(() => { osc.stop(); ctx.close(); }, 800);
     } catch(e) {}
 }
 
 async function loadUserQuickReplies() {
     try {
-        const res = await fetch(`/api/leads/quick-replies/alba/${encodeURIComponent(currentUser)}`);
-        const data = await res.json();
-        if (data.length > 0) customQR.alba = data;
+        const res1 = await fetch(`/api/leads/quick-replies/alba/${encodeURIComponent(currentUser)}`);
+        const d1 = await res1.json();
+        if (d1.length) customQR.alba = d1;
         const res2 = await fetch(`/api/leads/quick-replies/huellitas/${encodeURIComponent(currentUser)}`);
-        const data2 = await res2.json();
-        if (data2.length > 0) customQR.huellitas = data2;
-        renderQuickReplies();
-    } catch(e) { renderQuickReplies(); }
+        const d2 = await res2.json();
+        if (d2.length) customQR.huellitas = d2;
+    } catch(e) {}
+    renderQuickReplies();
 }
 
 function renderQuickReplies() {
-    const replies = customQR[currentBusiness].length > 0
-        ? customQR[currentBusiness].map(r => r.reply_text || r)
-        : DEFAULT_QR[currentBusiness];
-    const grid = document.getElementById('qr-grid');
-    grid.innerHTML = replies.map(r => `
-        <button class="qr-btn ${currentBusiness === 'huellitas' ? 'huellitas' : ''}"
-            onclick="useQuickReply(\`${r.replace(/`/g,'\\`').replace(/\n/g,' ')}\`)">
-            ${r.substring(0,35)}${r.length > 35 ? '...' : ''}
+    const defaults = DEFAULT_QR[currentBusiness];
+    const customs = customQR[currentBusiness].map(r => r.reply_text || r);
+    const all = [...defaults, ...customs];
+    document.getElementById('qr-grid').innerHTML = all.map(r => `
+        <button class="qr-btn" onclick="useQuickReply(\`${r.replace(/`/g,'\\`').replace(/\n/g,' ')}\`)">
+            ${r.substring(0,32)}${r.length > 32 ? '...' : ''}
         </button>`).join('');
 }
 
@@ -386,58 +504,6 @@ function useQuickReply(text) {
     document.getElementById('msg-input').value = text;
     document.getElementById('msg-input').focus();
     autoResize(document.getElementById('msg-input'));
-}
-
-function openEditModal() {
-    const modal = document.getElementById('qr-modal');
-    modal.style.display = 'block';
-    document.getElementById('modal-title').textContent = `✏️ Respuestas Rápidas — ${currentBusiness === 'alba' ? 'Albalumen' : 'Huellitas'}`;
-    renderEditList();
-}
-
-function closeEditModal() {
-    document.getElementById('qr-modal').style.display = 'none';
-    document.getElementById('new-qr-text').value = '';
-}
-
-function renderEditList() {
-    const replies = customQR[currentBusiness].length > 0
-        ? customQR[currentBusiness]
-        : DEFAULT_QR[currentBusiness].map(r => ({ reply_text: r, id: null }));
-    const list = document.getElementById('qr-edit-list');
-    list.innerHTML = replies.map((r, i) => `
-        <div class="qr-edit-item">
-            <span class="qr-edit-text">${r.reply_text || r}</span>
-            ${r.id ? `<button class="qr-delete-btn" onclick="deleteQuickReply(${r.id})">🗑️</button>` : ''}
-        </div>`).join('');
-}
-
-async function addQuickReply() {
-    const text = document.getElementById('new-qr-text').value.trim();
-    if (!text) return;
-    try {
-        const res = await fetch('/api/leads/quick-replies', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ business: currentBusiness, user_name: currentUser, reply_text: text })
-        });
-        const data = await res.json();
-        customQR[currentBusiness].push(data);
-        document.getElementById('new-qr-text').value = '';
-        renderEditList();
-        renderQuickReplies();
-        showNotification('✅ Respuesta agregada', 'success');
-    } catch(e) {}
-}
-
-async function deleteQuickReply(id) {
-    try {
-        await fetch(`/api/leads/quick-replies/${id}`, { method: 'DELETE' });
-        customQR[currentBusiness] = customQR[currentBusiness].filter(r => r.id !== id);
-        renderEditList();
-        renderQuickReplies();
-        showNotification('🗑️ Respuesta eliminada', 'warning');
-    } catch(e) {}
 }
 
 function switchBusiness(biz) {
@@ -469,15 +535,16 @@ function renderConversations(data) {
         return l.source?.includes('huellitas');
     });
     if (!filtered.length) {
-        list.innerHTML = '<p style="padding:20px;color:var(--text-light);font-size:14px;text-align:center;">Sin conversaciones aún</p>';
+        list.innerHTML = '<p style="padding:16px;color:var(--text-light);font-size:13px;text-align:center;">Sin conversaciones aún</p>';
         return;
     }
     list.innerHTML = filtered.map(lead => {
         const isH = lead.source?.includes('huellitas');
         const time = new Date(lead.created_at).toLocaleTimeString('es-CR', {hour:'2-digit', minute:'2-digit'});
         const isActive = lead.id === currentLeadId;
+        const statusColor = lead.status === 'New' ? 'badge-new' : lead.status === 'In-Progress' ? 'badge-claimed' : 'badge-lost';
         return `<div class="conv-item ${isActive ? 'active' : ''} ${isH ? 'huellitas' : ''}"
-            onclick="openConversation(${lead.id}, '${lead.phone}', '${(lead.contact_name||'').replace(/'/g,"\\'")}', ${isH})">
+            onclick="openConversation(${lead.id}, '${(lead.phone||'').replace(/'/g,"\\'")}', '${(lead.contact_name||'Sin nombre').replace(/'/g,"\\'")}', ${isH}, '${lead.status}', '${lead.claimed_by||''}')">
             <div class="conv-top">
                 <span class="conv-name">${lead.contact_name || 'Sin nombre'}</span>
                 <span class="conv-time">${time}</span>
@@ -485,9 +552,10 @@ function renderConversations(data) {
             <div class="conv-preview">${lead.service_type || 'Consulta'}</div>
             <div class="conv-badges">
                 <span class="badge ${isH ? 'badge-huellitas' : 'badge-alba'}">${isH ? '🐾' : '🕊️'}</span>
-                <span class="badge ${lead.status==='New'?'badge-new':lead.status==='In-Progress'?'badge-claimed':''}">${lead.status}</span>
+                <span class="badge ${statusColor}">${lead.status}</span>
                 ${lead.status === 'New' ? '<div class="unread-dot"></div>' : ''}
             </div>
+            ${lead.claimed_by ? `<div class="attended-by">👤 ${lead.claimed_by}</div>` : ''}
         </div>`;
     }).join('');
 }
@@ -495,25 +563,50 @@ function renderConversations(data) {
 function filterConversations(query) {
     const filtered = allConversations.filter(l =>
         (l.contact_name||'').toLowerCase().includes(query.toLowerCase()) ||
-        (l.phone||'').includes(query)
+        (l.phone||'').includes(query) ||
+        (l.service_type||'').toLowerCase().includes(query.toLowerCase())
     );
     renderConversations(filtered);
 }
 
-function openConversation(id, phone, name, isH) {
+function openConversation(id, phone, name, isH, status, claimedBy) {
     currentLeadId = id;
     currentLeadPhone = phone;
+    currentLeadStatus = status;
     if (window.innerWidth <= 768) hideSidebar();
     document.getElementById('no-conv').style.display = 'none';
     document.getElementById('active-chat').style.display = 'flex';
-    document.getElementById('chat-name').textContent = name || 'Sin nombre';
-    document.getElementById('chat-phone').textContent = phone ? phone.slice(0,-4) + '****' : 'N/A';
+    document.getElementById('chat-name').textContent = name;
     document.getElementById('chat-avatar').textContent = isH ? '🐾' : '🕊️';
     document.getElementById('chat-avatar').className = `avatar ${isH ? 'avatar-huellitas' : 'avatar-alba'}`;
+
+    const phoneDisplay = phone ? phone.slice(0,-4) + '****' : 'N/A';
+    const infoText = claimedBy ? `📞 ${phoneDisplay} · 👤 Atendido por ${claimedBy}` : `📞 ${phoneDisplay}`;
+    document.getElementById('chat-info').textContent = infoText;
+
     const claimBtn = document.getElementById('claim-btn');
-    claimBtn.className = `action-btn ${isH ? 'pink' : 'green'}`;
-    claimBtn.textContent = '✅ Reclamar';
-    claimBtn.disabled = false;
+    const lostBtn = document.getElementById('lost-btn');
+
+    if (status === 'In-Progress' && claimedBy && claimedBy !== currentUser && currentRole !== 'admin') {
+        claimBtn.disabled = true;
+        claimBtn.textContent = `🔒 ${claimedBy}`;
+        lostBtn.disabled = true;
+    } else if (status === 'In-Progress') {
+        claimBtn.disabled = true;
+        claimBtn.textContent = `✅ ${claimedBy || 'Reclamado'}`;
+        lostBtn.disabled = false;
+    } else if (status === 'Lost') {
+        claimBtn.disabled = true;
+        claimBtn.textContent = '❌ Perdido';
+        lostBtn.disabled = true;
+    } else {
+        claimBtn.disabled = false;
+        claimBtn.textContent = '✅ Reclamar';
+        claimBtn.className = `action-btn ${isH ? 'pink' : 'green'}`;
+        lostBtn.disabled = false;
+    }
+
+    document.getElementById('send-btn').className = `send-btn ${isH ? 'huellitas' : ''}`;
     loadMessages(id);
     renderConversations(allConversations);
 }
@@ -526,7 +619,7 @@ async function loadMessages(leadId) {
         const res = await fetch(`/api/leads/messages/${leadId}`);
         const messages = await res.json();
         if (!messages.length) {
-            area.innerHTML = `<div class="date-divider">Inicio de la conversación</div>`;
+            area.innerHTML = `<div class="date-divider">Inicio de conversación</div>`;
             return;
         }
         let lastDate = '';
@@ -537,16 +630,36 @@ async function loadMessages(leadId) {
                 area.innerHTML += `<div class="date-divider">${msgDate}</div>`;
             }
             const time = new Date(msg.created_at).toLocaleTimeString('es-CR', {hour:'2-digit', minute:'2-digit'});
-            const isOut = msg.direction === 'outgoing';
-            area.innerHTML += `
-                <div class="msg-wrapper ${isOut ? 'outgoing' : 'incoming'} ${isH ? 'huellitas' : ''}">
-                    <div class="msg-bubble">${msg.message_text}</div>
-                    <div class="msg-meta">${isOut ? (msg.sent_by||'Sistema') + ' · ' : ''}${time}</div>
-                </div>`;
+
+            if (msg.message_type === 'call') {
+                area.innerHTML += `
+                    <div class="msg-wrapper outgoing">
+                        <div class="call-bubble">
+                            <div class="call-icon">📞</div>
+                            <div class="call-result">${msg.call_result || 'Llamada registrada'}</div>
+                            ${msg.call_duration ? `<div class="call-duration">⏱️ ${msg.call_duration} minutos</div>` : ''}
+                            ${msg.message_text ? `<div class="call-note">${msg.message_text}</div>` : ''}
+                        </div>
+                        <div class="msg-meta">${msg.sent_by || 'Sistema'} · ${time}</div>
+                    </div>`;
+            } else if (msg.message_type === 'system') {
+                area.innerHTML += `
+                    <div class="msg-wrapper system">
+                        <div class="msg-bubble">${msg.message_text}</div>
+                        <div class="msg-meta">${time}</div>
+                    </div>`;
+            } else {
+                const isOut = msg.direction === 'outgoing';
+                area.innerHTML += `
+                    <div class="msg-wrapper ${isOut ? 'outgoing' : 'incoming'} ${isH ? 'huellitas' : ''}">
+                        <div class="msg-bubble">${msg.message_text}</div>
+                        <div class="msg-meta">${isOut ? (msg.sent_by||'Sistema') + ' · ' : ''}${time}</div>
+                    </div>`;
+            }
         });
         area.scrollTop = area.scrollHeight;
     } catch(e) {
-        area.innerHTML = `<div class="date-divider">Inicio de la conversación</div>`;
+        area.innerHTML = `<div class="date-divider">Inicio de conversación</div>`;
     }
 }
 
@@ -567,25 +680,23 @@ async function sendMessage() {
     input.style.height = 'auto';
     try {
         await fetch('/api/leads/send-message', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({ lead_id: currentLeadId, message: text, sent_by: currentUser, business: currentBusiness })
         });
-    } catch(e) { showNotification('❌ Error al guardar mensaje', 'error'); }
+    } catch(e) {}
 }
 
 async function claimCurrentLead() {
     if (!currentLeadId) return;
     const res = await fetch(`/api/leads/claim/${currentLeadId}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
+        method:'PUT', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ staff_name: currentUser })
     });
     if (res.ok) {
-        document.getElementById('chat-phone').textContent = currentLeadPhone;
         const btn = document.getElementById('claim-btn');
         btn.textContent = `✅ ${currentUser}`;
         btn.disabled = true;
+        document.getElementById('chat-info').textContent = `📞 ${currentLeadPhone} · 👤 Atendido por ${currentUser}`;
         showNotification(`✅ Reclamado por ${currentUser}`, 'success');
         loadConversations();
         loadUnreadCounts();
@@ -593,18 +704,32 @@ async function claimCurrentLead() {
 }
 
 function callClient() {
-    if (currentLeadPhone) window.open(`tel:${currentLeadPhone}`);
+    if (currentLeadPhone) {
+        window.location.href = `tel:${currentLeadPhone}`;
+    }
 }
 
-async function markCurrentLost() {
+function openLostModal() { document.getElementById('lost-modal').style.display = 'block'; }
+function closeLostModal() { document.getElementById('lost-modal').style.display = 'none'; }
+
+function toggleLostCompetitor() {
+    const reason = document.getElementById('lost-reason-sel').value;
+    document.getElementById('competitor-field').style.display = reason === 'Eligió a la competencia' ? 'block' : 'none';
+    document.getElementById('other-field').style.display = reason === 'Otro' ? 'block' : 'none';
+}
+
+async function confirmLost() {
     if (!currentLeadId) return;
-    if (!confirm('¿Marcar como perdido?')) return;
+    const reason = document.getElementById('lost-reason-sel').value;
+    const competitor = document.getElementById('competitor-input').value || null;
+    const other = document.getElementById('other-input').value || null;
+    const finalReason = reason === 'Otro' ? (other || 'Otro') : reason;
     await fetch(`/api/leads/lost/${currentLeadId}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ reason_lost: 'Marcado desde chat', competitor_name: null })
+        method:'PUT', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ reason_lost: finalReason, competitor_name: competitor })
     });
-    showNotification('📊 Lead perdido', 'warning');
+    closeLostModal();
+    showNotification(`📊 Lead perdido: ${finalReason}`, 'warning');
     loadConversations();
     loadUnreadCounts();
     document.getElementById('no-conv').style.display = 'flex';
@@ -612,9 +737,126 @@ async function markCurrentLost() {
     if (window.innerWidth <= 768) showSidebar();
 }
 
+function openCallModal() { document.getElementById('call-modal').style.display = 'block'; }
+function closeCallModal() { document.getElementById('call-modal').style.display = 'none'; }
+
+async function saveCallRecord() {
+    if (!currentLeadId) return;
+    const result = document.getElementById('call-result-sel').value;
+    const duration = parseInt(document.getElementById('call-duration-input').value) || 0;
+    const notes = document.getElementById('call-notes-input').value;
+    try {
+        await fetch('/api/leads/send-message', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+                lead_id: currentLeadId,
+                message: notes,
+                sent_by: currentUser,
+                business: currentBusiness,
+                message_type: 'call',
+                call_result: result,
+                call_duration: duration
+            })
+        });
+        closeCallModal();
+        document.getElementById('call-duration-input').value = '';
+        document.getElementById('call-notes-input').value = '';
+        showNotification('📞 Llamada registrada', 'success');
+        loadMessages(currentLeadId);
+    } catch(e) {}
+}
+
+function openTransferModal() {
+    const others = Object.entries(USERS).filter(([k,v]) => v.name !== currentUser);
+    document.getElementById('transfer-list').innerHTML = others.map(([key, ud]) => `
+        <div class="transfer-item" onclick="confirmTransfer('${ud.name}')">
+            <span style="font-size:20px;">👤</span>
+            <div>
+                <div style="font-weight:600;font-size:14px;">${ud.name}</div>
+                <div style="font-size:12px;color:var(--text-light);">${ud.role}</div>
+            </div>
+        </div>`).join('');
+    document.getElementById('transfer-modal').style.display = 'block';
+}
+
+function closeTransferModal() { document.getElementById('transfer-modal').style.display = 'none'; }
+
+async function confirmTransfer(toName) {
+    if (!currentLeadId) return;
+    const note = document.getElementById('transfer-note').value;
+    try {
+        await fetch('/api/leads/send-message', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+                lead_id: currentLeadId,
+                message: `🔄 Transferido de ${currentUser} a ${toName}${note ? ': ' + note : ''}`,
+                sent_by: 'Sistema',
+                business: currentBusiness,
+                message_type: 'system'
+            })
+        });
+        await fetch(`/api/leads/claim/${currentLeadId}`, {
+            method:'PUT', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ staff_name: toName })
+        });
+        closeTransferModal();
+        showNotification(`🔄 Transferido a ${toName}`, 'success');
+        loadConversations();
+    } catch(e) {}
+}
+
+function openEditModal() {
+    document.getElementById('modal-title').textContent = `✏️ Respuestas — ${currentBusiness === 'alba' ? 'Albalumen' : 'Huellitas'}`;
+    renderEditList();
+    document.getElementById('qr-modal').style.display = 'block';
+}
+
+function closeEditModal() { document.getElementById('qr-modal').style.display = 'none'; }
+
+function renderEditList() {
+    const customs = customQR[currentBusiness];
+    const list = document.getElementById('qr-edit-list');
+    if (!customs.length) {
+        list.innerHTML = '<p style="font-size:12px;color:var(--text-light);margin-bottom:10px;">Tus respuestas personalizadas aparecerán aquí.</p>';
+        return;
+    }
+    list.innerHTML = customs.map(r => `
+        <div class="qr-edit-item">
+            <span class="qr-edit-text">${r.reply_text || r}</span>
+            ${r.id ? `<button class="qr-delete-btn" onclick="deleteQuickReply(${r.id})">🗑️</button>` : ''}
+        </div>`).join('');
+}
+
+async function addQuickReply() {
+    const text = document.getElementById('new-qr-text').value.trim();
+    if (!text) return;
+    try {
+        const res = await fetch('/api/leads/quick-replies', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ business: currentBusiness, user_name: currentUser, reply_text: text })
+        });
+        const data = await res.json();
+        customQR[currentBusiness].push(data);
+        document.getElementById('new-qr-text').value = '';
+        renderEditList();
+        renderQuickReplies();
+        showNotification('✅ Respuesta agregada', 'success');
+    } catch(e) {}
+}
+
+async function deleteQuickReply(id) {
+    try {
+        await fetch(`/api/leads/quick-replies/${id}`, { method:'DELETE' });
+        customQR[currentBusiness] = customQR[currentBusiness].filter(r => r.id !== id);
+        renderEditList();
+        renderQuickReplies();
+        showNotification('🗑️ Eliminada', 'warning');
+    } catch(e) {}
+}
+
 function autoResize(el) {
     el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+    el.style.height = Math.min(el.scrollHeight, 90) + 'px';
 }
 
 function showNotification(msg, type) {

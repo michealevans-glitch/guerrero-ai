@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { sendOutreachEmails, getProspectsList, markProspectContacted } = require('../controllers/outreachController');
+const { markContacted, getOutreachStats, sendWhatsAppOutreach, sendEmailOutreach } = require('../controllers/outreachController');
 
-router.post('/send-emails', sendOutreachEmails);
-router.get('/prospects', getProspectsList);
-router.post('/mark-contacted', markProspectContacted);
+router.post('/mark-contacted', markContacted);
+router.get('/stats', getOutreachStats);
+router.post('/send-whatsapp', sendWhatsAppOutreach);
+router.post('/send-email', sendEmailOutreach);
 
 module.exports = router;
