@@ -55,3 +55,4 @@ app.listen(PORT, () => {
     }
   }, 60000);
 });
+app.use('/api/webhook', require('./routes/webhook'));
