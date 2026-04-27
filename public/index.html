@@ -68,7 +68,6 @@
 
 <audio id="siren" src="siren.mp3" loop preload="auto"></audio>
 
-<!-- LOGIN -->
 <div id="login-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0f;z-index:99999;display:flex;align-items:center;justify-content:center;">
     <div style="background:#1a1a2e;border:2px solid #00ff88;border-radius:16px;padding:40px;min-width:320px;text-align:center;">
         <h1 style="color:#00ff88;margin-bottom:8px;">⚔️ GUERRERO AI</h1>
@@ -94,7 +93,6 @@
         <div class="stat-card"><div class="number" id="stat-lost" style="color:#ff4444;">0</div><div class="label">Perdidos</div></div>
     </div>
 
-    <!-- ALBA FORM -->
     <div class="new-lead-form alba-form" id="form-alba">
         <h2 style="color:#00ff88;margin-bottom:20px;">🕊️ Registrar Cliente — Albalumen</h2>
         <div class="form-grid">
@@ -128,7 +126,6 @@
         <button class="btn-register-alba" onclick="createLead('alba')">🕊️ REGISTRAR LEAD ALBALUMEN Y ENVIAR ALERTA</button>
     </div>
 
-    <!-- HUELLITAS FORM -->
     <div class="new-lead-form huellitas-form" id="form-huellitas" style="display:none;">
         <h2 style="color:#ff88ff;margin-bottom:20px;">🐾 Registrar Cliente — Huellitas al Cielo</h2>
         <div class="form-grid">
@@ -158,12 +155,10 @@
         <button class="btn-register-huellitas" onclick="createLead('huellitas')">🐾 REGISTRAR LEAD HUELLITAS Y ENVIAR ALERTA</button>
     </div>
 
-    <!-- PROSPECTOS PANEL -->
     <div id="panel-prospectos" style="display:none;">
         <div class="card" style="margin-bottom:20px;">
             <h2 style="color:#ffaa00;margin-bottom:15px;">🎯 Panel de Prospectos — Solo Administradores</h2>
 
-            <!-- OUTREACH CONTROLS -->
             <div style="background:#0d0d1a;border:1px solid #444;border-radius:12px;padding:16px;margin-bottom:16px;">
                 <h3 style="color:#ffaa00;margin-bottom:12px;font-size:15px;">⚡ Control de Outreach Multicanal</h3>
                 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
@@ -221,7 +216,32 @@
                 <div id="outreach-result" style="font-size:13px;color:#00ff88;min-height:20px;"></div>
             </div>
 
-            <!-- OUTREACH STATS -->
+            <div style="background:#0d0d1a;border:1px solid #00ff88;border-radius:12px;padding:16px;margin-bottom:16px;">
+                <h3 style="color:#00ff88;margin-bottom:12px;font-size:15px;">🎯 Search & Destroy — Robot Autónomo</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                    <input type="text" id="sd-keyword" placeholder="Ej: veterinarias, funerarias, clínicas..." style="background:#0a0a0f;border:1px solid #333;color:white;padding:10px;border-radius:8px;font-size:13px;">
+                    <input type="text" id="sd-city" placeholder="Ciudad (ej: San José, Heredia...)" style="background:#0a0a0f;border:1px solid #333;color:white;padding:10px;border-radius:8px;font-size:13px;">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                    <select id="sd-business" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;font-size:13px;">
+                        <option value="alba">🕊️ Albalumen</option>
+                        <option value="huellitas">🐾 Huellitas</option>
+                    </select>
+                    <select id="sd-niche" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;font-size:13px;">
+                        <option value="veterinaria">🐾 Veterinaria</option>
+                        <option value="funeraria">⚰️ Funeraria</option>
+                        <option value="hospital clinica medica">🏥 Hospital/Clínica</option>
+                        <option value="farmacia">💊 Farmacia</option>
+                        <option value="hotel">🏨 Hotel</option>
+                        <option value="restaurante">🍽️ Restaurante</option>
+                        <option value="otro">🔍 Otro (según keyword)</option>
+                    </select>
+                </div>
+                <button onclick="launchSearchDestroy()" style="width:100%;background:linear-gradient(135deg,#00ff88,#00cc66);color:#000;border:none;padding:14px;border-radius:8px;font-size:15px;font-weight:900;cursor:pointer;">🎯 LANZAR SEARCH & DESTROY</button>
+                <div id="sd-result" style="margin-top:10px;font-size:13px;min-height:20px;"></div>
+                <div id="sd-jobs" style="margin-top:12px;"></div>
+            </div>
+
             <div style="background:#0d0d1a;border:1px solid #444;border-radius:12px;padding:16px;margin-bottom:16px;">
                 <h3 style="color:#ffaa00;margin-bottom:12px;font-size:15px;">📊 Estadísticas de Outreach</h3>
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
@@ -232,7 +252,6 @@
                 </div>
             </div>
 
-            <!-- FILTERS -->
             <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center;">
                 <select id="filter-city" onchange="loadProspects()" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;">
                     <option value="">Todas las ciudades</option>
@@ -261,7 +280,6 @@
         </div>
     </div>
 
-    <!-- WAR ROOM -->
     <div class="grid" id="war-room-grid">
         <div class="card">
             <h2>🚨 Embudo Activo <span id="active-count" style="background:#ff4444;color:white;padding:2px 8px;border-radius:10px;font-size:12px;margin-left:8px;">0</span></h2>
@@ -589,6 +607,66 @@
             resultDiv.style.color = '#ff4444';
             resultDiv.textContent = `❌ Error: ${e.message}`;
         }
+    }
+
+    async function launchSearchDestroy() {
+        const keyword = document.getElementById('sd-keyword').value.trim();
+        const city = document.getElementById('sd-city').value.trim();
+        const business = document.getElementById('sd-business').value;
+        const niche = document.getElementById('sd-niche').value;
+        const resultDiv = document.getElementById('sd-result');
+
+        if (!keyword) { showNotification('⚠️ Escribí una keyword', 'warning'); return; }
+
+        resultDiv.style.color = '#ffaa00';
+        resultDiv.textContent = `🎯 Lanzando Search & Destroy para: "${keyword}" en ${city || 'Costa Rica'}...`;
+
+        try {
+            const res = await fetch('/api/scraper/scrape-keyword', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ keyword, city, niche, business, created_by: currentUser })
+            });
+            const data = await res.json();
+            if (data.error) {
+                resultDiv.style.color = '#ff4444';
+                resultDiv.textContent = `❌ ${data.error}`;
+            } else {
+                resultDiv.style.color = '#00ff88';
+                resultDiv.textContent = `✅ Job #${data.job_id} iniciado! El robot está buscando en Google Maps...`;
+                setTimeout(loadJobStatus, 3000);
+                setTimeout(loadJobStatus, 8000);
+                setTimeout(loadJobStatus, 15000);
+                setTimeout(() => { loadProspects(); loadOutreachStats(); }, 20000);
+            }
+        } catch(e) {
+            resultDiv.style.color = '#ff4444';
+            resultDiv.textContent = `❌ Error: ${e.message}`;
+        }
+    }
+
+    async function loadJobStatus() {
+        try {
+            const res = await fetch('/api/scraper/jobs');
+            const jobs = await res.json();
+            const container = document.getElementById('sd-jobs');
+            if (!jobs.length) return;
+            container.innerHTML = `<div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;margin-bottom:6px;">Historial de Jobs</div>` +
+            jobs.slice(0,5).map(job => {
+                const statusColor = job.status === 'completed' ? '#00ff88' : job.status === 'running' ? '#ffaa00' : job.status === 'failed' ? '#ff4444' : '#888';
+                const icon = job.status === 'completed' ? '✅' : job.status === 'running' ? '⏳' : job.status === 'failed' ? '❌' : '🕐';
+                return `<div style="background:#1a1a2e;border-radius:8px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <span style="font-size:13px;font-weight:600;">${icon} ${job.keyword}</span>
+                        <span style="font-size:11px;color:#888;margin-left:8px;">${job.city || 'CR'}</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <span style="color:${statusColor};font-size:12px;font-weight:bold;">${job.status}</span>
+                        ${job.results_saved ? `<br><span style="color:#888;font-size:11px;">${job.results_saved} guardados</span>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        } catch(e) {}
     }
 
     async function loadProspects() {
