@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guerrero AI — War Room v3.1</title>
+    <title>Guerrero AI — War Room v3.1</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Segoe UI',sans-serif; background:#0a0a0f; color:white; }
@@ -57,7 +57,7 @@
 <div class="topbar">
     <div class="logo">
         <h1>⚔️ GUERRERO AI</h1>
-        <span id="clock-display">guerreroai.com | War Room v3.0</span>
+        <span id="clock-display">guerreroai.com | War Room v3.1</span>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
         <span id="user-badge" style="background:#333;padding:6px 12px;border-radius:6px;font-size:12px;"></span>
@@ -72,8 +72,8 @@
     <div style="background:#1a1a2e;border:2px solid #00ff88;border-radius:16px;padding:40px;min-width:320px;text-align:center;">
         <h1 style="color:#00ff88;margin-bottom:8px;">⚔️ GUERRERO AI</h1>
         <p style="color:#888;margin-bottom:25px;font-size:13px;">War Room — Acceso Seguro</p>
-        <input type="text" id="login-user" placeholder="Usuario" style="width:100%;background:#0a0a0f;border:1px solid #333;color:white;padding:12px;border-radius:8px;font-size:15px;margin-bottom:12px;">
-        <input type="password" id="login-pass" placeholder="Contraseña" style="width:100%;background:#0a0a0f;border:1px solid #333;color:white;padding:12px;border-radius:8px;font-size:15px;margin-bottom:20px;" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="text" id="login-user" placeholder="Usuario" autocomplete="username" style="width:100%;background:#0a0a0f;border:1px solid #333;color:white;padding:12px;border-radius:8px;font-size:15px;margin-bottom:12px;">
+        <input type="password" id="login-pass" placeholder="Contraseña" autocomplete="current-password" style="width:100%;background:#0a0a0f;border:1px solid #333;color:white;padding:12px;border-radius:8px;font-size:15px;margin-bottom:20px;" onkeydown="if(event.key==='Enter')doLogin()">
         <button onclick="doLogin()" style="width:100%;background:#00ff88;color:#000;border:none;padding:14px;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;">ENTRAR</button>
         <p id="login-error" style="color:#ff4444;margin-top:10px;font-size:13px;"></p>
     </div>
@@ -252,6 +252,22 @@
                 </div>
             </div>
 
+            <!-- GESTIÓN DE USUARIOS — SOLO ADMIN -->
+            <div style="background:#0d0d1a;border:1px solid #6600cc;border-radius:12px;padding:16px;margin-bottom:16px;">
+                <h3 style="color:#cc88ff;margin-bottom:12px;font-size:15px;">👥 Gestión de Usuarios</h3>
+                <div id="users-list" style="margin-bottom:12px;"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
+                    <input type="text" id="new-username" placeholder="Usuario" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;font-size:13px;">
+                    <input type="password" id="new-password" placeholder="Contraseña" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;font-size:13px;">
+                    <input type="text" id="new-fullname" placeholder="Nombre completo" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;font-size:13px;">
+                    <select id="new-role" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;font-size:13px;">
+                        <option value="operador">Operador</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button onclick="createNewUser()" style="background:#6600cc;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:13px;">+ Crear Usuario</button>
+            </div>
+
             <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center;">
                 <select id="filter-city" onchange="loadProspects()" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;">
                     <option value="">Todas las ciudades</option>
@@ -293,45 +309,75 @@
 </div>
 
 <script>
-    const USERS = {
-        'oscar':   { pass:'Albalumen2024#', role:'admin',    name:'Oscar Evans' },
-        'micheal': { pass:'Guerrero2024#',  role:'admin',    name:'Micheal Evans' },
-        'soledad': { pass:'Soledad2024',    role:'operador', name:'Soledad' },
-        'manuel':  { pass:'Manuel2024',     role:'operador', name:'Manuel' }
-    };
-
     let currentUser = null;
     let currentRole = null;
     let currentTab = 'alba';
+    let authToken = null;
 
-    function doLogin() {
-        const user = document.getElementById('login-user').value.toLowerCase().trim();
-        const pass = document.getElementById('login-pass').value;
-        const ud = USERS[user];
-        if (ud && ud.pass === pass) {
-            currentUser = ud.name;
-            currentRole = ud.role;
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-            document.getElementById('user-badge').textContent = `👤 ${currentUser} (${currentRole})`;
-            if (currentRole === 'admin') {
-                document.getElementById('tab-prospectos').style.display = 'block';
-                loadOutreachSettings();
-                loadOutreachStats();
+    async function doLogin() {
+        const username = document.getElementById('login-user').value.toLowerCase().trim();
+        const password = document.getElementById('login-pass').value;
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                authToken = data.token;
+                currentUser = data.user.full_name;
+                currentRole = data.user.role;
+                sessionStorage.setItem('ga_token', authToken);
+                sessionStorage.setItem('ga_user', currentUser);
+                sessionStorage.setItem('ga_role', currentRole);
+                showApp();
+            } else {
+                document.getElementById('login-error').textContent = `❌ ${data.error}`;
             }
-            loadStats(); loadActiveLeads(); loadRecentLeads();
-        } else {
-            document.getElementById('login-error').textContent = '❌ Usuario o contraseña incorrectos';
+        } catch(e) {
+            document.getElementById('login-error').textContent = '❌ Error de conexión';
         }
     }
 
+    function showApp() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        document.getElementById('user-badge').textContent = `👤 ${currentUser} (${currentRole})`;
+        if (currentRole === 'admin') {
+            document.getElementById('tab-prospectos').style.display = 'block';
+            loadOutreachSettings();
+            loadOutreachStats();
+            loadUsers();
+        }
+        loadStats(); loadActiveLeads(); loadRecentLeads();
+    }
+
     function logout() {
-        currentUser = null; currentRole = null;
+        currentUser = null; currentRole = null; authToken = null;
+        sessionStorage.clear();
         document.getElementById('main-app').style.display = 'none';
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('login-user').value = '';
         document.getElementById('login-pass').value = '';
     }
+
+    window.addEventListener('load', () => {
+        const token = sessionStorage.getItem('ga_token');
+        const user = sessionStorage.getItem('ga_user');
+        const role = sessionStorage.getItem('ga_role');
+        if (token && user && role) {
+            authToken = token;
+            currentUser = user;
+            currentRole = role;
+            showApp();
+        }
+    });
+
+    const authHeaders = () => ({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+    });
 
     function updateClock() {
         const crTime = new Intl.DateTimeFormat('es-CR', { timeZone:'America/Costa_Rica', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).format(new Date());
@@ -358,8 +404,7 @@
         } else {
             document.getElementById('panel-prospectos').style.display = 'block';
             document.getElementById('tab-prospectos').className = 'tab active-prospectos';
-            loadProspects();
-            loadOutreachStats();
+            loadProspects(); loadOutreachStats();
         }
     }
 
@@ -369,8 +414,8 @@
         if (!phone) { showNotification('⚠️ Teléfono requerido', 'warning'); return; }
         try {
             const res = await fetch('/api/leads/new', {
-                method:'POST', headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({ contact_name: n(`${business}-name`), phone, service_type: n(`${business}-service`), source: `${business}-${n(`${business}-source`)}`, notes: n(`${business}-notes`), business })
+                method:'POST', headers: authHeaders(),
+                body: JSON.stringify({ contact_name: n(`${business}-name`), phone, service_type: n(`${business}-service`), source: `${business}-${n(`${business}-source`)}`, notes: n(`${business}-notes`), business, registered_by: currentUser })
             });
             if (res.ok) {
                 showNotification('✅ Lead registrado y alerta enviada!', 'success');
@@ -425,8 +470,9 @@
                     </div>
                     <div class="lead-actions">
                         <button id="claim-btn-${lead.id}" onclick="claimLead(${lead.id},'${lead.phone}')" style="background:#00ff88;color:#000;">✅ RECLAMAR</button>
-                        <button onclick="openLostModal(${lead.id})" style="background:#ff4444;color:white;">❌ PERDIDO</button>
+                        <button onclick="openLostModal(${lead.id},'${lead.claimed_by||''}')" style="background:#ff4444;color:white;">❌ PERDIDO</button>
                     </div>
+                    ${lead.claimed_by ? `<p style="color:#888;font-size:11px;margin-top:6px;">👤 Reclamado por: <strong style="color:#00ff88;">${lead.claimed_by}</strong></p>` : ''}
                     <div id="action-btns-${lead.id}" style="display:none;margin-top:8px;gap:8px;flex-wrap:wrap;">
                         <a id="wa-btn-${lead.id}" href="#" target="_blank" style="background:#25d366;color:white;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:bold;">💬 WhatsApp</a>
                         <a id="call-btn-${lead.id}" href="#" style="background:#0066cc;color:white;padding:8px 14px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:bold;">📞 Llamar</a>
@@ -437,9 +483,10 @@
     }
 
     async function claimLead(id, fullPhone) {
-        const name = prompt('Tu nombre:');
-        if (!name) return;
-        const res = await fetch(`/api/leads/claim/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ staff_name: name }) });
+        const res = await fetch(`/api/leads/claim/${id}`, {
+            method:'PUT', headers: authHeaders(),
+            body: JSON.stringify({ staff_name: currentUser })
+        });
         if (res.ok) {
             document.getElementById(`phone-${id}`).textContent = `📞 ${fullPhone}`;
             document.getElementById(`phone-${id}`).style.color = '#00ff88';
@@ -451,20 +498,24 @@
             document.getElementById(`call-btn-${id}`).href = `tel:${fullPhone}`;
             const btn = document.getElementById(`claim-btn-${id}`);
             btn.disabled = true; btn.style.opacity = '0.5';
-            btn.textContent = `✅ Reclamado por ${name}`;
-            showNotification(`✅ Reclamado por ${name}`, 'success');
+            btn.textContent = `✅ ${currentUser}`;
+            showNotification(`✅ Reclamado por ${currentUser}`, 'success');
             loadStats();
         }
     }
 
     const REASONS = ['No contestó el teléfono','Precio muy alto','Eligió a la competencia','Familiar tomó la decisión','Lead falso/spam','Fuera de área','Respuesta muy lenta','Sin dinero','Otro'];
 
-    function openLostModal(id) {
+    function openLostModal(id, claimedBy) {
         const e = document.getElementById('lost-modal'); if (e) e.remove();
         const m = document.createElement('div'); m.id = 'lost-modal';
+        const warning = claimedBy && claimedBy !== currentUser
+            ? `<p style="background:#ff4444;color:white;padding:8px;border-radius:6px;font-size:12px;margin-bottom:10px;">⚠️ Este lead fue reclamado por <strong>${claimedBy}</strong>. Se registrará que vos (${currentUser}) lo cerrás.</p>`
+            : '';
         m.innerHTML = `<div class="modal-overlay" onclick="document.getElementById('lost-modal').remove()"></div>
         <div class="modal-box">
             <h3 style="color:#ff4444;margin-bottom:15px;">❌ ¿Por qué se perdió?</h3>
+            ${warning}
             <select id="lost-reason-sel" style="width:100%;padding:10px;background:#0a0a0f;color:white;border:1px solid #333;border-radius:6px;margin-bottom:12px;" onchange="toggleCompetitor()">
                 ${REASONS.map(r=>`<option>${r}</option>`).join('')}
             </select>
@@ -487,8 +538,11 @@
     async function confirmLost(id) {
         const reason = document.getElementById('lost-reason-sel').value;
         const competitor = document.getElementById('competitor-name-input')?.value || null;
-        const res = await fetch(`/api/leads/lost/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ reason_lost: reason, competitor_name: competitor }) });
-        if (res.ok) { document.getElementById('lost-modal').remove(); showNotification(`📊 Perdido: ${reason}`, 'warning'); loadActiveLeads(); loadStats(); }
+        const res = await fetch(`/api/leads/lost/${id}`, {
+            method:'PUT', headers: authHeaders(),
+            body: JSON.stringify({ reason_lost: reason, competitor_name: competitor, closed_by: currentUser })
+        });
+        if (res.ok) { document.getElementById('lost-modal').remove(); showNotification(`📊 Perdido: ${reason} — cerrado por ${currentUser}`, 'warning'); loadActiveLeads(); loadStats(); }
     }
 
     async function loadRecentLeads() {
@@ -497,20 +551,66 @@
             const data = await res.json();
             if (!data?.length) { document.getElementById('recent-leads').innerHTML = '<p style="color:#888;">Sin leads aún.</p>'; return; }
             document.getElementById('recent-leads').innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
-                <tr style="color:#888;"><th style="padding:6px;text-align:left;">Cliente</th><th style="padding:6px;text-align:left;">Servicio</th><th style="padding:6px;text-align:left;">Estado</th><th style="padding:6px;text-align:left;">Atendido por</th></tr>
+                <tr style="color:#888;"><th style="padding:6px;text-align:left;">Cliente</th><th style="padding:6px;text-align:left;">Servicio</th><th style="padding:6px;text-align:left;">Estado</th><th style="padding:6px;text-align:left;">Reclamado por</th><th style="padding:6px;text-align:left;">Cerrado por</th></tr>
                 ${data.slice(0,15).map(l=>`<tr style="border-bottom:1px solid #333;">
                     <td style="padding:6px;">${l.contact_name||'N/A'}<br><span style="color:#888;font-size:11px;">${maskPhone(l.phone)}</span></td>
                     <td style="padding:6px;font-size:11px;">${(l.service_type||'').substring(0,20)}</td>
                     <td style="padding:6px;"><span style="color:${l.status==='New'?'#ffaa00':l.status==='In-Progress'?'#00ff88':'#ff4444'};font-size:11px;">${l.status}</span></td>
                     <td style="padding:6px;font-size:11px;color:#888;">${l.claimed_by||'—'}</td>
+                    <td style="padding:6px;font-size:11px;color:${l.closed_by && l.closed_by !== l.claimed_by ? '#ff4444' : '#888'};">${l.closed_by||'—'}</td>
                 </tr>`).join('')}
             </table>`;
         } catch(e) {}
     }
 
-    // ═══════════════════════════════
-    // OUTREACH FUNCTIONS
-    // ═══════════════════════════════
+    async function loadUsers() {
+        try {
+            const res = await fetch('/api/auth/users', { headers: authHeaders() });
+            const users = await res.json();
+            document.getElementById('users-list').innerHTML = users.map(u => `
+                <div style="background:#1a1a2e;border-radius:8px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <span style="font-weight:600;font-size:13px;">👤 ${u.full_name}</span>
+                        <span style="color:#888;font-size:11px;margin-left:8px;">@${u.username}</span>
+                        <span style="color:${u.role==='admin'?'#ffaa00':'#888'};font-size:11px;margin-left:6px;">[${u.role}]</span>
+                        ${!u.active ? '<span style="color:#ff4444;font-size:11px;"> INACTIVO</span>' : ''}
+                    </div>
+                    <div style="display:flex;gap:6px;">
+                        ${u.username !== 'micheal' && u.username !== 'oscar' ? `<button onclick="deactivateUser('${u.username}')" style="background:#ff4444;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;">Desactivar</button>` : ''}
+                    </div>
+                </div>`).join('');
+        } catch(e) {}
+    }
+
+    async function createNewUser() {
+        const username = document.getElementById('new-username').value.trim();
+        const password = document.getElementById('new-password').value;
+        const full_name = document.getElementById('new-fullname').value.trim();
+        const role = document.getElementById('new-role').value;
+        if (!username || !password || !full_name) { showNotification('⚠️ Todos los campos son requeridos', 'warning'); return; }
+        const res = await fetch('/api/auth/users', {
+            method: 'POST', headers: authHeaders(),
+            body: JSON.stringify({ username, password, full_name, role })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showNotification(`✅ Usuario ${username} creado`, 'success');
+            document.getElementById('new-username').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('new-fullname').value = '';
+            loadUsers();
+        } else {
+            showNotification(`❌ ${data.error}`, 'error');
+        }
+    }
+
+    async function deactivateUser(username) {
+        if (!confirm(`¿Desactivar al usuario ${username}?`)) return;
+        await fetch(`/api/auth/users/${username}`, { method: 'DELETE', headers: authHeaders() });
+        showNotification(`✅ Usuario ${username} desactivado`, 'warning');
+        loadUsers();
+    }
+
     async function loadOutreachSettings() {
         try {
             const res = await fetch('/api/outreach/settings');
@@ -527,7 +627,7 @@
 
     async function toggleOutreach(key, value) {
         await fetch('/api/outreach/settings', {
-            method:'POST', headers:{'Content-Type':'application/json'},
+            method:'POST', headers: authHeaders(),
             body: JSON.stringify({ key, value: value.toString() })
         });
         const ch = key.replace('_active','');
@@ -542,25 +642,16 @@
         const limit = parseInt(document.getElementById('outreach-limit').value) || 50;
         const resultDiv = document.getElementById('outreach-result');
         resultDiv.style.color = '#ffaa00';
-        resultDiv.textContent = `⏳ Enviando ${channel}... esto puede tomar unos minutos.`;
+        resultDiv.textContent = `⏳ Enviando ${channel}...`;
         try {
             const res = await fetch(`/api/outreach/send-${channel}`, {
-                method:'POST', headers:{'Content-Type':'application/json'},
+                method:'POST', headers: authHeaders(),
                 body: JSON.stringify({ business, niche, limit })
             });
             const data = await res.json();
-            if (data.error) {
-                resultDiv.style.color = '#ff4444';
-                resultDiv.textContent = `❌ ${data.error}`;
-            } else {
-                resultDiv.style.color = '#00ff88';
-                resultDiv.textContent = `✅ Enviados: ${data.sent} | Fallidos: ${data.failed || 0} | Total: ${data.total}`;
-                loadOutreachStats();
-            }
-        } catch(e) {
-            resultDiv.style.color = '#ff4444';
-            resultDiv.textContent = `❌ Error de conexión`;
-        }
+            if (data.error) { resultDiv.style.color = '#ff4444'; resultDiv.textContent = `❌ ${data.error}`; }
+            else { resultDiv.style.color = '#00ff88'; resultDiv.textContent = `✅ Enviados: ${data.sent} | Fallidos: ${data.failed||0} | Total: ${data.total}`; loadOutreachStats(); }
+        } catch(e) { resultDiv.style.color = '#ff4444'; resultDiv.textContent = `❌ Error`; }
     }
 
     async function loadOutreachStats() {
@@ -575,38 +666,24 @@
     }
 
     async function importFile(input) {
-        const file = input.files[0];
-        if (!file) return;
+        const file = input.files[0]; if (!file) return;
         const resultDiv = document.getElementById('outreach-result');
-        resultDiv.style.color = '#ffaa00';
-        resultDiv.textContent = '⏳ Importando datos...';
+        resultDiv.textContent = '⏳ Importando...';
         try {
             const text = await file.text();
             let data;
-            if (file.name.endsWith('.json')) {
-                data = JSON.parse(text);
-            } else {
+            if (file.name.endsWith('.json')) { data = JSON.parse(text); }
+            else {
                 const lines = text.split('\n').filter(l => l.trim());
                 const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g,''));
-                data = lines.slice(1).map(line => {
-                    const vals = line.split(',');
-                    const obj = {};
-                    headers.forEach((h, i) => obj[h] = (vals[i]||'').trim().replace(/"/g,''));
-                    return obj;
-                });
+                data = lines.slice(1).map(line => { const vals = line.split(','); const obj = {}; headers.forEach((h,i) => obj[h] = (vals[i]||'').trim().replace(/"/g,'')); return obj; });
             }
-            const res = await fetch('/api/outreach/import-csv', {
-                method:'POST', headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({ data })
-            });
+            const res = await fetch('/api/outreach/import-csv', { method:'POST', headers: authHeaders(), body: JSON.stringify({ data }) });
             const result = await res.json();
             resultDiv.style.color = '#00ff88';
             resultDiv.textContent = `✅ Importados: ${result.saved} de ${result.total}`;
             loadProspects(); loadOutreachStats();
-        } catch(e) {
-            resultDiv.style.color = '#ff4444';
-            resultDiv.textContent = `❌ Error: ${e.message}`;
-        }
+        } catch(e) { resultDiv.style.color = '#ff4444'; resultDiv.textContent = `❌ ${e.message}`; }
     }
 
     async function launchSearchDestroy() {
@@ -615,34 +692,24 @@
         const business = document.getElementById('sd-business').value;
         const niche = document.getElementById('sd-niche').value;
         const resultDiv = document.getElementById('sd-result');
-
         if (!keyword) { showNotification('⚠️ Escribí una keyword', 'warning'); return; }
-
         resultDiv.style.color = '#ffaa00';
-        resultDiv.textContent = `🎯 Lanzando Search & Destroy para: "${keyword}" en ${city || 'Costa Rica'}...`;
-
+        resultDiv.textContent = `🎯 Lanzando Search & Destroy: "${keyword}" en ${city || 'Costa Rica'}...`;
         try {
             const res = await fetch('/api/scraper/scrape-keyword', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method:'POST', headers: authHeaders(),
                 body: JSON.stringify({ keyword, city, niche, business, created_by: currentUser })
             });
             const data = await res.json();
-            if (data.error) {
-                resultDiv.style.color = '#ff4444';
-                resultDiv.textContent = `❌ ${data.error}`;
-            } else {
+            if (data.error) { resultDiv.style.color = '#ff4444'; resultDiv.textContent = `❌ ${data.error}`; }
+            else {
                 resultDiv.style.color = '#00ff88';
-                resultDiv.textContent = `✅ Job #${data.job_id} iniciado! El robot está buscando en Google Maps...`;
+                resultDiv.textContent = `✅ Job #${data.job_id} iniciado! Buscando en Google Maps...`;
                 setTimeout(loadJobStatus, 3000);
                 setTimeout(loadJobStatus, 8000);
-                setTimeout(loadJobStatus, 15000);
                 setTimeout(() => { loadProspects(); loadOutreachStats(); }, 20000);
             }
-        } catch(e) {
-            resultDiv.style.color = '#ff4444';
-            resultDiv.textContent = `❌ Error: ${e.message}`;
-        }
+        } catch(e) { resultDiv.style.color = '#ff4444'; resultDiv.textContent = `❌ ${e.message}`; }
     }
 
     async function loadJobStatus() {
@@ -651,19 +718,13 @@
             const jobs = await res.json();
             const container = document.getElementById('sd-jobs');
             if (!jobs.length) return;
-            container.innerHTML = `<div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;margin-bottom:6px;">Historial de Jobs</div>` +
+            container.innerHTML = `<div style="font-size:11px;color:#888;font-weight:600;margin-bottom:6px;">HISTORIAL DE JOBS</div>` +
             jobs.slice(0,5).map(job => {
-                const statusColor = job.status === 'completed' ? '#00ff88' : job.status === 'running' ? '#ffaa00' : job.status === 'failed' ? '#ff4444' : '#888';
-                const icon = job.status === 'completed' ? '✅' : job.status === 'running' ? '⏳' : job.status === 'failed' ? '❌' : '🕐';
-                return `<div style="background:#1a1a2e;border-radius:8px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
-                    <div>
-                        <span style="font-size:13px;font-weight:600;">${icon} ${job.keyword}</span>
-                        <span style="font-size:11px;color:#888;margin-left:8px;">${job.city || 'CR'}</span>
-                    </div>
-                    <div style="text-align:right;">
-                        <span style="color:${statusColor};font-size:12px;font-weight:bold;">${job.status}</span>
-                        ${job.results_saved ? `<br><span style="color:#888;font-size:11px;">${job.results_saved} guardados</span>` : ''}
-                    </div>
+                const sc = job.status==='completed'?'#00ff88':job.status==='running'?'#ffaa00':job.status==='failed'?'#ff4444':'#888';
+                const ic = job.status==='completed'?'✅':job.status==='running'?'⏳':job.status==='failed'?'❌':'🕐';
+                return `<div style="background:#1a1a2e;border-radius:8px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;">
+                    <div><span style="font-size:13px;font-weight:600;">${ic} ${job.keyword}</span><span style="color:#888;font-size:11px;margin-left:8px;">${job.city||'CR'}</span></div>
+                    <div style="text-align:right;"><span style="color:${sc};font-size:12px;font-weight:bold;">${job.status}</span>${job.results_saved?`<br><span style="color:#888;font-size:11px;">${job.results_saved} guardados</span>`:''}</div>
                 </div>`;
             }).join('');
         } catch(e) {}
@@ -676,56 +737,29 @@
             const data = await res.json();
             const city = document.getElementById('filter-city').value;
             const niche = document.getElementById('filter-niche').value;
-            const filtered = data.filter(p => (!city || p.city === city) && (!niche || p.niche === niche));
+            const filtered = data.filter(p => (!city||p.city===city) && (!niche||p.niche===niche));
             const isOpen = updateClock();
             const ind = document.getElementById('horario-indicator');
-            ind.textContent = isOpen ? '🟢 Horario operativo' : '🔴 Fuera de horario (8am-7pm CR)';
+            ind.textContent = isOpen ? '🟢 Horario operativo' : '🔴 Fuera de horario';
             ind.style.cssText = `padding:8px 15px;border-radius:6px;font-weight:bold;font-size:13px;background:${isOpen?'rgba(0,255,136,0.1)':'rgba(255,68,68,0.1)'};color:${isOpen?'#00ff88':'#ff4444'};border:1px solid ${isOpen?'#00ff88':'#ff4444'};`;
             document.getElementById('prospects-body').innerHTML = filtered.map(p => {
-                const cp = p.phone ? p.phone.replace(/\D/g,'') : '';
-                const wp = cp.length === 8 ? `506${cp}` : cp;
-                const isVet = p.niche === 'veterinaria';
-                const isFun = p.niche === 'funeraria';
-                const msg = encodeURIComponent(isVet
-                    ? `Estimados colegas de ${p.business_name}, somos Huellitas al Cielo, crematorio certificado de mascotas en San José. 🐾 Para no recibir más mensajes responda STOP.`
-                    : `Estimados de ${p.business_name}, somos Albalumen, crematorio y funeraria en San José, atención 24/7. Para no recibir más mensajes responda STOP.`
-                );
-                const badge = isVet
-                    ? `<span style="background:#ff88ff;color:#000;padding:2px 6px;border-radius:4px;font-size:10px;">🐾 VET</span>`
-                    : isFun
-                        ? `<span style="background:#aaa;color:#000;padding:2px 6px;border-radius:4px;font-size:10px;">⚰️ FUN</span>`
-                        : `<span style="background:#00ff88;color:#000;padding:2px 6px;border-radius:4px;font-size:10px;">🏥 CLÍ</span>`;
-                const statusColor = p.status === 'contacted' ? '#00ff88' : p.status === 'excluded' ? '#ff4444' : '#ffaa00';
-                return `<tr>
-                    <td style="padding:10px;font-weight:bold;">${badge} ${p.business_name}</td>
-                    <td style="padding:10px;">${p.city}</td>
-                    <td style="padding:10px;font-family:monospace;font-size:12px;">${p.phone||'N/A'}</td>
-                    <td style="padding:10px;">⭐ ${p.google_rating||'N/A'}</td>
-                    <td style="padding:10px;"><span style="color:${statusColor};font-size:12px;font-weight:bold;">${p.status||'new'}</span></td>
-                    <td style="padding:10px;">
-                        <div style="display:flex;gap:5px;flex-wrap:wrap;">
-                            ${p.phone && isOpen ? `<a href="https://wa.me/${wp}?text=${msg}" target="_blank" style="background:#25d366;color:white;padding:4px 8px;border-radius:5px;text-decoration:none;font-size:11px;font-weight:bold;">💬</a>` : `<span style="background:#333;color:#555;padding:4px 8px;border-radius:5px;font-size:11px;">💬</span>`}
-                            ${p.phone ? `<a href="tel:${p.phone}" style="background:#0066cc;color:white;padding:4px 8px;border-radius:5px;text-decoration:none;font-size:11px;">📞</a>` : ''}
-                            <button onclick="markProspectContacted(${p.id})" style="background:#333;color:white;padding:4px 8px;border-radius:5px;border:none;cursor:pointer;font-size:11px;">✅</button>
-                        </div>
-                    </td>
-                </tr>`;
+                const cp = p.phone?p.phone.replace(/\D/g,''):'';
+                const wp = cp.length===8?`506${cp}`:cp;
+                const isVet = p.niche==='veterinaria'; const isFun = p.niche==='funeraria';
+                const msg = encodeURIComponent(isVet?`Estimados colegas de ${p.business_name}, somos Huellitas al Cielo. 🐾 Para no recibir más mensajes responda STOP.`:`Estimados de ${p.business_name}, somos Albalumen, atención 24/7. Para no recibir más mensajes responda STOP.`);
+                const badge = isVet?`<span style="background:#ff88ff;color:#000;padding:2px 6px;border-radius:4px;font-size:10px;">🐾 VET</span>`:isFun?`<span style="background:#aaa;color:#000;padding:2px 6px;border-radius:4px;font-size:10px;">⚰️ FUN</span>`:`<span style="background:#00ff88;color:#000;padding:2px 6px;border-radius:4px;font-size:10px;">🏥 CLÍ</span>`;
+                const sc = p.status==='contacted'?'#00ff88':p.status==='excluded'?'#ff4444':'#ffaa00';
+                return `<tr><td style="padding:10px;font-weight:bold;">${badge} ${p.business_name}</td><td style="padding:10px;">${p.city}</td><td style="padding:10px;font-family:monospace;font-size:12px;">${p.phone||'N/A'}</td><td style="padding:10px;">⭐ ${p.google_rating||'N/A'}</td><td style="padding:10px;"><span style="color:${sc};font-size:12px;font-weight:bold;">${p.status||'new'}</span></td><td style="padding:10px;"><div style="display:flex;gap:5px;">${p.phone&&isOpen?`<a href="https://wa.me/${wp}?text=${msg}" target="_blank" style="background:#25d366;color:white;padding:4px 8px;border-radius:5px;text-decoration:none;font-size:11px;font-weight:bold;">💬</a>`:`<span style="background:#333;color:#555;padding:4px 8px;border-radius:5px;font-size:11px;">💬</span>`}${p.phone?`<a href="tel:${p.phone}" style="background:#0066cc;color:white;padding:4px 8px;border-radius:5px;text-decoration:none;font-size:11px;">📞</a>`:''}  <button onclick="markProspectContacted(${p.id})" style="background:#333;color:white;padding:4px 8px;border-radius:5px;border:none;cursor:pointer;font-size:11px;">✅</button></div></td></tr>`;
             }).join('');
         } catch(e) {}
     }
 
     async function markProspectContacted(id) {
-        await fetch('/api/outreach/mark-contacted', {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ id, channel:'manual' })
-        });
+        await fetch('/api/outreach/mark-contacted', { method:'POST', headers: authHeaders(), body: JSON.stringify({ id, channel:'manual' }) });
         showNotification('✅ Prospecto marcado', 'success');
         loadProspects(); loadOutreachStats();
     }
 
-    // ═══════════════════════════════
-    // SIRENA Y NOTIFICACIONES
-    // ═══════════════════════════════
     let sirenPlaying = false;
     function startSiren() { if (!sirenPlaying) { document.getElementById('siren').play().catch(()=>{}); sirenPlaying = true; } }
     function stopSiren() { const s = document.getElementById('siren'); s.pause(); s.currentTime = 0; sirenPlaying = false; }

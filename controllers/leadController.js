@@ -3,12 +3,12 @@ const { sendLeadAlert } = require('./emailController');
 
 const createLead = async (req, res) => {
   try {
-    const { contact_name, phone, service_type, source, notes } = req.body;
+    const { contact_name, phone, service_type, source, notes, registered_by } = req.body;
     if (!phone) return res.status(400).json({ error: 'Phone is required' });
     const result = await pool.query(`
-      INSERT INTO leads (contact_name, phone, service_type, source, notes, status)
-      VALUES ($1, $2, $3, $4, $5, 'New') RETURNING *
-    `, [contact_name || 'No especificado', phone, service_type || 'Consulta General', source || 'manual', notes || null]);
+      INSERT INTO leads (contact_name, phone, service_type, source, notes, status, registered_by)
+      VALUES ($1, $2, $3, $4, $5, 'New', $6) RETURNING *
+    `, [contact_name || 'No especificado', phone, service_type || 'Consulta General', source || 'manual', notes || null, registered_by || null]);
     const lead = result.rows[0];
     sendLeadAlert(lead);
     res.json(lead);
@@ -52,11 +52,11 @@ const claimLead = async (req, res) => {
 const markLost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { reason_lost, competitor_name } = req.body;
+    const { reason_lost, competitor_name, closed_by } = req.body;
     const result = await pool.query(`
-      UPDATE leads SET status = 'Lost', reason_lost = $1, competitor_name = $2, lost_at = NOW()
-      WHERE id = $3 RETURNING *
-    `, [reason_lost, competitor_name || null, id]);
+      UPDATE leads SET status = 'Lost', reason_lost = $1, competitor_name = $2, lost_at = NOW(), closed_by = $3
+      WHERE id = $4 RETURNING *
+    `, [reason_lost, competitor_name || null, closed_by || null, id]);
     res.json(result.rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
