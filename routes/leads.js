@@ -34,7 +34,7 @@ router.post('/send-message', async (req, res) => {
 router.get('/quick-replies/:business/:user', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT * FROM quick_replies WHERE business = $1 AND user_name = $2 ORDER BY id ASC`,
+      `SELECT * FROM quick_replies WHERE business = $1 AND (user_name = $2 OR user_name = 'system') ORDER BY user_name DESC, id ASC`,
       [req.params.business, decodeURIComponent(req.params.user)]
     );
     res.json(result.rows);
@@ -52,6 +52,17 @@ router.post('/quick-replies', async (req, res) => {
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
 
+router.put('/quick-replies/:id', async (req, res) => {
+  try {
+    const { reply_text } = req.body;
+    const result = await pool.query(
+      `UPDATE quick_replies SET reply_text = $1 WHERE id = $2 RETURNING *`,
+      [reply_text, req.params.id]
+    );
+    res.json(result.rows[0]);
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
 router.delete('/quick-replies/:id', async (req, res) => {
   try {
     await pool.query(`DELETE FROM quick_replies WHERE id = $1`, [req.params.id]);
@@ -64,6 +75,17 @@ router.get('/unread-count', async (req, res) => {
     const alba = await pool.query(`SELECT COUNT(*) FROM leads WHERE status = 'New' AND (source NOT LIKE '%huellitas%' OR source IS NULL)`);
     const huellitas = await pool.query(`SELECT COUNT(*) FROM leads WHERE status = 'New' AND source LIKE '%huellitas%'`);
     res.json({ alba: parseInt(alba.rows[0].count), huellitas: parseInt(huellitas.rows[0].count) });
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post('/transfer', async (req, res) => {
+  try {
+    const { lead_id, to_user, from_user } = req.body;
+    const result = await pool.query(
+      `UPDATE leads SET claimed_by = $1, transferred_from = $2, transferred_at = NOW() WHERE id = $3 RETURNING *`,
+      [to_user, from_user, lead_id]
+    );
+    res.json(result.rows[0]);
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
 
