@@ -5,58 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>War Room - Guerrero AI</title>
     <style>
-        body { margin: 0; background: #0a0a0f; color: white; font-family: sans-serif; display: flex; height: 100vh; }
-        .sidebar { width: 260px; background: #0d0d1a; border-right: 1px solid #333; display: flex; flex-direction: column; }
+        body { margin: 0; background: #0a0a0f; color: white; font-family: sans-serif; display: flex; height: 100vh; opacity: 0; transition: opacity 0.3s; }
+        body.loaded { opacity: 1; }
+        .sidebar { width: 260px; background: #0d0d1a; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
         .nav-link { padding: 15px 20px; color: #888; text-decoration: none; font-weight: bold; border-bottom: 1px solid #222; cursor: pointer; }
         .nav-link:hover, .active { background: rgba(0,255,136,0.1); color: #00ff88; }
-        .main { flex: 1; padding: 25px; overflow-y: auto; }
+        .main { flex: 1; padding: 20px; overflow-y: auto; }
         .card { background: #1a1a2e; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; }
-        .btn { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        .grid-toggles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .toggle-box { background: #000; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #444; font-size: 14px; }
+        .btn { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; text-transform: uppercase; }
         .btn-green { background: #00ff88; color: black; }
         .btn-blue { background: #007bff; color: white; }
         .btn-orange { background: #ff6b00; color: white; }
-        input, select { background: #000; color: white; border: 1px solid #444; padding: 10px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; }
+        input, select { background: #000; color: white; border: 1px solid #444; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 8px; }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div style="padding: 25px; font-size: 22px; font-weight: 900; color: #00ff88;">GUERRERO AI</div>
-        <a href="#" class="nav-link active">WAR ROOM</a>
-        <a href="/chat" class="nav-link">CHAT CENTRAL</a>
-        <div class="nav-link" onclick="window.location.href='/chat?view=stats'" style="color: #ffc107;">ESTADISTICAS</div>
+        <a href="#" class="nav-link active">🛡️ WAR ROOM</a>
+        <a href="/chat" class="nav-link">💬 CHAT CENTRAL</a>
+        <div class="nav-link" onclick="window.location.href='/chat?view=stats'" style="color: #ffc107;">📊 ESTADISTICAS</div>
     </div>
+
     <div class="main">
-        <div class="card">
-            <h3 style="color:#ff6b00">🎯 SEARCH & DESTROY (Empresas/Negocios)</h3>
-            <input type="text" id="nicho" placeholder="Ej: Veterinarias, Clínicas">
-            <input type="text" id="ciudad" placeholder="Ciudad">
-            <button class="btn btn-orange" onclick="lanzarRobot('empresa')">BUSCAR NEGOCIOS</button>
+        <div class="grid-toggles">
+            <div class="toggle-box">WhatsApp: <span style="color:#00ff88">ON</span></div>
+            <div class="toggle-box">SMS: <span style="color:#00ff88">ON</span></div>
+            <div class="toggle-box">Llamadas: <span style="color:#00ff88">ON</span></div>
         </div>
 
-        <div class="card" style="border-color: #007bff;">
-            <h3 style="color:#007bff">👤 CAPTURA DE INDIVIDUOS (Prospectos Particulares)</h3>
-            <input type="text" id="indNombre" placeholder="Nombre completo de la persona">
-            <input type="text" id="indTele" placeholder="WhatsApp (Ej: 50688888888)">
+        <div class="card">
+            <h3 style="color:#ff6b00; margin-top:0;">🎯 SEARCH & DESTROY (Empresas)</h3>
+            <input type="text" id="nicho" placeholder="Nicho (Ej: Veterinarias)">
+            <input type="text" id="ciudad" placeholder="Ciudad (Ej: Puntarenas)">
+            <button class="btn btn-orange" onclick="alert('Buscando...')">BUSCAR NEGOCIOS</button>
+        </div>
+
+        <div class="card" style="border-left: 5px solid #007bff;">
+            <h3 style="color:#007bff; margin-top:0;">👤 CAPTURA DE INDIVIDUOS</h3>
+            <input type="text" id="indNom" placeholder="Nombre completo">
+            <input type="text" id="indTel" placeholder="WhatsApp (506...)">
             <select id="indBiz">
                 <option value="albalumen">Albalumen</option>
                 <option value="huellitas">Huellitas</option>
             </select>
-            <button class="btn btn-blue" onclick="guardarIndividuo()">REGISTRAR PERSONA</button>
+            <button class="btn btn-blue" onclick="saveInd()">REGISTRAR PERSONA</button>
         </div>
     </div>
+
     <script>
-        function lanzarRobot(tipo) {
-            const n = document.getElementById('nicho').value;
-            const c = document.getElementById('ciudad').value;
-            alert("Robot buscando " + n + " en " + c);
-        }
+        window.onload = () => document.body.classList.add('loaded');
 
-        async function guardarIndividuo() {
-            const nom = document.getElementById('indNombre').value;
-            const tel = document.getElementById('indTele').value;
-            const emp = document.getElementById('indBiz').value;
-
-            if(!nom || !tel) return alert("Falta nombre o teléfono");
+        async function saveInd() {
+            const nom = document.getElementById('indNom').value;
+            const tel = document.getElementById('indTel').value;
+            if(!nom || !tel) return alert("Faltan datos");
 
             const res = await fetch('/api/leads', {
                 method: 'POST',
@@ -64,19 +69,12 @@
                 body: JSON.stringify({
                     contact_name: nom,
                     phone: tel.replace(/\D/g,''),
-                    business: emp,
+                    business: document.getElementById('indBiz').value,
                     source: 'WarRoom-Individual',
                     category: 'persona'
                 })
             });
-
-            if(res.ok) {
-                alert("✅ Persona registrada con éxito");
-                document.getElementById('indNombre').value = '';
-                document.getElementById('indTele').value = '';
-            } else {
-                alert("❌ Error al registrar");
-            }
+            if(res.ok) { alert("✅ Registrado"); location.reload(); }
         }
     </script>
 </body>
