@@ -5,95 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>War Room - Guerrero AI</title>
     <style>
-        :root { --primary: #00ff88; --bg: #0a0a0f; --card: #161625; }
-        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        :root { --neon-green: #00ff88; --neon-blue: #00d4ff; --neon-orange: #ff6b00; --dark-bg: #050508; }
         
-        .sidebar { width: 260px; background: #0d0d1a; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
-        .logo { padding: 25px; font-size: 20px; font-weight: 900; color: var(--primary); }
-        .nav-link { padding: 15px 25px; color: #888; text-decoration: none; font-weight: bold; border-left: 4px solid transparent; }
-        .nav-link.active { background: rgba(0,255,136,0.1); color: var(--primary); border-left-color: var(--primary); }
-
-        .main { flex: 1; padding: 20px; overflow-y: auto; }
-        
-        /* SLIDING MENU PARA TOGGLES Y BOTONES */
-        .sliding-menu { 
+        body { 
+            margin: 0; 
+            background: var(--dark-bg); 
+            color: white; 
+            font-family: 'Courier New', Courier, monospace; 
             display: flex; 
-            overflow-x: auto; 
-            gap: 10px; 
-            padding-bottom: 15px; 
-            scrollbar-width: none; /* Firefox */
+            height: 100vh; 
+            overflow: hidden;
         }
-        .sliding-menu::-webkit-scrollbar { display: none; } /* Chrome/Safari */
-        
-        .toggle-box { 
-            flex: 0 0 auto; 
+
+        /* SIDEBAR ESTILO CYBER */
+        .sidebar { 
+            width: 240px; 
             background: #000; 
-            padding: 12px 20px; 
-            border-radius: 10px; 
-            border: 1px solid #333; 
-            font-size: 13px; 
-            white-space: nowrap;
+            border-right: 2px solid #1a1a1a; 
+            display: flex; 
+            flex-direction: column; 
+            flex-shrink: 0; 
         }
+        .logo { 
+            padding: 25px; 
+            font-size: 20px; 
+            font-weight: 900; 
+            color: var(--neon-green); 
+            text-shadow: 0 0 10px var(--neon-green);
+            letter-spacing: 2px;
+        }
+        .nav-link { 
+            padding: 15px 25px; 
+            color: #444; 
+            text-decoration: none; 
+            font-weight: bold; 
+            border-bottom: 1px solid #111;
+            transition: 0.3s;
+        }
+        .nav-link.active { color: var(--neon-green); background: rgba(0,255,136,0.05); }
 
-        .card { background: var(--card); border-radius: 15px; padding: 20px; border: 1px solid #2d2d3f; margin-top: 10px; }
-        input, select { background: #000; color: #fff; border: 1px solid #3d3d50; padding: 14px; border-radius: 10px; width: 100%; box-sizing: border-box; margin-top: 10px; font-size: 16px; }
-        .btn-save { background: var(--primary); color: #000; padding: 16px; border: none; border-radius: 10px; font-weight: 800; width: 100%; margin-top: 15px; cursor: pointer; text-transform: uppercase; }
+        /* CONTENIDO */
+        .main { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* TARJETAS NEON */
+        .card { 
+            background: #0a0a0f; 
+            border-radius: 5px; 
+            padding: 20px; 
+            border: 1px solid #1a1a2e;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        
+        .box-title { font-size: 14px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
 
+        /* INPUTS ESTILO TERMINAL */
+        input, select { 
+            background: #000; 
+            color: var(--neon-green); 
+            border: 1px solid #333; 
+            padding: 12px; 
+            width: 100%; 
+            box-sizing: border-box; 
+            margin-bottom: 15px; 
+            font-family: monospace;
+            outline: none;
+        }
+        input:focus { border-color: var(--neon-green); box-shadow: 0 0 5px var(--neon-green); }
+
+        /* BOTONES DE PODER */
+        .btn { 
+            padding: 15px; 
+            border: none; 
+            font-weight: 900; 
+            cursor: pointer; 
+            width: 100%; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .btn-green { background: var(--neon-green); color: #000; box-shadow: 0 0 15px rgba(0,255,136,0.4); }
+        .btn-blue { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px rgba(0,212,255,0.4); }
+        .btn-orange { background: var(--neon-orange); color: #000; box-shadow: 0 0 15px rgba(255,107,0,0.4); }
+
+        /* RESPONSIVE CELULAR */
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; flex-direction: row; border-right: none; border-bottom: 1px solid #333; }
+            .sidebar { width: 100%; height: auto; flex-direction: row; border-right: none; border-bottom: 1px solid #222; }
             .logo { padding: 15px; font-size: 14px; }
-            .nav-link { padding: 15px; border-left: none; border-bottom: 3px solid transparent; font-size: 12px; }
-            .nav-link.active { border-bottom-color: var(--primary); }
+            .nav-container { display: flex; flex: 1; justify-content: flex-end; }
+            .nav-link { padding: 15px; font-size: 11px; border-bottom: none; }
+            .main { padding: 15px; }
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <div class="logo">⚔️ GUERRERO AI</div>
-        <div style="display: flex;">
+        <div class="logo">GUERRERO AI</div>
+        <div class="nav-container">
             <a href="/index.html" class="nav-link active">WAR ROOM</a>
             <a href="/chat.html" class="nav-link">CHAT</a>
         </div>
     </div>
     
     <div class="main">
-        <div class="sliding-menu">
-            <div class="toggle-box">WhatsApp: <span style="color:var(--primary)">ON</span></div>
-            <div class="toggle-box">SMS: <span style="color:var(--primary)">ON</span></div>
-            <div class="toggle-box">Llamadas: <span style="color:var(--primary)">ON</span></div>
-            <div class="toggle-box" style="border-color: #ffcc00; color: #ffcc00;">MODO IA: ACTIVO</div>
-            <div class="toggle-box" style="background: #1a1a2e;">REPORTES: 24h</div>
+        <div class="card" style="border-top: 3px solid var(--neon-orange);">
+            <div class="box-title" style="color: var(--neon-orange);">🎯 SEARCH & DESTROY</div>
+            <input type="text" id="nicho" placeholder="NICHO (VETERINARIAS...)">
+            <input type="text" id="ciudad" placeholder="CIUDAD (SAN JOSE...)">
+            <button class="btn btn-orange">LANZAR BUSQUEDA</button>
         </div>
 
-        <div class="card">
-            <h3 style="color: #007bff; margin:0;">👤 Registro de Prospectos</h3>
-            <input type="text" id="mNom" placeholder="Nombre completo">
-            <input type="tel" id="mTel" placeholder="WhatsApp (Ej: 50688888888)">
-            <select id="mBiz">
-                <option value="albalumen">Albalumen 🕊️</option>
-                <option value="huellitas">Huellitas 🐾</option>
+        <div class="card" style="border-top: 3px solid var(--neon-blue);">
+            <div class="box-title" style="color: var(--neon-blue);">👤 CAPTURA INDIVIDUOS</div>
+            <input type="text" id="iNom" placeholder="NOMBRE COMPLETO">
+            <input type="text" id="iTel" placeholder="WHATSAPP (506...)">
+            <select id="iBiz">
+                <option value="albalumen">ALBALUMEN 🕊️</option>
+                <option value="huellitas">HUELLITAS 🐾</option>
             </select>
-            <button class="btn-save" onclick="enviarLead()">💾 GUARDAR CLIENTE</button>
+            <button class="btn btn-blue" onclick="saveI()">GUARDAR PROSPECTO</button>
         </div>
     </div>
 
     <script>
-        async function enviarLead() {
-            const nom = document.getElementById('mNom').value;
-            const tel = document.getElementById('mTel').value;
-            if(!nom || !tel) return alert("⚠️ Rellena los datos");
+        async function saveI() {
+            const nom = document.getElementById('iNom').value;
+            const tel = document.getElementById('iTel').value;
+            if(!nom || !tel) return alert("DATOS INCOMPLETOS");
+
             const res = await fetch('/api/leads', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     contact_name: nom,
                     phone: tel.replace(/\D/g,''),
-                    business: document.getElementById('mBiz').value,
-                    source: 'Manual-Sliding'
+                    business: document.getElementById('iBiz').value,
+                    source: 'Manual-Pro'
                 })
             });
-            if(res.ok) { alert("✅ GUARDADO"); location.reload(); }
+
+            if(res.ok) {
+                alert("SISTEMA ACTUALIZADO: LEAD GUARDADO");
+                location.reload();
+            }
         }
     </script>
 </body>

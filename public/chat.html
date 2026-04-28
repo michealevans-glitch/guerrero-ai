@@ -3,62 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chat - Guerrero AI</title>
+    <title>Chat Central - Guerrero AI</title>
     <style>
-        :root { --primary: #00ff88; --bg: #050505; }
-        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; display: flex; height: 100vh; flex-direction: column; opacity: 0; transition: opacity 0.4s; }
+        :root { --neon-green: #00ff88; --neon-yellow: #ffcc00; --neon-red: #ff4444; --bg: #050508; }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
         body.loaded { opacity: 1; }
 
-        .header-sliding { 
-            background: #111; 
-            border-bottom: 1px solid #333; 
+        /* SIDEBAR / MENU */
+        .sidebar { 
+            width: 240px; 
+            background: #000; 
+            border-right: 2px solid #1a1a1a; 
             display: flex; 
-            overflow-x: auto; 
-            white-space: nowrap; 
-            scrollbar-width: none;
+            flex-direction: column; 
+            flex-shrink: 0; 
         }
-        .header-sliding::-webkit-scrollbar { display: none; }
+        .logo { 
+            padding: 25px; 
+            font-size: 20px; 
+            font-weight: 900; 
+            color: var(--neon-green); 
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+        .nav-item { 
+            padding: 18px 25px; 
+            color: #444; 
+            text-decoration: none; 
+            font-weight: bold; 
+            cursor: pointer;
+            border-bottom: 1px solid #111;
+            transition: 0.3s;
+        }
+        .nav-item.active { color: var(--neon-green); background: rgba(0,255,136,0.05); }
+        .nav-item#stats-btn { color: var(--neon-yellow); }
 
-        .nav-tab { padding: 15px 20px; color: #888; font-weight: bold; text-decoration: none; cursor: pointer; display: inline-block; }
-        .nav-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: rgba(0,255,136,0.05); }
-        .btn-plus { color: #ffcc00; font-weight: 900; }
+        /* CONTENIDO */
+        .content { flex: 1; position: relative; display: flex; flex-direction: column; }
+        
+        /* VISTA DE CHAT */
+        #chat-view { display: flex; flex-direction: column; height: 100%; }
+        .chat-header { padding: 15px; border-bottom: 1px solid #222; background: #0a0a0f; }
+        .chat-messages { flex: 1; padding: 20px; color: #444; text-align: center; }
 
-        .content { flex: 1; overflow-y: auto; padding: 20px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 20px; }
-        .stat-card { background: #161625; padding: 15px; border-radius: 12px; border: 1px solid #333; text-align: center; }
+        /* VISTA DE ESTADISTICAS */
+        #stats-view { display: none; padding: 25px; overflow-y: auto; }
+        .grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .stat-card { 
+            background: #000; 
+            padding: 20px; 
+            border: 1px solid #222; 
+            text-align: center;
+            border-radius: 4px;
+        }
+        .stat-card h2 { margin: 10px 0 0 0; font-size: 24px; }
+
+        /* BOTON FLOTANTE / AGREGAR */
+        .btn-add { 
+            background: var(--neon-green); 
+            color: #000; 
+            padding: 15px; 
+            margin: 20px; 
+            border: none; 
+            font-weight: 900; 
+            cursor: pointer; 
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0,255,136,0.3);
+        }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; }
+        .modal-box { background: #0a0a0f; width: 90%; max-width: 350px; margin: 50px auto; padding: 30px; border: 1px solid var(--neon-green); }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            background: #000; 
+            color: var(--neon-green); 
+            border: 1px solid #333; 
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+
+        /* CELULAR: SLIDING MENU BOTTOM */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { 
+                width: 100%; 
+                height: auto; 
+                order: 2; /* Pone el menú abajo */
+                border-right: none; 
+                border-top: 2px solid #1a1a1a; 
+            }
+            .nav-container { display: flex; width: 100%; overflow-x: auto; }
+            .nav-item { 
+                flex: 1; 
+                text-align: center; 
+                padding: 15px 5px; 
+                font-size: 11px; 
+                border-bottom: none; 
+                border-right: 1px solid #111;
+                white-space: nowrap;
+            }
+            .logo { display: none; } /* Ocultamos logo en movil para ganar espacio */
+            .btn-add { margin: 10px; width: calc(100% - 20px); order: 1; }
+            .content { order: 1; height: calc(100vh - 120px); }
+            .grid-stats { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-    <div class="header-sliding">
-        <a href="/index.html" class="nav-tab">🛡️ WAR ROOM</a>
-        <div class="nav-tab active" onclick="show('chat')">💬 CHAT</div>
-        <div class="nav-tab" onclick="show('stats')">📊 RENDIMIENTO</div>
-        <div class="nav-tab btn-plus" onclick="alert('Abriendo registro para Soledad...')">➕ CLIENTE</div>
+
+    <div class="sidebar">
+        <div class="logo">GUERRERO CHAT</div>
+        <div class="nav-container">
+            <a href="/index.html" class="nav-item">🛡️ WAR ROOM</a>
+            <div class="nav-item active" onclick="switchV('chat')">💬 MENSAJES</div>
+            <div class="nav-item" id="stats-btn" onclick="switchV('stats')">📊 STATS</div>
+        </div>
+        <button class="btn-add" onclick="openM()">+ NUEVO LEAD</button>
     </div>
 
     <div class="content">
-        <div id="chat-v">
-            <h3 style="color:#444; text-align:center; margin-top:50px;">Selecciona un chat...</h3>
+        <div id="chat-view">
+            <div class="chat-header">
+                <h3 style="margin:0; color:var(--neon-green); font-size:14px;">TERMINAL_LIVE_MESSAGES</h3>
+            </div>
+            <div class="chat-messages">
+                [ SISTEMA LISTO - ESPERANDO ENTRADA ]
+            </div>
         </div>
 
-        <div id="stats-v" style="display:none;">
-            <h2 style="color:var(--primary)">ESTADISTICAS</h2>
-            <div class="stats-grid">
-                <div class="stat-card"><small>CIERRE</small><h3 style="color:var(--primary)">72%</h3></div>
-                <div class="stat-card"><small>VELOCIDAD</small><h3 style="color:var(--primary)">2.4m</h3></div>
+        <div id="stats-view">
+            <h1 style="color:var(--neon-green); font-size: 20px; border-bottom: 1px solid #222; padding-bottom: 10px;">RENDIMIENTO_DEL_SISTEMA</h1>
+            <div class="grid-stats">
+                <div class="stat-card">
+                    <small style="color: #666;">LATENCIA</small>
+                    <h2 style="color: var(--neon-green);">2.4m</h2>
+                </div>
+                <div class="stat-card">
+                    <small style="color: #666;">CONVERSION</small>
+                    <h2 style="color: var(--neon-green);">72%</h2>
+                </div>
+                <div class="stat-card">
+                    <small style="color: #666;">OFFLINE</small>
+                    <h2 style="color: var(--neon-red);">05</h2>
+                </div>
             </div>
+            <button onclick="switchV('chat')" style="width:100%; margin-top:20px; background:#111; color:#fff; border:1px solid #333; padding:15px; cursor:pointer;">CERRAR_STATS</button>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-box">
+            <h3 style="color:var(--neon-green); margin-top:0;">NUEVO_REGISTRO</h3>
+            <input type="text" id="n" placeholder="NOMBRE">
+            <input type="text" id="p" placeholder="TELEFONO">
+            <select id="b">
+                <option value="albalumen">ALBALUMEN</option>
+                <option value="huellitas">HUELLITAS</option>
+            </select>
+            <button onclick="save()" class="btn-add" style="margin:10px 0; width:100%;">EJECUTAR_GUARDADO</button>
+            <button onclick="closeM()" style="width:100%; background:none; color:#444; border:none; cursor:pointer;">CANCELAR</button>
         </div>
     </div>
 
     <script>
-        function show(v) {
-            document.getElementById('chat-v').style.display = v === 'chat' ? 'block' : 'none';
-            document.getElementById('stats-v').style.display = v === 'stats' ? 'block' : 'none';
-            // Cambiar clase active
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+        function switchV(v) {
+            document.getElementById('stats-view').style.display = v === 'stats' ? 'block' : 'none';
+            document.getElementById('chat-view').style.display = v === 'chat' ? 'flex' : 'none';
+            
+            // Actualizar estado activo en el menu
+            const items = document.querySelectorAll('.nav-item');
+            items.forEach(i => i.classList.remove('active'));
+            if(v === 'chat') items[1].classList.add('active');
+            if(v === 'stats') items[2].classList.add('active');
         }
-        window.onload = () => document.body.classList.add('loaded');
+
+        function openM() { document.getElementById('modal').style.display = 'block'; }
+        function closeM() { document.getElementById('modal').style.display = 'none'; }
+
+        async function save() {
+            const nom = document.getElementById('n').value;
+            const tel = document.getElementById('p').value;
+            if(!nom || !tel) return alert("DATOS_INVALIDOS");
+
+            const res = await fetch('/api/leads', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    contact_name: nom,
+                    phone: tel.replace(/\D/g,''),
+                    business: document.getElementById('b').value,
+                    source: 'Chat-Terminal'
+                })
+            });
+            if(res.ok) { alert("DATOS_SINCRONIZADOS"); location.reload(); }
+        }
+
+        window.onload = () => { document.body.classList.add('loaded'); };
     </script>
 </body>
 </html>
