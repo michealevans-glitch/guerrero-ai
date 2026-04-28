@@ -1,0 +1,47 @@
+[33mb8c8888[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Fix routes and restore lead visibility
+[33mb845204[m Recreate leads routes clean no corruption
+[33mebc143f[m Force redeploy
+[33m18d2b3b[m Fix routes leads hyperlink corruption
+[33mdb9264d[m Fix leads routes - restore complete
+[33mba7c80e[m Restore War Room v3.1
+[33ma829505[m Restore leads routes
+[33m6efe0b1[m Add Twilio voice alert to Oscar on 3min unattended lead
+[33mfca2809[m Add JWT auth, user management, closed_by tracking
+[33m441efc2[m Force cache bust v3.1
+[33m7581954[m Search and Destroy full integration
+[33m8e57b03[m Complete War Room with multicanal outreach panel
+[33mefbc398[m Complete Guerrero AI - PWA chat fixes call records transfer
+[33m3d7c37c[m Add PWA manifest and service worker
+[33mf302e2c[m Upgrade chat with badges, editable QR, mobile optimized
+[33m62c8924[m Add messages and quick replies endpoints
+[33m4c159db[m Add Guerrero AI Chat interface
+[33me09afb9[m Add WhatsApp webhook for auto lead capture
+[33mf812156[m Fix index.js restore complete
+[33m3a29515[m Fix emailController async syntax
+[33md112bfc[m Add WhatsApp alerts to both Albalumen and Huellitas
+[33mda76366[m Add 3min WhatsApp alert and Twilio integration
+[33me41d70e[m Fix leadController with getMyLeads and competitor
+[33m6e66d1e[m Fix stats, show claimed_by, separate vet vs clinic prospects
+[33m7021f6f[m Add competitor tracking and my leads endpoint
+[33m73f9e0d[m Add security login roles and phone masking
+[33m988ae27[m Restore War Room with Prospectos tab
+[33m7ada972[m Restore scraperController complete
+[33m0f72ac9[m Update War Room script with clean phones and leads
+[33mfc40bc3[m Mision 1: Add Prospect Panel and CR Timezone Logic
+[33m222358f[m Fix Paginas Amarillas scraper headers
+[33md6f58bb[m Fix API key name and add email column
+[33m1df4ff7[m Add Paginas Amarillas scraper
+[33m1e01d1a[m Fix scraper syntax error
+[33m5510e4a[m Fix scraper save with unique constraint
+[33md64b53f[m Add email outreach for veterinarias
+[33me4080d3[m Fix scraper null error
+[33m966e8aa[m Fix scraper route position
+[33mf908cd6[m Add veterinarias scraper
+[33m3412fae[m Add Alba Lumen and Huellitas tabs with Claim/Lost buttons
+[33m373acd7[m Switch to SendGrid
+[33m7142c18[m Switch to Gmail port 465
+[33m9bec35d[m Debug email logs
+[33m2c380bd[m Remove .env from repo
+[33m997ecb6[m Add Railway PostgreSQL support
+[33mcdf0249[m Remove node_modules
+[33m49bc7fd[m Guerrero AI v1.0
