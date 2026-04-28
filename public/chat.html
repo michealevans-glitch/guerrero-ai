@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Central - Guerrero AI</title>
     <style>
-        /* TRUCO ANTI-PARPADEO: La página empieza invisible */
+        /* BASE Y TRUCO ANTI-PARPADEO */
         body { 
             margin: 0; 
             background: #050505; 
@@ -16,57 +16,71 @@
             opacity: 0; 
             transition: opacity 0.4s ease-in; 
         }
-        
-        /* Cuando todo esté listo, se vuelve visible */
         body.loaded { opacity: 1; }
 
-        .sidebar { width: 260px; background: #111; border-right: 2px solid #333; display: flex; flex-direction: column; }
+        .sidebar { width: 260px; background: #111; border-right: 2px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
         .nav-item { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; color: #888; font-weight: bold; text-decoration: none; }
         .active { color: #00ff88 !important; background: #1a1a1a; }
         #stats-btn { color: #ffcc00; }
         .btn-add { background: #00ff88; color: black; padding: 15px; margin: 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
-        .content { flex: 1; position: relative; }
-        #stats-view { display: none; padding: 40px; }
+        .content { flex: 1; position: relative; overflow-y: auto; }
+        #stats-view { display: none; padding: 20px; }
         #chat-view { display: flex; flex-direction: column; height: 100%; }
         
+        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; }
-        .modal-box { background: #1a1a1a; width: 320px; margin: 100px auto; padding: 30px; border-radius: 15px; border: 2px solid #00ff88; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; background: #000; color: white; border: 1px solid #444; box-sizing: border-box; }
+        .modal-box { background: #1a1a1a; width: 90%; max-width: 350px; margin: 50px auto; padding: 25px; border-radius: 15px; border: 2px solid #00ff88; box-sizing: border-box; }
+        input, select { width: 100%; padding: 14px; margin: 10px 0; background: #000; color: white; border: 1px solid #444; box-sizing: border-box; border-radius: 8px; font-size: 16px; }
+
+        /* 🔥 MAGIA PARA EL CELULAR */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #333; }
+            .nav-item { display: inline-block; padding: 15px; font-size: 13px; border-bottom: none; }
+            .btn-add { margin: 10px; padding: 12px; font-size: 14px; }
+            .content { height: calc(100vh - 150px); }
+            #stats-view { padding: 15px; }
+            .grid-stats { grid-template-columns: 1fr !important; }
+        }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div style="padding: 25px; font-size: 20px; font-weight: 900; color: #00ff88;">⚔️ GUERRERO AI</div>
-        <a href="/war-room" class="nav-item">🛡️ WAR ROOM</a>
-        <div class="nav-item active" onclick="switchV('chat')">💬 CHAT CENTRAL</div>
-        <div class="nav-item" id="stats-btn" onclick="switchV('stats')">📊 RENDIMIENTO</div>
-        <button class="btn-add" onclick="openM()">➕ AGREGAR CLIENTE</button>
+        <div style="padding: 20px; font-size: 18px; font-weight: 900; color: #00ff88;">⚔️ GUERRERO AI</div>
+        <div style="display: flex; flex-wrap: wrap;">
+            <a href="/index.html" class="nav-item">🛡️ WAR ROOM</a>
+            <div class="nav-item active" onclick="switchV('chat')">💬 CHAT</div>
+            <div class="nav-item" id="stats-btn" onclick="switchV('stats')">📊 RENDIMIENTO</div>
+        </div>
+        <button class="btn-add" onclick="openM()">➕ NUEVO CLIENTE</button>
     </div>
 
     <div class="content">
         <div id="chat-view">
-            <div style="padding: 20px; border-bottom: 1px solid #333; background: #111;">
+            <div style="padding: 15px; border-bottom: 1px solid #333; background: #111;">
                 <h3 style="margin:0;">Mensajería en Vivo</h3>
             </div>
-            <div style="flex:1; padding:20px; color:#444">Selecciona un chat para comenzar...</div>
+            <div style="flex:1; padding:20px; color:#444; text-align:center; margin-top: 50px;">
+                Selecciona un chat para comenzar...
+            </div>
         </div>
 
         <div id="stats-view">
-            <h1 style="color:#00ff88">📈 PANEL DE RENDIMIENTO</h1>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 20px;">
-                <div style="background:#111; padding:20px; border:1px solid #333; text-align:center;">
-                    <small>RESPUESTA</small><h2 style="color:#00ff88">2.4 min</h2>
+            <h1 style="color:#00ff88; font-size: 24px;">📈 RENDIMIENTO</h1>
+            <div class="grid-stats" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px;">
+                <div style="background:#111; padding:20px; border:1px solid #333; text-align:center; border-radius:10px;">
+                    <small style="color:#888">RESPUESTA</small><h2 style="color:#00ff88; margin: 10px 0 0 0;">2.4 min</h2>
                 </div>
-                <div style="background:#111; padding:20px; border:1px solid #333; text-align:center;">
-                    <small>CIERRES</small><h2 style="color:#00ff88">72%</h2>
+                <div style="background:#111; padding:20px; border:1px solid #333; text-align:center; border-radius:10px;">
+                    <small style="color:#888">CIERRES</small><h2 style="color:#00ff88; margin: 10px 0 0 0;">72%</h2>
                 </div>
-                <div style="background:#111; padding:20px; border:1px solid #ff4444; text-align:center;">
-                    <small>PERDIDOS</small><h2 style="color:#ff4444;">05</h2>
+                <div style="background:#111; padding:20px; border:1px solid #ff4444; text-align:center; border-radius:10px;">
+                    <small style="color:#888">PERDIDOS</small><h2 style="color:#ff4444; margin: 10px 0 0 0;">05</h2>
                 </div>
             </div>
-            <button onclick="switchV('chat')" style="margin-top:30px; padding:10px 20px; cursor:pointer; background:#333; color:white; border:none; border-radius:5px;">Volver al Chat</button>
+            <button onclick="switchV('chat')" style="width:100%; margin-top:30px; padding:15px; cursor:pointer; background:#333; color:white; border:none; border-radius:8px; font-weight:bold;">Volver al Chat</button>
         </div>
     </div>
 
@@ -79,41 +93,38 @@
                 <option value="albalumen">Albalumen 🕊️</option>
                 <option value="huellitas">Huellitas 🐾</option>
             </select>
-            <button onclick="save()" style="width:100%; padding:15px; background:#00ff88; border:none; font-weight:bold; cursor:pointer; border-radius:5px;">GUARDAR</button>
-            <button onclick="closeM()" style="width:100%; background:none; color:#666; border:none; margin-top:10px; cursor:pointer;">Cancelar</button>
+            <button onclick="save()" style="width:100%; padding:15px; background:#00ff88; border:none; font-weight:bold; cursor:pointer; border-radius:8px;">GUARDAR</button>
+            <button onclick="closeM()" style="width:100%; background:none; color:#666; border:none; margin-top:15px; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
     <script>
-        // Función para cambiar vistas
         function switchV(v) {
             document.getElementById('stats-view').style.display = v === 'stats' ? 'block' : 'none';
             document.getElementById('chat-view').style.display = v === 'chat' ? 'flex' : 'none';
         }
 
-        // Modal de registro
         function openM() { document.getElementById('modal').style.display = 'block'; }
         function closeM() { document.getElementById('modal').style.display = 'none'; }
 
-        // Guardar Lead
         async function save() {
-            const d = {
-                contact_name: document.getElementById('n').value,
-                phone: document.getElementById('p').value,
-                business: document.getElementById('b').value,
-                source: 'Manual-Chat'
-            };
-            const r = await fetch('/api/leads', {
+            const nom = document.getElementById('n').value;
+            const tel = document.getElementById('p').value;
+            if(!nom || !tel) return alert("Faltan datos");
+
+            const res = await fetch('/api/leads', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(d)
+                body: JSON.stringify({
+                    contact_name: nom,
+                    phone: tel.replace(/\D/g,''),
+                    business: document.getElementById('b').value,
+                    source: 'Chat-Mobile'
+                })
             });
-            if(r.ok) { alert("✅ Guardado"); location.reload(); }
+            if(res.ok) { alert("✅ Guardado"); location.reload(); }
         }
 
-        // --- EL TRUCO FINAL ---
-        // Esto espera a que el navegador termine de leer el código
-        // y lo hace aparecer suavemente sin saltos.
         window.onload = function() {
             document.body.classList.add('loaded');
         };
