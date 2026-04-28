@@ -3,104 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Guerrero AI Command Center v4.0</title>
+    <title>Guerrero AI — Enterprise Terminal</title>
     <style>
-        :root { --alba-green: #00ff88; --neon-blue: #00d4ff; --neon-purple: #bc13fe; --dark-bg: #050508; --card-bg: #11111b; }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family: 'Segoe UI', monospace; background: var(--dark-bg); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        :root {
+            --neon-green: #00ff88;
+            --neon-blue: #00d4ff;
+            --neon-purple: #bc13fe;
+            --bg-ultra: #020205;
+            --card-panel: #0a0a12;
+            --border-glow: #1a1a2e;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; outline: none; }
+        body { font-family: 'Consolas', 'Courier New', monospace; background: var(--bg-ultra); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* TOPBAR CON TOGGLES */
-        .topbar { background:#0d0d1a; border-bottom:2px solid var(--alba-green); padding:10px 15px; display:flex; justify-content:space-between; align-items:center; z-index:100; }
-        .outreach-toggles { display: flex; gap: 8px; }
-        .toggle-status { font-size: 10px; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; color: var(--alba-green); }
+        /* HEADER COMPLEX CON TOGGLES DE SISTEMA */
+        .header-system { background: #000; border-bottom: 2px solid var(--neon-green); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 0 15px rgba(0,255,136,0.2); z-index: 100; }
+        .system-status { display: flex; gap: 15px; }
+        .status-pill { border: 1px solid #333; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .active-pill { color: var(--neon-green); border-color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green); }
 
-        .main-layout { display:flex; flex:1; overflow:hidden; }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
 
-        /* SIDEBAR V3.1 */
-        .sidebar { width:320px; background:var(--card-bg); border-right:1px solid #333; display:flex; flex-direction:column; transition: 0.3s; }
-        .sidebar-header { padding:15px; border-bottom:1px solid #222; }
-        .conv-item { padding:15px; border-bottom:1px solid #222; cursor:pointer; }
-        .conv-item.active { background:rgba(0,255,136,0.1); border-left:4px solid var(--alba-green); }
+        /* SIDEBAR V3.1 (EL DISEÑO QUE TE GUSTA) */
+        .sidebar { width: 320px; background: var(--card-panel); border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; transition: 0.3s; }
+        .sidebar-search { padding: 15px; border-bottom: 1px solid #1a1a1a; }
+        .search-input { width: 100%; background: #000; border: 1px solid #333; color: var(--neon-green); padding: 8px; font-family: monospace; }
+        .conv-list { flex: 1; overflow-y: auto; }
+        .conv-item { padding: 15px; border-bottom: 1px solid #111; cursor: pointer; border-left: 3px solid transparent; }
+        .conv-item.active { background: rgba(0,255,136,0.05); border-left-color: var(--neon-green); }
+        .conv-name { display: block; font-weight: bold; font-size: 14px; }
+        .conv-meta { font-size: 11px; color: #666; }
 
-        /* CHAT AREA */
-        .chat-area { flex:1; display:flex; flex-direction:column; background:var(--dark-bg); }
-        .messages-area { flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; }
-        .msg.outgoing { background:var(--alba-green); color:#000; align-self:flex-end; padding:10px; border-radius:10px; font-weight:bold; }
-        .msg.incoming { background:#262626; align-self:flex-start; padding:10px; border-radius:10px; }
+        /* ÁREA DE OPERACIONES */
+        .ops-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-ultra); }
+        
+        /* BOTONES DE CATEGORIZACIÓN (SOLEDAD) */
+        .category-panel { background: #070710; border: 1px solid var(--neon-purple); margin: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 0 10px rgba(188, 19, 254, 0.1); }
+        .panel-label { color: var(--neon-purple); font-size: 10px; font-weight: bold; margin-bottom: 10px; display: block; }
+        .mini-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .m-input, .m-select { background: #000; border: 1px solid #333; color: var(--neon-purple); padding: 10px; font-size: 12px; width: 100%; }
+        .btn-register { background: var(--neon-purple); color: white; border: none; padding: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; text-transform: uppercase; font-size: 12px; }
 
-        /* CAPTURA CATEGORIZADA (SOLEDAD) */
-        .capture-panel { background: #0a0a15; border: 1px solid var(--neon-purple); padding: 12px; margin: 10px; border-radius: 6px; }
-        .grid-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-        input, select { background:#000; color:var(--alba-green); border:1px solid #333; padding:8px; font-size:12px; }
+        /* CHAT Y SLIDING MENU */
+        .chat-feed { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+        .bubble.in { background: #1a1a2e; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .bubble.out { background: var(--neon-green); color: black; align-self: flex-end; border-bottom-right-radius: 2px; font-weight: bold; }
 
-        /* 🔥 SLIDING MENU BOTTOM */
-        .quick-replies { background: #000; border-top: 1px solid #222; padding: 10px; display: flex; gap: 10px; overflow-x: auto; white-space: nowrap; }
-        .reply-tag { border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 15px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        /* SLIDING MENU DE MENSAJES PREDETERMINADOS */
+        .sliding-menu { background: #000; border-top: 1px solid #222; padding: 12px; display: flex; gap: 12px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+        .sliding-menu::-webkit-scrollbar { display: none; }
+        .template-tag { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 10px 18px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .template-tag:hover { background: var(--neon-blue); color: black; }
 
-        .input-row { padding: 15px; display: flex; gap: 10px; background: #111; }
-        .msg-input { flex: 1; background: #000; border: 1px solid #444; color: white; padding: 10px; }
+        /* INPUT BAR */
+        .input-zone { background: #0a0a0f; padding: 20px; display: flex; gap: 15px; border-top: 1px solid #222; }
+        .main-input { flex: 1; background: #000; border: 1px solid #333; color: white; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 14px; }
+        .btn-send { background: var(--neon-green); color: black; border: none; padding: 0 30px; border-radius: 5px; font-weight: 900; cursor: pointer; }
 
         @media (max-width: 768px) {
-            .sidebar { position: absolute; width: 280px; height: 100%; z-index: 200; transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
+            .sidebar { position: absolute; left: -100%; z-index: 200; height: 100%; background: #000; }
+            .sidebar.active { left: 0; }
         }
     </style>
 </head>
 <body>
 
-<div class="topbar">
-    <div class="logo"><h1 style="font-size:16px;">⚔️ GUERRERO v4.0</h1></div>
-    <div class="outreach-toggles">
-        <div class="toggle-status">WA: ON</div>
-        <div class="toggle-status">SMS: ON</div>
-        <a href="/index.html" style="color:var(--alba-green); text-decoration:none; font-size:12px; font-weight:bold; margin-left:10px;">WAR ROOM</a>
+<div class="header-system">
+    <div class="logo"><h1>⚔️ GUERRERO_SYSTEM_v4.0</h1></div>
+    <div class="system-status">
+        <div class="status-pill active-pill">WA: ONLINE</div>
+        <div class="status-pill active-pill">SMS: ONLINE</div>
+        <a href="/index.html" style="color: var(--neon-green); text-decoration: none; border: 1px solid; padding: 5px 12px; border-radius: 4px; font-size: 11px;">WAR_ROOM</a>
     </div>
 </div>
 
-<div class="main-layout">
+<div class="main-container">
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header"><input type="text" placeholder="Buscar Lead..." style="width:100%;"></div>
-        <div id="conv-list">
-            <div class="conv-item active"><b>Micheal Evans</b><br><small>Albalumen - WhatsApp</small></div>
+        <div class="sidebar-search"><input type="text" class="search-input" placeholder="BUSCAR_LEAD_ID..."></div>
+        <div class="conv-list">
+            <div class="conv-item active">
+                <span class="conv-name">MICHEAL EVANS</span>
+                <span class="conv-meta">CANAL: WHATSAPP | STATUS: OPEN</span>
+            </div>
         </div>
     </div>
 
-    <div class="chat-area">
-        <div class="capture-panel">
-            <div style="color:var(--neon-purple); font-size:10px; margin-bottom:5px; font-weight:bold;">[ ASIGNAR A SOLEDAD ]</div>
-            <div class="grid-mini">
-                <input type="text" id="n" placeholder="Nombre">
-                <input type="text" id="p" placeholder="Teléfono">
-                <select id="biz"><option value="albalumen">🕊️ ALBALUMEN</option><option value="huellitas">🐾 HUELLITAS</option></select>
-                <select id="src"><option value="walkin">🚶 WALK-IN</option><option value="call">📞 LLAMADA</option></select>
+    <div class="ops-area">
+        <div class="category-panel">
+            <span class="panel-label">[ ASIGNACIÓN_Y_CATEGORIZACIÓN_SOLEDAD ]</span>
+            <div class="mini-form">
+                <input type="text" id="cNom" class="m-input" placeholder="NOMBRE_CLIENTE">
+                <input type="text" id="cTel" class="m-input" placeholder="TEL_WHATSAPP">
+                <select id="cBiz" class="m-select">
+                    <option value="albalumen">🕊️ ALBALUMEN</option>
+                    <option value="huellitas">🐾 HUELLITAS</option>
+                </select>
+                <select id="cCanal" class="m-select">
+                    <option value="walkin">🚶 WALK-IN</option>
+                    <option value="llamada">📞 LLAMADA</option>
+                    <option value="fb">🌐 SOCIAL_ADS</option>
+                </select>
             </div>
-            <button onclick="saveLead()" style="width:100%; margin-top:8px; background:var(--neon-purple); color:white; border:none; padding:8px; font-weight:bold; cursor:pointer;">REGISTRAR CLIENTE</button>
+            <button class="btn-register" onclick="saveLead()">EJECUTAR_REGISTRO_SOLEDAD</button>
         </div>
 
-        <div class="messages-area" id="msg-area">
-            <div class="msg incoming">Sistema Guerrero Online. Seleccione una conversación.</div>
+        <div class="chat-feed" id="chatFeed">
+            <div class="bubble in">SISTEMA LISTO. ESPERANDO ENTRADA DE DATOS...</div>
         </div>
 
-        <div class="quick-replies">
-            <div class="reply-tag" onclick="msg('📍 Ubicación: San José...')">📍 UBICACION</div>
-            <div class="reply-tag" onclick="msg('💰 Cuentas: IBAN...')">💰 CUENTAS</div>
-            <div class="reply-tag" onclick="msg('🕊️ Emergencias: Paquete...')">🕊️ EMERGENCIAS</div>
-            <div class="reply-tag" onclick="msg('💳 Link de Pago Forwarder:')">💳 LINK PAGO</div>
+        <div class="sliding-menu">
+            <div class="template-tag" onclick="use('📍 UBICACIÓN: San José, 200m Norte Iglesia Sta. Teresita.')">📍 UBICACIÓN</div>
+            <div class="template-tag" onclick="use('💰 CUENTAS: IBAN CR05015108010026012345 (Albalumen).')">💰 CUENTAS</div>
+            <div class="template-tag" onclick="use('🕊️ EMERGENCIAS: Paquete completo ₡350,000.')">🕊️ EMERGENCIAS</div>
+            <div class="template-tag" onclick="use('💳 LINK_PAGO: Generando enlace de pago forwarder...')">💳 LINK_PAGO</div>
+            <div class="template-tag" onclick="use('📦 BODEGA: Paquete recibido en Miami/CR.')">📦 BODEGA</div>
         </div>
 
-        <div class="input-row">
-            <textarea id="mainIn" class="msg-input" placeholder="Escribe aquí..."></textarea>
-            <button onclick="send()" style="background:var(--alba-green); border:none; padding:10px 20px; font-weight:bold;">></button>
+        <div class="input-zone">
+            <textarea id="msgInput" class="main-input" placeholder="ESCRIBA_COMANDO_O_MENSAJE..."></textarea>
+            <button class="btn-send" onclick="send()">SEND</button>
         </div>
     </div>
 </div>
 
 <script>
-    function msg(t) { document.getElementById('mainIn').value = t; document.getElementById('mainIn').focus(); }
+    function use(t) { document.getElementById('msgInput').value = t; document.getElementById('msgInput').focus(); }
     async function saveLead() {
-        const d = { n: document.getElementById('n').value, p: document.getElementById('p').value, b: document.getElementById('biz').value, s: document.getElementById('src').value };
-        if(!d.n || !d.p) return alert("Faltan datos");
-        alert("✅ Registrado en Soledad: " + d.n);
+        const n = document.getElementById('cNom').value;
+        const t = document.getElementById('cTel').value;
+        if(!n || !t) return alert("⚠️ ERROR: DATOS INCOMPLETOS");
+        alert("✅ CLIENTE REGISTRADO: " + n + " ASIGNADO A SOLEDAD");
     }
 </script>
 </body>
