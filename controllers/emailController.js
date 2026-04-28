@@ -27,6 +27,31 @@ const sendWhatsAppAlert = async (message) => {
   }
 };
 
+const sendVoiceAlert = async (lead) => {
+  try {
+    const oscarPhone = '+50685281312';
+    const mins = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / 60000);
+    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say language="es-MX" voice="Polly.Mia">
+    Alerta de Guerrero AI. Hay un cliente sin atender hace ${mins} minutos.
+    El servicio solicitado es ${lead.service_type || 'consulta general'}.
+    Por favor atienda inmediatamente.
+    Repito. Cliente sin atender hace ${mins} minutos. Atienda de inmediato.
+  </Say>
+</Response>`;
+
+    await twilioClient.calls.create({
+      twiml,
+      from: TWILIO_PHONE,
+      to: oscarPhone
+    });
+    console.log('📞 Voice alert sent to Oscar!');
+  } catch (err) {
+    console.error('❌ Voice alert error:', err.message);
+  }
+};
+
 const sendLeadAlert = async (lead) => {
   try {
     await sgMail.send({
@@ -61,7 +86,13 @@ const send3MinuteAlert = async (lead) => {
       to: process.env.EMAIL_ALERT_TO,
       from: process.env.EMAIL_USER,
       subject: `🚨 URGENTE — Lead sin atender ${mins} minutos`,
-      html: `<div style="background:#ff0000;color:white;padding:20px;border-radius:10px;font-family:sans-serif;"><h1>🚨 LEAD SIN ATENDER</h1><p><strong>${mins} MINUTOS SIN RESPUESTA</strong></p><p>Cliente: ${lead.contact_name || 'Sin nombre'}</p><p>Servicio: ${lead.service_type}</p><p>Teléfono: ${lead.phone}</p></div>`
+      html: `<div style="background:#ff0000;color:white;padding:20px;border-radius:10px;font-family:sans-serif;">
+        <h1>🚨 LEAD SIN ATENDER</h1>
+        <p><strong>${mins} MINUTOS SIN RESPUESTA</strong></p>
+        <p>Cliente: ${lead.contact_name || 'Sin nombre'}</p>
+        <p>Servicio: ${lead.service_type}</p>
+        <p>Teléfono: ${lead.phone}</p>
+      </div>`
     });
     console.log('🚨 3min alert email sent!');
   } catch (err) {
@@ -69,6 +100,7 @@ const send3MinuteAlert = async (lead) => {
   }
 
   await sendWhatsAppAlert(msg);
+  await sendVoiceAlert(lead);
 };
 
 const testEmail = async (req, res) => {
@@ -85,4 +117,4 @@ const testEmail = async (req, res) => {
   }
 };
 
-module.exports = { sendLeadAlert, send3MinuteAlert, testEmail };
+module.exports = { sendLeadAlert, send3MinuteAlert, sendVoiceAlert, testEmail };

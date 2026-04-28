@@ -1,74 +1,83 @@
-const pool = require('../config/database');
-const { sendLeadAlert } = require('./emailController');
+// ============================================
+// GUERRERO AI III — ALERTA DE VOZ TWILIO
+// leadController.js — Bloque de Alerta
+// ============================================
 
-const createLead = async (req, res) => {
-  try {
-    const { contact_name, phone, service_type, source, notes, registered_by } = req.body;
-    if (!phone) return res.status(400).json({ error: 'Phone is required' });
-    const result = await pool.query(`
-      INSERT INTO leads (contact_name, phone, service_type, source, notes, status, registered_by)
-      VALUES ($1, $2, $3, $4, $5, 'New', $6) RETURNING *
-    `, [contact_name || 'No especificado', phone, service_type || 'Consulta General', source || 'manual', notes || null, registered_by || null]);
-    const lead = result.rows[0];
-    sendLeadAlert(lead);
-    res.json(lead);
-  } catch (err) {
-    console.error('❌ Lead error:', err.message);
-    res.status(500).json({ error: err.message });
-  }
+const twilio = require('twilio');
+const twilioClient = new twilio(
+    process.env.TWILIO_ACCOUNT_SID, 
+    process.env.TWILIO_AUTH_TOKEN
+);
+
+const checkUnattendedLeads = async () => {
+    try {
+        const query = `
+            SELECT * FROM leads 
+            WHERE status = 'nuevo' 
+            AND created_at < NOW() - INTERVAL '3 minutes'
+            AND alert_sent = false
+        `;
+        
+        const { rows } = await pool.query(query);
+
+        for (let lead of rows) {
+            const contactName = lead.contact_name || 'Sin nombre';
+            
+            // LLAMADA DE VOZ A MICHEAL Y OSCAR
+            const alertNumbers = [
+                process.env.TWILIO_ALERT_MICHEAL,
+                process.env.TWILIO_ALERT_OSCAR
+            ].filter(Boolean); // Solo llama a los que estén configurados
+
+            for (let alertNumber of alertNumbers) {
+                await twilioClient.calls.create({
+                    twiml: `<Response>
+                        <Say voice="Polly.Lupe" language="es-US">
+                            Atención Guerrero. Hay un cliente nuevo esperando en el War Room.
+                            El cliente se llama ${contactName}.
+                            Ingresa al sistema ahora para atenderlo.
+                            Repito. Cliente pendiente: ${contactName}.
+                        </Say>
+                    </Response>`,
+                    to: alertNumber,
+                    from: process.env.TWILIO_PHONE
+                });
+
+                console.log(`📞 Alerta de voz enviada a ${alertNumber} — Lead: ${contactName}`);
+            }
+
+            // Marcar como alertado para no llamar infinitamente
+            await pool.query(
+                'UPDATE leads SET alert_sent = true WHERE id = $1', 
+                [lead.id]
+            );
+        }
+
+    } catch (error) {
+        console.error('❌ Error en checkUnattendedLeads:', error.message);
+    }
 };
 
-const getActiveLeads = async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT *, EXTRACT(EPOCH FROM (NOW() - created_at)) as seconds_waiting
-      FROM leads WHERE status = 'New' ORDER BY created_at ASC
-    `);
-    res.json(result.rows);
-  } catch (err) { res.status(500).json({ error: err.message }); }
+// SMS DE RESPALDO (si WhatsApp falla)
+const sendBackupSMS = async (to, message) => {
+    try {
+        // Validar que el número destino sea +1 USA (Twilio trial/paid limitation)
+        if (!to.startsWith('+1')) {
+            console.log(`⚠️ SMS omitido — número CR no soportado sin A2P: ${to}`);
+            return;
+        }
+
+        await twilioClient.messages.create({
+            body: `[ALBALUMEN] ${message}`,
+            from: process.env.TWILIO_PHONE,
+            to: to
+        });
+
+        console.log(`✅ SMS de respaldo enviado a ${to}`);
+
+    } catch (error) {
+        console.error('❌ Error enviando SMS de respaldo:', error.message);
+    }
 };
 
-const getRecentLeads = async (req, res) => {
-  try {
-    const result = await pool.query(`SELECT * FROM leads ORDER BY created_at DESC LIMIT 20`);
-    res.json(result.rows);
-  } catch (err) { res.status(500).json({ error: err.message }); }
-};
-
-const claimLead = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { staff_name } = req.body;
-    const result = await pool.query(`
-      UPDATE leads SET status = 'In-Progress', claimed_by = $1, claimed_at = NOW(),
-      time_to_respond_seconds = EXTRACT(EPOCH FROM (NOW() - created_at))
-      WHERE id = $2 AND status = 'New' RETURNING *
-    `, [staff_name, id]);
-    if (!result.rows[0]) return res.status(400).json({ error: 'Lead already claimed' });
-    res.json(result.rows[0]);
-  } catch (err) { res.status(500).json({ error: err.message }); }
-};
-
-const markLost = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { reason_lost, competitor_name, closed_by } = req.body;
-    const result = await pool.query(`
-      UPDATE leads SET status = 'Lost', reason_lost = $1, competitor_name = $2, lost_at = NOW(), closed_by = $3
-      WHERE id = $4 RETURNING *
-    `, [reason_lost, competitor_name || null, closed_by || null, id]);
-    res.json(result.rows[0]);
-  } catch (err) { res.status(500).json({ error: err.message }); }
-};
-
-const getMyLeads = async (req, res) => {
-  try {
-    const { staff_name } = req.query;
-    const result = await pool.query(`
-      SELECT * FROM leads WHERE claimed_by = $1 ORDER BY claimed_at DESC LIMIT 50
-    `, [staff_name]);
-    res.json(result.rows);
-  } catch (err) { res.status(500).json({ error: err.message }); }
-};
-
-module.exports = { createLead, getActiveLeads, getRecentLeads, claimLead, markLost, getMyLeads };
+module.exports = { checkUnattendedLeads, sendBackupSMS };
