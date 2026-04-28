@@ -5,96 +5,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Guerrero AI — Centro de Comando</title>
     <style>
-        :root { --green: #00ff88; --dark: #0a0a0f; --card: #1a1a2e; --text: #ffffff; --pink: #ff00ff; }
+        :root { --green: #00ff88; --dark: #0a0a0f; --card: #1a1a2e; --text: #ffffff; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--dark); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
         
-        /* Navegación Lateral */
         .sidebar { width: 280px; background: #0d0d1a; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
-        .nav-link { padding: 15px 20px; color: #888; text-decoration: none; display: flex; align-items: center; gap: 10px; font-weight: bold; border-bottom: 1px solid #222; transition: 0.3s; }
+        .nav-link { padding: 15px 20px; color: #888; text-decoration: none; display: flex; align-items: center; gap: 10px; font-weight: bold; border-bottom: 1px solid #222; cursor: pointer; }
         .nav-link:hover, .nav-link.active { background: rgba(0,255,136,0.1); color: var(--green); }
         
         .chat-container { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .chat-header { padding: 15px; background: var(--card); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .btn-plus-fixed { background: var(--green); color: black; border: none; padding: 15px; margin: 15px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
         
-        /* Stats Dashboard Overlay */
-        #stats-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: var(--dark); z-index: 50; display: none; padding: 20px; overflow-y: auto; }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .stat-card { background: var(--card); padding: 20px; border-radius: 12px; border-left: 4px solid var(--green); text-align: center; }
-        
-        .btn-plus { background: var(--green); color: black; border: none; padding: 12px; margin: 15px; border-radius: 8px; font-weight: 900; cursor: pointer; }
-        
-        @media(max-width: 768px) { .sidebar { position: fixed; transform: translateX(-100%); z-index: 100; height: 100%; transition: 0.3s; } .sidebar.open { transform: translateX(0); } }
+        #stats-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: var(--dark); z-index: 100; display: none; padding: 20px; overflow-y: auto; }
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:200; }
     </style>
 </head>
 <body>
 
-<div class="sidebar" id="sidebar">
+<div class="sidebar">
     <div style="padding: 25px; font-size: 22px; font-weight: 900; color: var(--green);">⚔️ GUERRERO AI</div>
-    <a href="/war-room" class="nav-link">🛡️ War Room (Outreach)</a>
-    <a href="#" class="nav-link active" onclick="toggleStats(false)">💬 Chat Central</a>
-    <a href="#" class="nav-link" onclick="toggleStats(true)">📊 Estadísticas Reales</a>
+    <a href="/war-room" class="nav-link">🛡️ War Room</a>
+    <div class="nav-link active" onclick="toggleStats(false)">💬 Chat Central</div>
+    <div class="nav-link" onclick="toggleStats(true)">📊 Estadísticas</div>
     
-    <button class="btn-plus" onclick="openReg()">➕ REGISTRAR CLIENTE</button>
+    <button class="btn-plus-fixed" onclick="openReg()">➕ Agregar Cliente</button>
 </div>
 
 <div class="chat-container">
     <div id="stats-overlay">
-        <h2>📈 Dashboard de Rendimiento (Real-Time)</h2>
-        <div class="stat-grid">
-            <div class="stat-card"><h3>2.5 min</h3><p>Tiempo de Respuesta Promedio</p></div>
-            <div class="stat-card" style="border-color: var(--pink);"><h3>85%</h3><p>Cierre de Ventas (Huellitas)</p></div>
-            <div class="stat-card"><h3>12</h3><p>Leads Recuperados hoy</p></div>
-        </div>
-        <button class="btn-plus" onclick="toggleStats(false)">VOLVER AL CHAT</button>
-    </div>
-
-    <div class="chat-header">
-        <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="background:none; border:none; color:white; font-size:24px;" class="mobile-only">☰</button>
-        <div id="active-client-info"><b>Seleccione un Guerrero</b></div>
-        <div class="topbar-btns">
-             <button class="nav-link" style="display:inline; border:none;" onclick="location.reload()">🔄 Refrescar</button>
-        </div>
+        <h2>📈 Panel de Control de Ventas</h2>
+        <button class="btn-plus-fixed" onclick="toggleStats(false)">Cerrar Estadísticas</button>
+        <div style="margin-top:20px;">[Aquí se cargará el Dashboard]</div>
     </div>
     
-    <div style="flex:1; display:flex; align-items:center; justify-content:center; color: #444;">
-        <p>Los mensajes aparecerán aquí al seleccionar un lead...</p>
+    <div id="chat-content" style="flex:1; display:flex; flex-direction:column;">
+        <div style="padding:20px; border-bottom:1px solid #333;"><h3>Mensajería Activa</h3></div>
+        <div id="messages" style="flex:1; padding:20px; overflow-y:auto; color:#555;">Selecciona un chat...</div>
     </div>
 </div>
 
-<div id="regModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:200;">
-    <div style="background:var(--card); width:320px; margin: 100px auto; padding:20px; border-radius:15px; border: 1px solid var(--green);">
-        <h3>🚀 Registro Flash</h3>
-        <input type="text" id="regName" placeholder="Nombre (o Nickname)" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:white; border:1px solid #333;">
-        <input type="text" id="regPhone" placeholder="WhatsApp (506...)" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:white; border:1px solid #333;">
-        <select id="regBiz" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:white;">
-            <option value="albalumen">Albalumen</option>
-            <option value="huellitas">Huellitas</option>
+<div id="regModal" class="modal">
+    <div style="background:var(--card); width:90%; max-width:350px; margin: 100px auto; padding:25px; border-radius:15px; border: 1px solid var(--green);">
+        <h3 style="color:var(--green)">🚀 Registro de Lead</h3>
+        <input type="text" id="regName" placeholder="Nombre" style="width:100%; padding:12px; margin-bottom:10px; background:#000; color:white; border:1px solid #333;">
+        <input type="text" id="regPhone" placeholder="WhatsApp (Ej: 50688888888)" style="width:100%; padding:12px; margin-bottom:10px; background:#000; color:white; border:1px solid #333;">
+        <select id="regBiz" style="width:100%; padding:12px; margin-bottom:15px; background:#000; color:white; border:1px solid #333;">
+            <option value="albalumen">🕊️ Albalumen</option>
+            <option value="huellitas">🐾 Huellitas</option>
         </select>
-        <button onclick="saveQuickLead()" style="width:100%; padding:12px; background:var(--green); border:none; font-weight:bold;">ACTIVAR CHAT</button>
-        <button onclick="document.getElementById('regModal').style.display='none'" style="width:100%; padding:10px; background:#444; border:none; margin-top:5px; color:white;">CERRAR</button>
+        <button onclick="saveQuickLead()" style="width:100%; padding:15px; background:var(--green); border:none; font-weight:bold; cursor:pointer;">GUARDAR CLIENTE</button>
+        <button onclick="closeReg()" style="width:100%; padding:10px; background:#333; color:white; border:none; margin-top:10px; cursor:pointer;">Cancelar</button>
     </div>
 </div>
 
 <script>
     function toggleStats(show) { document.getElementById('stats-overlay').style.display = show ? 'block' : 'none'; }
     function openReg() { document.getElementById('regModal').style.display = 'block'; }
-    
+    function closeReg() { document.getElementById('regModal').style.display = 'none'; }
+
     async function saveQuickLead() {
         const name = document.getElementById('regName').value;
         const phone = document.getElementById('regPhone').value;
         const biz = document.getElementById('regBiz').value;
-        
-        if(!name || !phone) return alert("Nombre y Teléfono obligatorios");
 
-        const res = await fetch('/api/leads', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ contact_name: name, phone: phone, business: biz, source: 'Manual-Flash', status: 'In-Progress', claimed_by: 'Micheal' })
-        });
+        if(!name || !phone) return alert("Falta Nombre o Teléfono");
 
-        if(res.ok) {
-            alert("🚀 Guerrero activado en el sistema");
-            location.reload();
+        try {
+            const res = await fetch('/api/leads', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    contact_name: name,
+                    phone: phone.replace(/\D/g,''), // Limpia el número
+                    business: biz,
+                    source: 'Manual-Chat',
+                    category: 'persona',
+                    status: 'nuevo'
+                })
+            });
+
+            if(res.ok) {
+                alert("✅ Lead guardado con éxito");
+                closeReg();
+                location.reload();
+            } else {
+                alert("❌ Error al guardar. Revisa la consola.");
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 </script>
