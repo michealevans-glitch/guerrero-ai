@@ -2,132 +2,63 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Central - Guerrero AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat - Guerrero AI</title>
     <style>
-        /* BASE Y TRUCO ANTI-PARPADEO */
-        body { 
-            margin: 0; 
-            background: #050505; 
-            color: white; 
-            font-family: sans-serif; 
-            display: flex; 
-            height: 100vh; 
-            opacity: 0; 
-            transition: opacity 0.4s ease-in; 
-        }
+        :root { --primary: #00ff88; --bg: #050505; }
+        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; display: flex; height: 100vh; flex-direction: column; opacity: 0; transition: opacity 0.4s; }
         body.loaded { opacity: 1; }
 
-        .sidebar { width: 260px; background: #111; border-right: 2px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
-        .nav-item { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; color: #888; font-weight: bold; text-decoration: none; }
-        .active { color: #00ff88 !important; background: #1a1a1a; }
-        #stats-btn { color: #ffcc00; }
-        .btn-add { background: #00ff88; color: black; padding: 15px; margin: 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        
-        .content { flex: 1; position: relative; overflow-y: auto; }
-        #stats-view { display: none; padding: 20px; }
-        #chat-view { display: flex; flex-direction: column; height: 100%; }
-        
-        /* MODAL */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; }
-        .modal-box { background: #1a1a1a; width: 90%; max-width: 350px; margin: 50px auto; padding: 25px; border-radius: 15px; border: 2px solid #00ff88; box-sizing: border-box; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; background: #000; color: white; border: 1px solid #444; box-sizing: border-box; border-radius: 8px; font-size: 16px; }
-
-        /* 🔥 MAGIA PARA EL CELULAR */
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #333; }
-            .nav-item { display: inline-block; padding: 15px; font-size: 13px; border-bottom: none; }
-            .btn-add { margin: 10px; padding: 12px; font-size: 14px; }
-            .content { height: calc(100vh - 150px); }
-            #stats-view { padding: 15px; }
-            .grid-stats { grid-template-columns: 1fr !important; }
+        .header-sliding { 
+            background: #111; 
+            border-bottom: 1px solid #333; 
+            display: flex; 
+            overflow-x: auto; 
+            white-space: nowrap; 
+            scrollbar-width: none;
         }
+        .header-sliding::-webkit-scrollbar { display: none; }
+
+        .nav-tab { padding: 15px 20px; color: #888; font-weight: bold; text-decoration: none; cursor: pointer; display: inline-block; }
+        .nav-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: rgba(0,255,136,0.05); }
+        .btn-plus { color: #ffcc00; font-weight: 900; }
+
+        .content { flex: 1; overflow-y: auto; padding: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 20px; }
+        .stat-card { background: #161625; padding: 15px; border-radius: 12px; border: 1px solid #333; text-align: center; }
     </style>
 </head>
 <body>
-
-    <div class="sidebar">
-        <div style="padding: 20px; font-size: 18px; font-weight: 900; color: #00ff88;">⚔️ GUERRERO AI</div>
-        <div style="display: flex; flex-wrap: wrap;">
-            <a href="/index.html" class="nav-item">🛡️ WAR ROOM</a>
-            <div class="nav-item active" onclick="switchV('chat')">💬 CHAT</div>
-            <div class="nav-item" id="stats-btn" onclick="switchV('stats')">📊 RENDIMIENTO</div>
-        </div>
-        <button class="btn-add" onclick="openM()">➕ NUEVO CLIENTE</button>
+    <div class="header-sliding">
+        <a href="/index.html" class="nav-tab">🛡️ WAR ROOM</a>
+        <div class="nav-tab active" onclick="show('chat')">💬 CHAT</div>
+        <div class="nav-tab" onclick="show('stats')">📊 RENDIMIENTO</div>
+        <div class="nav-tab btn-plus" onclick="alert('Abriendo registro para Soledad...')">➕ CLIENTE</div>
     </div>
 
     <div class="content">
-        <div id="chat-view">
-            <div style="padding: 15px; border-bottom: 1px solid #333; background: #111;">
-                <h3 style="margin:0;">Mensajería en Vivo</h3>
-            </div>
-            <div style="flex:1; padding:20px; color:#444; text-align:center; margin-top: 50px;">
-                Selecciona un chat para comenzar...
-            </div>
+        <div id="chat-v">
+            <h3 style="color:#444; text-align:center; margin-top:50px;">Selecciona un chat...</h3>
         </div>
 
-        <div id="stats-view">
-            <h1 style="color:#00ff88; font-size: 24px;">📈 RENDIMIENTO</h1>
-            <div class="grid-stats" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px;">
-                <div style="background:#111; padding:20px; border:1px solid #333; text-align:center; border-radius:10px;">
-                    <small style="color:#888">RESPUESTA</small><h2 style="color:#00ff88; margin: 10px 0 0 0;">2.4 min</h2>
-                </div>
-                <div style="background:#111; padding:20px; border:1px solid #333; text-align:center; border-radius:10px;">
-                    <small style="color:#888">CIERRES</small><h2 style="color:#00ff88; margin: 10px 0 0 0;">72%</h2>
-                </div>
-                <div style="background:#111; padding:20px; border:1px solid #ff4444; text-align:center; border-radius:10px;">
-                    <small style="color:#888">PERDIDOS</small><h2 style="color:#ff4444; margin: 10px 0 0 0;">05</h2>
-                </div>
+        <div id="stats-v" style="display:none;">
+            <h2 style="color:var(--primary)">ESTADISTICAS</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><small>CIERRE</small><h3 style="color:var(--primary)">72%</h3></div>
+                <div class="stat-card"><small>VELOCIDAD</small><h3 style="color:var(--primary)">2.4m</h3></div>
             </div>
-            <button onclick="switchV('chat')" style="width:100%; margin-top:30px; padding:15px; cursor:pointer; background:#333; color:white; border:none; border-radius:8px; font-weight:bold;">Volver al Chat</button>
-        </div>
-    </div>
-
-    <div id="modal" class="modal">
-        <div class="modal-box">
-            <h3 style="color:#00ff88; margin-top:0;">🚀 Registro Rápido</h3>
-            <input type="text" id="n" placeholder="Nombre">
-            <input type="text" id="p" placeholder="Teléfono">
-            <select id="b">
-                <option value="albalumen">Albalumen 🕊️</option>
-                <option value="huellitas">Huellitas 🐾</option>
-            </select>
-            <button onclick="save()" style="width:100%; padding:15px; background:#00ff88; border:none; font-weight:bold; cursor:pointer; border-radius:8px;">GUARDAR</button>
-            <button onclick="closeM()" style="width:100%; background:none; color:#666; border:none; margin-top:15px; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
     <script>
-        function switchV(v) {
-            document.getElementById('stats-view').style.display = v === 'stats' ? 'block' : 'none';
-            document.getElementById('chat-view').style.display = v === 'chat' ? 'flex' : 'none';
+        function show(v) {
+            document.getElementById('chat-v').style.display = v === 'chat' ? 'block' : 'none';
+            document.getElementById('stats-v').style.display = v === 'stats' ? 'block' : 'none';
+            // Cambiar clase active
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.currentTarget.classList.add('active');
         }
-
-        function openM() { document.getElementById('modal').style.display = 'block'; }
-        function closeM() { document.getElementById('modal').style.display = 'none'; }
-
-        async function save() {
-            const nom = document.getElementById('n').value;
-            const tel = document.getElementById('p').value;
-            if(!nom || !tel) return alert("Faltan datos");
-
-            const res = await fetch('/api/leads', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    contact_name: nom,
-                    phone: tel.replace(/\D/g,''),
-                    business: document.getElementById('b').value,
-                    source: 'Chat-Mobile'
-                })
-            });
-            if(res.ok) { alert("✅ Guardado"); location.reload(); }
-        }
-
-        window.onload = function() {
-            document.body.classList.add('loaded');
-        };
+        window.onload = () => document.body.classList.add('loaded');
     </script>
 </body>
 </html>
