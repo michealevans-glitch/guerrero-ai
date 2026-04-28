@@ -3,173 +3,1291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Guerrero AI — Chat Central v3.1</title>
+    <title>Guerrero AI — War Room v3.1</title>
     <style>
         :root {
             --dark-bg: #0a0a0f;
             --card-bg: #1a1a2e;
-            --border: #333;
+            --card-bg2: #0d0d1a;
+            --border: #2a2a3e;
             --alba-green: #00ff88;
             --huellitas-pink: #ff88ff;
+            --neon-blue: #00d4ff;
+            --neon-orange: #ff6600;
+            --neon-purple: #bc13fe;
+            --neon-yellow: #ffd700;
             --text-main: #ffffff;
             --text-dim: #888;
-            --msg-in: #262626;
+            --danger: #ff4444;
+            --success: #00ff88;
+            --warning: #ffaa00;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Segoe UI', sans-serif; background:var(--dark-bg); color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body { font-family:'Segoe UI', system-ui, sans-serif; background:var(--dark-bg); color:var(--text-main); min-height:100vh; overflow-x:hidden; }
 
-        /* BARRA SUPERIOR IGUAL AL WAR ROOM */
-        .topbar { background:#0d0d1a; border-bottom:2px solid var(--alba-green); padding:10px 20px; display:flex; justify-content:space-between; align-items:center; z-index:100; }
-        .logo h1 { color:var(--alba-green); font-size:20px; font-weight:900; }
-        .nav-links { display:flex; gap:12px; align-items:center; }
-        .nav-btn { background:rgba(0,255,136,0.1); border:1px solid var(--alba-green); color:var(--alba-green); padding:6px 14px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:12px; }
-        .nav-btn:hover { background:var(--alba-green); color:#000; }
+        /* ===== TOPBAR ===== */
+        .topbar {
+            background:var(--card-bg2);
+            border-bottom:2px solid var(--alba-green);
+            padding:8px 16px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            position:sticky;
+            top:0;
+            z-index:1000;
+        }
+        .logo-area { display:flex; align-items:center; gap:10px; }
+        .logo-area h1 { color:var(--alba-green); font-size:18px; font-weight:900; letter-spacing:1px; }
+        .clock-area { font-size:11px; color:var(--text-dim); }
+        .clock-area .time { color:var(--alba-green); font-weight:bold; font-size:13px; }
+        .status-dot { display:inline-block; width:8px; height:8px; background:#ff0000; border-radius:50%; animation:blink 1s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-        .main-layout { display:flex; flex:1; overflow:hidden; }
+        .topbar-right { display:flex; gap:8px; align-items:center; }
+        .user-pill {
+            background:rgba(0,255,136,0.1);
+            border:1px solid var(--alba-green);
+            color:var(--alba-green);
+            padding:5px 10px;
+            border-radius:8px;
+            font-size:11px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+        .nav-btn {
+            background:rgba(0,255,136,0.1);
+            border:1px solid var(--alba-green);
+            color:var(--alba-green);
+            padding:6px 12px;
+            border-radius:8px;
+            font-size:11px;
+            font-weight:bold;
+            cursor:pointer;
+            text-decoration:none;
+        }
+        .nav-btn.danger { background:rgba(255,68,68,0.2); border-color:var(--danger); color:var(--danger); }
+        .nav-btn:hover { opacity:0.8; }
 
-        /* SIDEBAR (Lista de Chats) */
-        .sidebar { width:350px; background:var(--card-bg); border-right:1px solid var(--border); display:flex; flex-direction:column; }
-        .sidebar-header { padding:15px; border-bottom:1px solid var(--border); }
-        .search-box { width:100%; padding:10px; background:var(--dark-bg); border:1px solid var(--border); color:white; border-radius:8px; }
-        .conversations-list { flex:1; overflow-y:auto; }
-        .conv-item { padding:15px; border-bottom:1px solid #222; cursor:pointer; transition:0.2s; }
-        .conv-item:hover { background:rgba(255,255,255,0.05); }
-        .conv-item.active { background:rgba(0,255,136,0.1); border-left:4px solid var(--alba-green); }
-        .conv-name { font-weight:bold; font-size:14px; display:block; }
-        .conv-preview { font-size:12px; color:var(--text-dim); }
+        /* ===== MAIN CONTENT ===== */
+        .main { padding:12px; max-width:900px; margin:0 auto; }
 
-        /* AREA DE CHAT */
-        .chat-area { flex:1; display:flex; flex-direction:column; background:var(--dark-bg); }
-        .chat-header { padding:15px; background:var(--card-bg); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-        .messages-area { flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
-        
-        /* BURBUJAS DE MENSAJE */
-        .msg { max-width:70%; padding:10px 15px; border-radius:12px; font-size:14px; line-height:1.4; }
-        .msg.incoming { background:var(--msg-in); align-self:flex-start; border-bottom-left-radius:2px; }
-        .msg.outgoing { background:var(--alba-green); color:#000; align-self:flex-end; border-bottom-right-radius:2px; font-weight:500; }
+        /* ===== TABS ===== */
+        .tabs { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+        .tab-btn {
+            background:var(--card-bg);
+            border:2px solid var(--border);
+            color:var(--text-dim);
+            padding:14px 20px;
+            border-radius:12px;
+            font-size:14px;
+            font-weight:bold;
+            cursor:pointer;
+            text-align:left;
+            transition:all 0.2s;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        .tab-btn.active.alba { border-color:var(--alba-green); color:var(--alba-green); background:rgba(0,255,136,0.08); }
+        .tab-btn.active.huellitas { border-color:var(--huellitas-pink); color:var(--huellitas-pink); background:rgba(255,136,255,0.08); }
+        .tab-btn.active.prospectos { border-color:var(--neon-orange); color:var(--neon-orange); background:rgba(255,102,0,0.08); }
 
-        /* AREA DE ENTRADA Y TEMPLATES */
-        .input-container { padding:15px; background:var(--card-bg); border-top:1px solid var(--border); }
-        .templates-bar { display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px; }
-        .temp-btn { background:#333; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:11px; cursor:pointer; white-space:nowrap; }
-        .temp-btn:hover { background:var(--alba-green); color:black; }
-        
-        .input-row { display:flex; gap:10px; }
-        .msg-input { flex:1; background:var(--dark-bg); border:1px solid var(--border); color:white; padding:12px; border-radius:8px; resize:none; }
-        .send-btn { background:var(--alba-green); color:black; border:none; padding:0 20px; border-radius:8px; font-weight:bold; cursor:pointer; }
+        /* ===== STATS GRID ===== */
+        .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+        .stat-card {
+            background:var(--card-bg);
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:18px;
+            text-align:center;
+        }
+        .stat-card .stat-num { font-size:42px; font-weight:900; line-height:1; }
+        .stat-card .stat-label { font-size:12px; color:var(--text-dim); margin-top:4px; }
+        .stat-card.green .stat-num { color:var(--alba-green); }
+        .stat-card.orange .stat-num { color:var(--warning); }
+        .stat-card.blue .stat-num { color:var(--neon-blue); }
+        .stat-card.red .stat-num { color:var(--danger); }
 
-        @media(max-width:768px) { .sidebar { display:none; } }
+        /* ===== SECTION CARDS ===== */
+        .section-card {
+            background:var(--card-bg);
+            border:1px solid var(--border);
+            border-radius:14px;
+            padding:18px;
+            margin-bottom:14px;
+        }
+        .section-title {
+            font-size:15px;
+            font-weight:900;
+            margin-bottom:14px;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        .section-title.green { color:var(--alba-green); }
+        .section-title.orange { color:var(--neon-orange); }
+        .section-title.blue { color:var(--neon-blue); }
+        .section-title.purple { color:var(--neon-purple); }
+        .section-title.yellow { color:var(--neon-yellow); }
+
+        /* ===== FORMULARIO REGISTRO CLIENTE ===== */
+        .form-group { margin-bottom:12px; }
+        .form-label { font-size:11px; color:var(--text-dim); margin-bottom:4px; display:block; }
+        .form-input {
+            width:100%;
+            background:#0a0a0f;
+            border:1px solid var(--border);
+            color:white;
+            padding:12px 14px;
+            border-radius:8px;
+            font-size:14px;
+        }
+        .form-input:focus { outline:none; border-color:var(--alba-green); }
+        .form-select {
+            width:100%;
+            background:#0a0a0f;
+            border:1px solid var(--border);
+            color:white;
+            padding:12px 14px;
+            border-radius:8px;
+            font-size:14px;
+            appearance:none;
+        }
+        .phone-row { display:flex; gap:8px; align-items:center; }
+        .phone-row .form-input { flex:1; }
+        .reveal-btn {
+            background:var(--card-bg2);
+            border:1px solid var(--border);
+            color:var(--text-dim);
+            padding:12px;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+        }
+        .btn-register {
+            width:100%;
+            background:var(--alba-green);
+            color:#000;
+            border:none;
+            padding:16px;
+            border-radius:10px;
+            font-size:14px;
+            font-weight:900;
+            cursor:pointer;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            margin-top:4px;
+        }
+        .btn-register:hover { opacity:0.9; }
+        .btn-register.huellitas-btn { background:var(--huellitas-pink); }
+
+        /* ===== EMBUDO ===== */
+        .embudo-header {
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:12px;
+        }
+        .embudo-badge {
+            background:var(--danger);
+            color:white;
+            border-radius:50%;
+            width:22px; height:22px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:11px;
+            font-weight:bold;
+        }
+        .embudo-empty { color:var(--alba-green); font-size:13px; }
+        .lead-card {
+            background:#0a0a0f;
+            border:1px solid var(--border);
+            border-radius:10px;
+            padding:14px;
+            margin-bottom:8px;
+            position:relative;
+        }
+        .lead-card.urgent { border-color:var(--danger); }
+        .lead-card .lead-name { font-weight:bold; font-size:14px; margin-bottom:4px; }
+        .lead-card .lead-meta { font-size:11px; color:var(--text-dim); }
+        .lead-card .lead-phone { font-size:13px; color:var(--neon-blue); margin:4px 0; }
+        .lead-actions { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+        .lead-btn {
+            flex:1;
+            padding:8px;
+            border-radius:6px;
+            font-size:11px;
+            font-weight:bold;
+            cursor:pointer;
+            border:none;
+            min-width:80px;
+        }
+        .lead-btn.claim { background:var(--alba-green); color:#000; }
+        .lead-btn.lost { background:var(--danger); color:white; }
+        .lead-btn.whatsapp { background:#25D366; color:white; }
+
+        /* ===== OUTREACH MULTICANAL ===== */
+        .toggle-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+        .toggle-card {
+            background:#0a0a0f;
+            border:1px solid var(--border);
+            border-radius:10px;
+            padding:12px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .toggle-label { font-size:13px; display:flex; align-items:center; gap:6px; }
+        .toggle-switch {
+            position:relative;
+            width:44px; height:24px;
+            cursor:pointer;
+        }
+        .toggle-switch input { opacity:0; width:0; height:0; }
+        .toggle-slider {
+            position:absolute;
+            inset:0;
+            background:#333;
+            border-radius:24px;
+            transition:0.3s;
+        }
+        .toggle-slider:before {
+            content:'';
+            position:absolute;
+            width:18px; height:18px;
+            left:3px; bottom:3px;
+            background:white;
+            border-radius:50%;
+            transition:0.3s;
+        }
+        input:checked + .toggle-slider { background:var(--alba-green); }
+        input:checked + .toggle-slider:before { transform:translateX(20px); }
+
+        .outreach-selects { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+        .outreach-selects .form-select { flex:1; min-width:120px; }
+        .outreach-selects input[type=number] {
+            width:70px;
+            background:#0a0a0f;
+            border:1px solid var(--border);
+            color:white;
+            padding:12px 10px;
+            border-radius:8px;
+            font-size:14px;
+            text-align:center;
+        }
+
+        .outreach-btns { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .outreach-btns button {
+            padding:14px;
+            border:none;
+            border-radius:10px;
+            font-size:13px;
+            font-weight:bold;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+        }
+        .btn-wa { background:#25D366; color:white; }
+        .btn-sms { background:var(--neon-blue); color:#000; }
+        .btn-email { background:var(--neon-orange); color:white; }
+        .btn-csv { background:var(--neon-purple); color:white; }
+
+        /* ===== SEARCH & DESTROY ===== */
+        .sd-card {
+            background:#0a0a0f;
+            border:2px solid var(--alba-green);
+            border-radius:14px;
+            padding:16px;
+            margin-bottom:14px;
+        }
+        .sd-inputs { display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+        .sd-inputs .form-input { flex:1; min-width:120px; }
+        .btn-sd {
+            width:100%;
+            background:var(--alba-green);
+            color:#000;
+            border:none;
+            padding:16px;
+            border-radius:10px;
+            font-size:15px;
+            font-weight:900;
+            cursor:pointer;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+
+        /* ===== STATS OUTREACH ===== */
+        .outreach-stats { display:flex; gap:10px; text-align:center; margin-bottom:14px; }
+        .outreach-stats .os { flex:1; }
+        .outreach-stats .os .num { font-size:28px; font-weight:900; }
+        .outreach-stats .os .lbl { font-size:10px; color:var(--text-dim); }
+        .os.green .num { color:var(--alba-green); }
+        .os.orange .num { color:var(--warning); }
+        .os.blue .num { color:var(--neon-blue); }
+        .os.red .num { color:var(--danger); }
+
+        /* ===== GESTIÓN USUARIOS ===== */
+        .user-list { margin-bottom:14px; }
+        .user-row {
+            background:#0a0a0f;
+            border:1px solid var(--border);
+            border-radius:8px;
+            padding:12px 14px;
+            margin-bottom:6px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .user-info .user-name { font-size:13px; font-weight:bold; }
+        .user-info .user-handle { font-size:11px; color:var(--text-dim); }
+        .user-badge {
+            font-size:10px;
+            padding:2px 8px;
+            border-radius:4px;
+            font-weight:bold;
+        }
+        .badge-admin { color:var(--alba-green); border:1px solid var(--alba-green); }
+        .badge-op { color:var(--text-dim); border:1px solid var(--border); }
+        .btn-desactivar { background:var(--danger); color:white; border:none; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:bold; pointer:cursor; }
+
+        .create-user-form { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+        .create-user-form .form-input { flex:1; min-width:120px; }
+        .btn-create { background:var(--neon-purple); color:white; border:none; padding:12px 20px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+
+        /* ===== PROSPECTOS TABLE ===== */
+        .filter-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+        .filter-row .form-select { flex:1; min-width:140px; }
+        .horario-btn {
+            width:100%;
+            padding:12px;
+            border-radius:10px;
+            font-size:13px;
+            font-weight:bold;
+            border:none;
+            cursor:pointer;
+            margin-bottom:14px;
+        }
+        .horario-btn.fuera { background:var(--danger); color:white; }
+        .horario-btn.dentro { background:var(--alba-green); color:#000; }
+
+        .prospects-table { width:100%; }
+        .prospects-table th {
+            font-size:11px;
+            color:var(--text-dim);
+            text-align:left;
+            padding:8px 6px;
+            border-bottom:1px solid var(--border);
+        }
+        .prospects-table td {
+            padding:10px 6px;
+            font-size:12px;
+            border-bottom:1px solid #111;
+            vertical-align:middle;
+        }
+        .prospect-badge {
+            font-size:9px;
+            padding:2px 6px;
+            border-radius:4px;
+            font-weight:bold;
+            display:inline-block;
+        }
+        .pb-cli { background:rgba(0,255,136,0.2); color:var(--alba-green); border:1px solid var(--alba-green); }
+        .pb-fun { background:rgba(255,102,0,0.2); color:var(--neon-orange); border:1px solid var(--neon-orange); }
+        .pb-vet { background:rgba(0,212,255,0.2); color:var(--neon-blue); border:1px solid var(--neon-blue); }
+        .pb-farm { background:rgba(255,215,0,0.2); color:var(--neon-yellow); border:1px solid var(--neon-yellow); }
+
+        /* ===== LOGIN MODAL ===== */
+        .modal-overlay {
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.95);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:9999;
+        }
+        .modal-box {
+            background:var(--card-bg);
+            border:2px solid var(--alba-green);
+            border-radius:20px;
+            padding:32px 28px;
+            width:90%;
+            max-width:380px;
+            text-align:center;
+        }
+        .modal-box h2 { color:var(--alba-green); font-size:24px; margin-bottom:6px; }
+        .modal-box p { color:var(--text-dim); font-size:12px; margin-bottom:24px; }
+        .modal-box .form-input { margin-bottom:12px; padding:14px; font-size:15px; }
+        .btn-login {
+            width:100%;
+            background:var(--alba-green);
+            color:#000;
+            border:none;
+            padding:16px;
+            border-radius:10px;
+            font-size:16px;
+            font-weight:900;
+            cursor:pointer;
+            margin-top:4px;
+        }
+        .login-error { color:var(--danger); font-size:12px; margin-top:10px; display:none; }
+
+        /* ===== MODAL PÉRDIDA ===== */
+        .loss-modal {
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.85);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:8000;
+        }
+        .loss-modal.open { display:flex; }
+        .loss-box {
+            background:var(--card-bg);
+            border:2px solid var(--danger);
+            border-radius:16px;
+            padding:24px;
+            width:90%;
+            max-width:360px;
+        }
+        .loss-box h3 { color:var(--danger); margin-bottom:14px; }
+        .loss-options { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+        .loss-opt {
+            background:#0a0a0f;
+            border:1px solid var(--border);
+            color:white;
+            padding:10px 14px;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:13px;
+            text-align:left;
+        }
+        .loss-opt.selected { border-color:var(--danger); color:var(--danger); }
+        .loss-competitor { width:100%; background:#0a0a0f; border:1px solid var(--border); color:white; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:10px; }
+        .btn-confirm-loss { background:var(--danger); color:white; border:none; padding:12px; border-radius:8px; width:100%; font-weight:bold; cursor:pointer; }
+
+        /* ===== HORARIO INDICATOR ===== */
+        .horario-pill {
+            font-size:10px;
+            padding:3px 8px;
+            border-radius:4px;
+            font-weight:bold;
+        }
+        .hp-fuera { background:rgba(255,68,68,0.2); color:var(--danger); border:1px solid var(--danger); }
+        .hp-dentro { background:rgba(0,255,136,0.2); color:var(--alba-green); border:1px solid var(--alba-green); }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position:fixed;
+            bottom:24px;
+            left:50%;
+            transform:translateX(-50%);
+            background:var(--alba-green);
+            color:#000;
+            padding:12px 24px;
+            border-radius:10px;
+            font-weight:bold;
+            font-size:13px;
+            z-index:10000;
+            opacity:0;
+            transition:opacity 0.3s;
+            pointer-events:none;
+        }
+        .toast.show { opacity:1; }
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:480px) {
+            .topbar { padding:8px 10px; }
+            .logo-area h1 { font-size:15px; }
+            .main { padding:8px; }
+        }
+
+        /* Content sections hidden by default */
+        .tab-content { display:none; }
+        .tab-content.active { display:block; }
     </style>
 </head>
 <body>
 
+<div class="modal-overlay" id="login-modal">
+    <div class="modal-box">
+        <h2>⚔️ GUERRERO AI</h2>
+        <p>War Room v3.1 — Acceso Autorizado</p>
+        <input type="text" class="form-input" id="login-user" placeholder="Usuario" autocomplete="username">
+        <input type="password" class="form-input" id="login-pass" placeholder="Contraseña" autocomplete="current-password">
+        <button class="btn-login" onclick="doLogin()">ENTRAR AL WAR ROOM</button>
+        <div class="login-error" id="login-error">❌ Credenciales incorrectas</div>
+    </div>
+</div>
+
+<div class="loss-modal" id="loss-modal">
+    <div class="loss-box">
+        <h3>💀 Marcar como Perdido</h3>
+        <div class="loss-options">
+            <div class="loss-opt" onclick="selectLoss(this, 'precio')">💰 Precio muy alto</div>
+            <div class="loss-opt" onclick="selectLoss(this, 'competidor')">🏴 Fue con la competencia</div>
+            <div class="loss-opt" onclick="selectLoss(this, 'no_contesta')">📵 No contestó</div>
+            <div class="loss-opt" onclick="selectLoss(this, 'no_procede')">🚫 No procede / Falsa alarma</div>
+            <div class="loss-opt" onclick="selectLoss(this, 'otro')">❓ Otro motivo</div>
+        </div>
+        <input type="text" class="loss-competitor" id="loss-competitor" placeholder="Competidor o detalle (opcional)">
+        <button class="btn-confirm-loss" onclick="confirmLoss()">CONFIRMAR PÉRDIDA</button>
+    </div>
+</div>
+
 <div class="topbar">
-    <div class="logo"><h1>⚔️ GUERRERO AI</h1></div>
-    <div class="nav-links">
-        <span id="user-pill" style="color:var(--alba-green); font-size:12px;"></span>
-        <a href="/" class="nav-btn">🛡️ War Room</a>
-        <button class="nav-btn" style="background:#ff4444; border-color:#ff4444; color:white;" onclick="logout()">🚪 Salir</button>
+    <div class="logo-area">
+        <div>
+            <h1>⚔️ GUERRERO AI</h1>
+            <div class="clock-area">
+                <span class="time" id="clock">00:00:00</span>
+                <span> CR | <span class="status-dot"></span></span>
+                <span id="horario-status" style="font-size:10px; margin-left:4px;"> CARGANDO</span>
+            </div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="user-pill" id="user-pill">👤 ...</div>
+        <a href="/chat.html" class="nav-btn">💬 Chat</a>
+        <button class="nav-btn danger" onclick="doLogout()">🚪 Salir</button>
     </div>
 </div>
 
-<div class="main-layout">
-    <div class="sidebar">
-        <div class="sidebar-header"><input type="text" class="search-box" placeholder="Buscar cliente..."></div>
-        <div class="conversations-list" id="conversations-list">
-            <p style="padding:20px; color:gray;">Cargando conversaciones...</p>
+<div class="main" id="main-app" style="display:none;">
+
+    <div class="tabs" id="tabs">
+        <button class="tab-btn active alba" onclick="switchTab('alba', this)">🕊️ ALBALUMEN</button>
+        <button class="tab-btn huellitas" onclick="switchTab('huellitas', this)">🐾 HUELLITAS AL CIELO</button>
+        <button class="tab-btn prospectos" onclick="switchTab('prospectos', this)">🎯 PROSPECTOS</button>
+    </div>
+
+    <div class="tab-content active" id="tab-alba">
+        <div class="stats-grid" id="alba-stats">
+            <div class="stat-card green"><div class="stat-num" id="alba-total">—</div><div class="stat-label">Total Leads</div></div>
+            <div class="stat-card orange"><div class="stat-num" id="alba-pendientes">—</div><div class="stat-label">Pendientes</div></div>
+            <div class="stat-card blue"><div class="stat-num" id="alba-atendidos">—</div><div class="stat-label">Atendidos</div></div>
+            <div class="stat-card red"><div class="stat-num" id="alba-perdidos">—</div><div class="stat-label">Perdidos</div></div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title green">🕊️ Registrar Cliente — Albalumen</div>
+            <div class="form-group">
+                <label class="form-label">Nombre del Familiar</label>
+                <input type="text" class="form-input" id="alba-nombre" placeholder="Ej: María Rodríguez">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Teléfono</label>
+                <div class="phone-row">
+                    <input type="tel" class="form-input" id="alba-phone" placeholder="+506 8888-1111">
+                    <button class="reveal-btn" title="WhatsApp">➤</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tipo de Servicio</label>
+                <select class="form-select" id="alba-servicio">
+                    <option value="Paquete Emergencias — ₡350,000">🕊️ Paquete Emergencias — ₡350,000</option>
+                    <option value="Paquete Completo — ₡650,000">🕊️ Paquete Completo — ₡650,000</option>
+                    <option value="Sepultura — ₡400,000">⚰️ Sepultura — ₡400,000</option>
+                    <option value="Cremación — ₡210,000">🔥 Cremación — ₡210,000</option>
+                    <option value="Columbario — ₡910,000">🏛️ Columbario — ₡910,000</option>
+                    <option value="Consulta General">📋 Consulta General</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Fuente</label>
+                <select class="form-select" id="alba-fuente">
+                    <option>📞 Teléfono</option>
+                    <option>💬 WhatsApp</option>
+                    <option>🚶 Walk-in</option>
+                    <option>🌐 Web</option>
+                    <option>📢 Referido</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notas</label>
+                <input type="text" class="form-input" id="alba-notas" placeholder="Información adicional...">
+            </div>
+            <button class="btn-register" onclick="registrarLead('albalumen')">🕊️ REGISTRAR LEAD ALBALUMEN Y ENVIAR ALERTA</button>
+        </div>
+
+        <div class="section-card">
+            <div class="embudo-header">
+                <div class="section-title green" style="margin:0;">🔥 Embudo Activo</div>
+                <div class="embudo-badge" id="alba-badge">0</div>
+            </div>
+            <div id="alba-embudo">
+                <div class="embudo-empty">✅ Sin leads pendientes.</div>
+            </div>
         </div>
     </div>
 
-    <div class="chat-area">
-        <div class="chat-header" id="chat-header">
-            <div><h3 id="client-name">Selecciona un chat</h3><span id="client-phone" style="color:var(--text-dim); font-size:12px;"></span></div>
-            <div id="header-actions"></div>
+    <div class="tab-content" id="tab-huellitas">
+        <div class="stats-grid">
+            <div class="stat-card green"><div class="stat-num" id="hue-total">—</div><div class="stat-label">Total Leads</div></div>
+            <div class="stat-card orange"><div class="stat-num" id="hue-pendientes">—</div><div class="stat-label">Pendientes</div></div>
+            <div class="stat-card blue"><div class="stat-num" id="hue-atendidos">—</div><div class="stat-label">Atendidos</div></div>
+            <div class="stat-card red"><div class="stat-num" id="hue-perdidos">—</div><div class="stat-label">Perdidos</div></div>
         </div>
-        
-        <div class="messages-area" id="messages-area">
-            </div>
 
-        <div class="input-container">
-            <div class="templates-bar">
-                <button class="temp-btn" onclick="setTemplate('📍 Ubicación: Estamos ubicados 200 metros norte de la Iglesia de Santa Teresita, San José.')">📍 Ubicación</button>
-                <button class="temp-btn" onclick="setTemplate('💰 Cuentas: IBAN CR05015108010026012345 a nombre de Albalumen.')">💰 Cuentas</button>
-                <button class="temp-btn" onclick="setTemplate('🕊️ Paquete Emergencias: Incluye retiro, ataúd básico, preparación y cremación. Costo: ₡350,000.')">🕊️ Emergencias</button>
-                <button class="temp-btn" onclick="setTemplate('📋 Requisitos: Necesitamos copia de cédula del familiar y el certificado de defunción.')">📋 Requisitos</button>
+        <div class="section-card">
+            <div class="section-title" style="color:var(--huellitas-pink);">🐾 Registrar Cliente — Huellitas al Cielo</div>
+            <div class="form-group">
+                <label class="form-label">Nombre del Dueño</label>
+                <input type="text" class="form-input" id="hue-nombre" placeholder="Ej: Carlos Méndez">
             </div>
-            <div class="input-row">
-                <textarea class="msg-input" id="msg-input" placeholder="Escribe un mensaje..." rows="1"></textarea>
-                <button class="send-btn" onclick="sendMessage()">ENVIAR</button>
+            <div class="form-group">
+                <label class="form-label">Teléfono</label>
+                <input type="tel" class="form-input" id="hue-phone" placeholder="+506 8888-1111">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tipo de Servicio</label>
+                <select class="form-select" id="hue-servicio">
+                    <option value="Cremación Peluditos 0-15kg — ₡40,000">🐱 Cremación Peluditos (0-15kg) — ₡40,000</option>
+                    <option value="Cremación Huellita 16-30kg — ₡59,000">🐕 Cremación Huellita (16-30kg) — ₡59,000</option>
+                    <option value="Plan Preventivo — 18 cuotas ₡4,900">📋 Plan Preventivo — 18 cuotas ₡4,900</option>
+                    <option value="Eutanasia">💉 Servicio de Eutanasia</option>
+                    <option value="Consulta General">📋 Consulta General</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Fuente</label>
+                <select class="form-select" id="hue-fuente">
+                    <option>💬 WhatsApp</option>
+                    <option>📞 Teléfono</option>
+                    <option>🐾 Veterinaria referido</option>
+                    <option>🌐 Web / Redes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notas</label>
+                <input type="text" class="form-input" id="hue-notas" placeholder="Nombre/especie de la mascota, etc.">
+            </div>
+            <button class="btn-register huellitas-btn" onclick="registrarLead('huellitas')">🐾 REGISTRAR LEAD HUELLITAS Y ENVIAR ALERTA</button>
+        </div>
+
+        <div class="section-card">
+            <div class="embudo-header">
+                <div class="section-title" style="color:var(--huellitas-pink); margin:0;">🔥 Embudo Activo</div>
+                <div class="embudo-badge" id="hue-badge">0</div>
+            </div>
+            <div id="hue-embudo">
+                <div class="embudo-empty">✅ Sin leads pendientes.</div>
             </div>
         </div>
     </div>
+
+    <div class="tab-content" id="tab-prospectos">
+        <div id="admin-only-section">
+
+            <div class="section-card" style="border-color:var(--neon-orange);">
+                <div class="section-title orange">🎯 Panel de Prospectos — Solo Administradores</div>
+
+                <div style="color:var(--neon-yellow); font-weight:bold; font-size:12px; margin-bottom:10px;">⚡ Control de Outreach Multicanal</div>
+                <div class="toggle-grid">
+                    <div class="toggle-card">
+                        <span class="toggle-label">💬 WhatsApp</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-wa" onchange="updateToggle('whatsapp_active', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-card">
+                        <span class="toggle-label">📱 SMS</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-sms" onchange="updateToggle('sms_active', this.checked)" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-card">
+                        <span class="toggle-label">📧 Email</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-email" onchange="updateToggle('email_active', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-card">
+                        <span class="toggle-label">📞 Llamadas</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-calls" onchange="updateToggle('calls_active', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="outreach-selects">
+                    <select class="form-select" id="out-business">
+                        <option value="albalumen">🕊️ Albalumen</option>
+                        <option value="huellitas">🐾 Huellitas</option>
+                    </select>
+                    <select class="form-select" id="out-niche">
+                        <option value="">Todos los nichos</option>
+                        <option value="clinica">🏥 Clínica</option>
+                        <option value="funeraria">⚰️ Funeraria</option>
+                        <option value="veterinaria">🐾 Veterinaria</option>
+                        <option value="farmacia">💊 Farmacia</option>
+                    </select>
+                    <input type="number" value="50" id="out-limit" min="1" max="500">
+                </div>
+
+                <div class="outreach-btns">
+                    <button class="btn-wa" onclick="fireOutreach('whatsapp')">💬 WhatsApp</button>
+                    <button class="btn-sms" onclick="fireOutreach('sms')">📱 SMS</button>
+                    <button class="btn-email" onclick="fireOutreach('email')">📧 Email</button>
+                    <button class="btn-csv" onclick="document.getElementById('csv-file').click()">📂 Cargar CSV</button>
+                </div>
+                <input type="file" id="csv-file" accept=".csv" style="display:none" onchange="uploadCSV(this)">
+            </div>
+
+            <div class="sd-card">
+                <div class="section-title green" style="margin-bottom:12px;">🎯 Search & Destroy — Robot Autónomo</div>
+                <div class="sd-inputs">
+                    <input type="text" class="form-input" id="sd-keyword" placeholder="Ej: veterinarias, funerarias,...">
+                    <input type="text" class="form-input" id="sd-city" placeholder="Ciudad (ej: San José,...)">
+                </div>
+                <div class="outreach-selects" style="margin-bottom:10px;">
+                    <select class="form-select" id="sd-business">
+                        <option value="albalumen">🕊️ Albalumen</option>
+                        <option value="huellitas">🐾 Huellitas</option>
+                    </select>
+                    <select class="form-select" id="sd-niche">
+                        <option value="veterinaria">🐾 Veterinaria</option>
+                        <option value="clinica">🏥 Clínica</option>
+                        <option value="funeraria">⚰️ Funeraria</option>
+                        <option value="farmacia">💊 Farmacia</option>
+                    </select>
+                </div>
+                <button class="btn-sd" onclick="launchSD()">🎯 LANZAR SEARCH & DESTROY</button>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title yellow">📊 Estadísticas de Outreach</div>
+                <div class="outreach-stats">
+                    <div class="os green"><div class="num" id="os-total">341</div><div class="lbl">Total</div></div>
+                    <div class="os orange"><div class="num" id="os-pending">341</div><div class="lbl">Pendientes</div></div>
+                    <div class="os blue"><div class="num" id="os-contacted">0</div><div class="lbl">Contactados</div></div>
+                    <div class="os red"><div class="num" id="os-excluded">0</div><div class="lbl">Excluidos</div></div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title purple">👥 Gestión de Usuarios</div>
+                <div class="user-list" id="users-list">
+                    <div class="user-row">
+                        <div class="user-info"><div class="user-name">Oscar Evans</div><div class="user-handle">@oscar</div></div>
+                        <span class="user-badge badge-admin">[admin]</span>
+                    </div>
+                    <div class="user-row">
+                        <div class="user-info"><div class="user-name">Micheal Evans</div><div class="user-handle">@micheal</div></div>
+                        <span class="user-badge badge-admin">[admin]</span>
+                    </div>
+                    <div class="user-row">
+                        <div class="user-info"><div class="user-name">Soledad</div><div class="user-handle">@soledad</div></div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="user-badge badge-op">[operador]</span>
+                            <button class="btn-desactivar">Desactivar</button>
+                        </div>
+                    </div>
+                    <div class="user-row">
+                        <div class="user-info"><div class="user-name">Manuel</div><div class="user-handle">@manuel</div></div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="user-badge badge-op">[operador]</span>
+                            <button class="btn-desactivar">Desactivar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="create-user-form">
+                    <input type="text" class="form-input" id="new-username" placeholder="Usuario">
+                    <input type="password" class="form-input" id="new-password" placeholder="Contraseña">
+                    <button class="btn-create" onclick="crearUsuario()">+ Crear Usuario</button>
+                </div>
+            </div>
+
+            <div class="filter-row">
+                <select class="form-select" id="filter-ciudad" onchange="loadProspects()">
+                    <option value="">Todas las ciudades</option>
+                    <option value="San José">San José</option>
+                    <option value="Alajuela">Alajuela</option>
+                    <option value="Heredia">Heredia</option>
+                    <option value="Cartago">Cartago</option>
+                    <option value="Puntarenas">Puntarenas</option>
+                    <option value="Guanacaste">Guanacaste</option>
+                    <option value="Limón">Limón</option>
+                </select>
+                <select class="form-select" id="filter-niche" onchange="loadProspects()">
+                    <option value="">Todos los nichos</option>
+                    <option value="clinica">🏥 Clínica</option>
+                    <option value="funeraria">⚰️ Funeraria</option>
+                    <option value="veterinaria">🐾 Veterinaria</option>
+                    <option value="farmacia">💊 Farmacia</option>
+                </select>
+            </div>
+
+            <div id="horario-btn-wrap">
+                <div class="horario-btn fuera" id="horario-main-btn">🔴 Fuera de horario</div>
+            </div>
+
+            <div class="section-card" style="padding:0; overflow:hidden;">
+                <div style="overflow-x:auto;">
+                    <table class="prospects-table">
+                        <thead>
+                            <tr>
+                                <th>Negocio</th>
+                                <th>Ciudad</th>
+                                <th>Teléfono</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prospects-tbody">
+                            <tr><td colspan="4" style="text-align:center; color:var(--text-dim); padding:20px;">Cargando prospectos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <div id="no-admin-msg" style="display:none; text-align:center; padding:40px; color:var(--text-dim);">
+            🔒 Esta sección es solo para administradores.
+        </div>
+    </div>
+
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-    let currentLeadId = null;
-    let currentUser = sessionStorage.getItem('ga_user') || 'Micheal';
+// ===== AUTH =====
+const USERS = {
+    'micheal': { pass: 'Guerrero2024#', role: 'admin', display: 'Micheal Evans' },
+    'oscar':   { pass: 'Albalumen2024#', role: 'admin', display: 'Oscar Evans' },
+    'soledad': { pass: 'Soledad2024', role: 'operator', display: 'Soledad' },
+    'manuel':  { pass: 'Manuel2024', role: 'operator', display: 'Manuel' }
+};
 
-    function setTemplate(text) {
-        document.getElementById('msg-input').value = text;
-        document.getElementById('msg-input').focus();
+let currentUser = null;
+let currentRole = null;
+let lossLeadId = null;
+let lossReason = null;
+
+function doLogin() {
+    const u = document.getElementById('login-user').value.trim().toLowerCase();
+    const p = document.getElementById('login-pass').value;
+    if (USERS[u] && USERS[u].pass === p) {
+        currentUser = USERS[u].display;
+        currentRole = USERS[u].role;
+        sessionStorage.setItem('ga_user', currentUser);
+        sessionStorage.setItem('ga_role', currentRole);
+        sessionStorage.setItem('ga_key', u);
+        document.getElementById('login-modal').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        document.getElementById('user-pill').textContent = `👤 ${currentUser} (${currentRole === 'admin' ? 'admin' : 'op'})`;
+        if (currentRole !== 'admin') {
+            // hide prospectos tab for operators
+            document.querySelector('.tab-btn.prospectos').style.display = 'none';
+        }
+        initApp();
+    } else {
+        document.getElementById('login-error').style.display = 'block';
+    }
+}
+
+function doLogout() {
+    sessionStorage.clear();
+    location.reload();
+}
+
+// Enter key login
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('login-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+
+// Auto-restore session
+(function() {
+    const u = sessionStorage.getItem('ga_user');
+    const r = sessionStorage.getItem('ga_role');
+    if (u && r) {
+        currentUser = u;
+        currentRole = r;
+        document.getElementById('login-modal').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        document.getElementById('user-pill').textContent = `👤 ${u} (${r === 'admin' ? 'admin' : 'op'})`;
+        if (r !== 'admin') document.querySelector('.tab-btn.prospectos').style.display = 'none';
+        initApp();
+    }
+})();
+
+// ===== CLOCK =====
+function updateClock() {
+    const now = new Date();
+    const cr = new Date(now.toLocaleString('en-US', {timeZone: 'America/Costa_Rica'}));
+    const h = String(cr.getHours()).padStart(2,'0');
+    const m = String(cr.getMinutes()).padStart(2,'0');
+    const s = String(cr.getSeconds()).padStart(2,'0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+    const hour = cr.getHours();
+    const inHours = hour >= 8 && hour < 22;
+    const statusEl = document.getElementById('horario-status');
+    const mainBtn = document.getElementById('horario-main-btn');
+    if (inHours) {
+        statusEl.textContent = ' EN HORARIO';
+        statusEl.style.color = 'var(--alba-green)';
+        if(mainBtn) { mainBtn.textContent = '🟢 En horario de atención'; mainBtn.className = 'horario-btn dentro'; }
+    } else {
+        statusEl.textContent = ' FUERA DE HORARIO';
+        statusEl.style.color = 'var(--danger)';
+        if(mainBtn) { mainBtn.textContent = '🔴 Fuera de horario'; mainBtn.className = 'horario-btn fuera'; }
+    }
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ===== TABS =====
+function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    btn.classList.add('active');
+    if (tab === 'prospectos') {
+        if (currentRole === 'admin') {
+            document.getElementById('admin-only-section').style.display = 'block';
+            document.getElementById('no-admin-msg').style.display = 'none';
+            loadProspects();
+            loadOutreachStats();
+            loadOutreachSettings();
+        } else {
+            document.getElementById('admin-only-section').style.display = 'none';
+            document.getElementById('no-admin-msg').style.display = 'block';
+        }
+    }
+    if (tab === 'alba') loadAlbaLeads();
+    if (tab === 'huellitas') loadHuelleLeads();
+}
+
+// ===== INIT =====
+function initApp() {
+    loadAlbaLeads();
+    setInterval(loadAlbaLeads, 15000);
+}
+
+// ===== TOAST =====
+function showToast(msg, color) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = color || 'var(--alba-green)';
+    t.style.color = color ? 'white' : '#000';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== LEADS =====
+async function loadAlbaLeads() {
+    try {
+        const res = await fetch('/api/leads?business=albalumen');
+        const leads = await res.json();
+        renderLeads(leads, 'albalumen');
+    } catch(e) { console.log('Leads fetch error'); }
+}
+
+async function loadHuelleLeads() {
+    try {
+        const res = await fetch('/api/leads?business=huellitas');
+        const leads = await res.json();
+        renderLeads(leads, 'huellitas');
+    } catch(e) {}
+}
+
+function renderLeads(leads, business) {
+    const prefix = business === 'albalumen' ? 'alba' : 'hue';
+    const total = leads.length;
+    const pendientes = leads.filter(l => l.status === 'nuevo' || l.status === 'New').length;
+    const atendidos = leads.filter(l => l.status === 'In-Progress').length;
+    const perdidos = leads.filter(l => l.status === 'Lost').length;
+
+    document.getElementById(prefix + '-total').textContent = total;
+    document.getElementById(prefix + '-pendientes').textContent = pendientes;
+    document.getElementById(prefix + '-atendidos').textContent = atendidos;
+    document.getElementById(prefix + '-perdidos').textContent = perdidos;
+    document.getElementById(prefix + '-badge').textContent = pendientes;
+
+    const embudo = document.getElementById(prefix + '-embudo');
+    const active = leads.filter(l => l.status === 'nuevo' || l.status === 'New' || l.status === 'In-Progress');
+
+    if (active.length === 0) {
+        embudo.innerHTML = '<div class="embudo-empty">✅ Sin leads pendientes.</div>';
+        return;
     }
 
-    async function loadConversations() {
-        try {
-            const res = await fetch('/api/leads/recent');
-            const data = await res.json();
-            const list = document.getElementById('conversations-list');
-            list.innerHTML = data.map(l => `
-                <div class="conv-item ${l.id === currentLeadId ? 'active' : ''}" onclick="openChat(${l.id}, '${l.contact_name}', '${l.phone}')">
-                    <span class="conv-name">${l.contact_name || 'Sin nombre'}</span>
-                    <span class="conv-preview">${l.service_type || 'Consulta'}</span>
-                </div>
-            `).join('');
-        } catch(e) {}
+    embudo.innerHTML = active.map(l => {
+        const minAgo = Math.floor((Date.now() - new Date(l.created_at).getTime()) / 60000);
+        const urgent = minAgo >= 3;
+        const phone = currentRole === 'admin' ? (l.phone || '—') : maskPhone(l.phone);
+        return `
+        <div class="lead-card ${urgent ? 'urgent' : ''}">
+            <div class="lead-name">${l.contact_name || l.name || 'Sin nombre'} ${urgent ? '🚨' : ''}</div>
+            <div class="lead-meta">${l.service_type || 'Consulta'} · ${l.source || 'manual'} · Hace ${minAgo}min</div>
+            <div class="lead-phone">${phone}</div>
+            ${l.claimed_by ? `<div style="font-size:10px; color:var(--neon-blue);">✋ Atendido por: ${l.claimed_by}</div>` : ''}
+            <div class="lead-actions">
+                ${l.status !== 'In-Progress' ? `<button class="lead-btn claim" onclick="claimLead(${l.id})">✋ RECLAMAR</button>` : ''}
+                <button class="lead-btn whatsapp" onclick="openWA('${l.phone}')">💬 WhatsApp</button>
+                <button class="lead-btn lost" onclick="openLossModal(${l.id})">💀 Perdido</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function maskPhone(phone) {
+    if (!phone) return '—';
+    const clean = phone.replace(/\D/g, '');
+    return clean.length > 4 ? '****' + clean.slice(-4) : '****';
+}
+
+async function claimLead(id) {
+    try {
+        await fetch(`/api/leads/${id}/claim`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ staff_name: currentUser })
+        });
+        showToast('✅ Lead reclamado!');
+        loadAlbaLeads();
+        loadHuelleLeads();
+    } catch(e) {}
+}
+
+function openWA(phone) {
+    if (!phone) return;
+    const clean = phone.replace(/\D/g, '');
+    window.open(`https://wa.me/${clean}`, '_blank');
+}
+
+// ===== REGISTRAR LEAD =====
+async function registrarLead(business) {
+    let nombre, phone, servicio, fuente, notas;
+    if (business === 'albalumen') {
+        nombre = document.getElementById('alba-nombre').value.trim();
+        phone = document.getElementById('alba-phone').value.trim();
+        servicio = document.getElementById('alba-servicio').value;
+        fuente = document.getElementById('alba-fuente').value;
+        notas = document.getElementById('alba-notas').value.trim();
+    } else {
+        nombre = document.getElementById('hue-nombre').value.trim();
+        phone = document.getElementById('hue-phone').value.trim();
+        servicio = document.getElementById('hue-servicio').value;
+        fuente = document.getElementById('hue-fuente').value;
+        notas = document.getElementById('hue-notas').value.trim();
     }
+    if (!nombre || !phone) { showToast('❌ Nombre y teléfono son requeridos', 'var(--danger)'); return; }
 
-    async function openChat(id, name, phone) {
-        currentLeadId = id;
-        document.getElementById('client-name').textContent = name;
-        document.getElementById('client-phone').textContent = phone;
-        loadMessages(id);
+    try {
+        const res = await fetch('/api/leads/new', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+                contact_name: nombre, phone, service_type: servicio,
+                source: fuente, business, notas,
+                registered_by: currentUser
+            })
+        });
+        if (res.ok) {
+            showToast('✅ Lead registrado y alerta enviada!');
+            if (business === 'albalumen') {
+                document.getElementById('alba-nombre').value = '';
+                document.getElementById('alba-phone').value = '';
+                document.getElementById('alba-notas').value = '';
+                loadAlbaLeads();
+            } else {
+                document.getElementById('hue-nombre').value = '';
+                document.getElementById('hue-phone').value = '';
+                document.getElementById('hue-notas').value = '';
+                loadHuelleLeads();
+            }
+        } else { showToast('❌ Error al registrar', 'var(--danger)'); }
+    } catch(e) { showToast('❌ Error de conexión', 'var(--danger)'); }
+}
+
+// ===== LOSS MODAL =====
+function openLossModal(id) {
+    lossLeadId = id;
+    lossReason = null;
+    document.querySelectorAll('.loss-opt').forEach(o => o.classList.remove('selected'));
+    document.getElementById('loss-competitor').value = '';
+    document.getElementById('loss-modal').classList.add('open');
+}
+function selectLoss(el, reason) {
+    document.querySelectorAll('.loss-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    lossReason = reason;
+}
+async function confirmLoss() {
+    if (!lossReason) { showToast('Selecciona un motivo', 'var(--warning)'); return; }
+    const competitor = document.getElementById('loss-competitor').value;
+    try {
+        await fetch(`/api/leads/${lossLeadId}/lost`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ reason_lost: lossReason, competitor })
+        });
+        document.getElementById('loss-modal').classList.remove('open');
+        showToast('📊 Lead marcado como perdido');
+        loadAlbaLeads();
+        loadHuelleLeads();
+    } catch(e) {}
+}
+document.getElementById('loss-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('loss-modal')) document.getElementById('loss-modal').classList.remove('open');
+});
+
+// ===== OUTREACH =====
+async function loadOutreachSettings() {
+    try {
+        const res = await fetch('/api/outreach/settings');
+        const s = await res.json();
+        document.getElementById('toggle-wa').checked = s.whatsapp_active === 'true';
+        document.getElementById('toggle-sms').checked = s.sms_active === 'true';
+        document.getElementById('toggle-email').checked = s.email_active === 'true';
+    } catch(e) {}
+}
+
+async function updateToggle(key, value) {
+    try {
+        await fetch('/api/outreach/settings', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ key, value: value.toString() })
+        });
+    } catch(e) {}
+}
+
+async function fireOutreach(channel) {
+    const business = document.getElementById('out-business').value;
+    const niche = document.getElementById('out-niche').value;
+    const limit = document.getElementById('out-limit').value;
+    const endpoints = { whatsapp: 'send-whatsapp', sms: 'send-sms', email: 'send-email' };
+    showToast(`🚀 Iniciando outreach ${channel.toUpperCase()}...`);
+    try {
+        const res = await fetch(`/api/outreach/${endpoints[channel]}`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ business, niche, limit: parseInt(limit) })
+        });
+        const data = await res.json();
+        if (data.sent !== undefined) {
+            showToast(`✅ Enviados: ${data.sent} | Fallidos: ${data.failed}`);
+            loadOutreachStats();
+        } else { showToast('⚠️ ' + (data.error || 'Error'), 'var(--warning)'); }
+    } catch(e) { showToast('❌ Error de conexión', 'var(--danger)'); }
+}
+
+async function loadOutreachStats() {
+    try {
+        const res = await fetch('/api/outreach/stats');
+        const s = await res.json();
+        document.getElementById('os-total').textContent = s.total || 0;
+        document.getElementById('os-pending').textContent = s.pending || 0;
+        document.getElementById('os-contacted').textContent = s.contacted || 0;
+        document.getElementById('os-excluded').textContent = s.excluded || 0;
+    } catch(e) {}
+}
+
+async function launchSD() {
+    const keyword = document.getElementById('sd-keyword').value.trim();
+    const city = document.getElementById('sd-city').value.trim();
+    const business = document.getElementById('sd-business').value;
+    const niche = document.getElementById('sd-niche').value;
+    if (!keyword || !city) { showToast('Ingresa keyword y ciudad', 'var(--warning)'); return; }
+    showToast('🎯 Search & Destroy lanzado!');
+    try {
+        await fetch('/api/scraper/scrape-keyword', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ keyword, city, business, niche })
+        });
+        showToast('✅ Búsqueda iniciada en background!');
+    } catch(e) { showToast('❌ Error al lanzar', 'var(--danger)'); }
+}
+
+// ===== CSV UPLOAD =====
+async function uploadCSV(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split('\n').filter(l => l.trim());
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const data = lines.slice(1).map(line => {
+        const vals = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = (vals[i] || '').trim());
+        return obj;
+    });
+    try {
+        const res = await fetch('/api/outreach/import-csv', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ data })
+        });
+        const r = await res.json();
+        showToast(`✅ CSV: ${r.saved} de ${r.total} importados!`);
+        loadOutreachStats();
+    } catch(e) { showToast('❌ Error importando CSV', 'var(--danger)'); }
+}
+
+// ===== PROSPECTOS TABLE =====
+async function loadProspects() {
+    const ciudad = document.getElementById('filter-ciudad').value;
+    const niche = document.getElementById('filter-niche').value;
+    try {
+        let url = '/api/scraper/prospects?';
+        if (ciudad) url += `city=${encodeURIComponent(ciudad)}&`;
+        if (niche) url += `niche=${encodeURIComponent(niche)}&`;
+        const res = await fetch(url);
+        const prospects = await res.json();
+        const tbody = document.getElementById('prospects-tbody');
+        if (!prospects.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-dim); padding:20px;">Sin prospectos encontrados.</td></tr>';
+            return;
+        }
+        const nicheColors = { clinica:'pb-cli', funeraria:'pb-fun', veterinaria:'pb-vet', farmacia:'pb-farm' };
+        const nicheLabels = { clinica:'CLÍ', funeraria:'FUN', veterinaria:'VET', farmacia:'FARM' };
+        tbody.innerHTML = prospects.slice(0, 100).map(p => `
+            <tr>
+                <td>
+                    <span class="prospect-badge ${nicheColors[p.niche] || 'pb-cli'}">${nicheLabels[p.niche] || '—'}</span>
+                    <strong style="display:block; font-size:12px; margin-top:3px;">${p.business_name || '—'}</strong>
+                </td>
+                <td>${p.city || '—'}</td>
+                <td style="color:var(--neon-blue);">${p.phone ? p.phone.replace(/(\d{4})(\d{4})/, '$1 $2') : '—'}</td>
+                <td>⭐ ${p.rating || '—'}</td>
+            </tr>
+        `).join('');
+    } catch(e) {
+        document.getElementById('prospects-tbody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-dim); padding:20px;">Error cargando prospectos.</td></tr>';
     }
+}
 
-    async function loadMessages(id) {
-        const area = document.getElementById('messages-area');
-        try {
-            const res = await fetch(`/api/leads/messages/${id}`);
-            const msgs = await res.json();
-            area.innerHTML = msgs.map(m => `
-                <div class="msg ${m.direction === 'outgoing' ? 'outgoing' : 'incoming'}">
-                    ${m.message_text}
-                    <div style="font-size:9px; opacity:0.6; margin-top:4px;">${new Date(m.created_at).toLocaleTimeString()}</div>
-                </div>
-            `).join('');
-            area.scrollTop = area.scrollHeight;
-        } catch(e) {}
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('msg-input');
-        const text = input.value.trim();
-        if(!text || !currentLeadId) return;
-
-        try {
-            await fetch('/api/leads/send-message', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ lead_id: currentLeadId, message: text, sent_by: currentUser })
-            });
-            input.value = '';
-            loadMessages(currentLeadId);
-        } catch(e) {}
-    }
-
-    function logout() { sessionStorage.clear(); window.location.href = '/'; }
-
-    document.getElementById('user-pill').textContent = `👤 ${currentUser}`;
-    setInterval(loadConversations, 5000);
-    loadConversations();
+// ===== CREAR USUARIO =====
+async function crearUsuario() {
+    const username = document.getElementById('new-username').value.trim();
+    const password = document.getElementById('new-password').value.trim();
+    if (!username || !password) { showToast('Completa usuario y contraseña', 'var(--warning)'); return; }
+    try {
+        const res = await fetch('/api/auth/create-user', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ username, password, role: 'operator' })
+        });
+        if (res.ok) {
+            showToast('✅ Usuario creado!');
+            document.getElementById('new-username').value = '';
+            document.getElementById('new-password').value = '';
+        } else { showToast('❌ Error creando usuario', 'var(--danger)'); }
+    } catch(e) { showToast('❌ Error de conexión', 'var(--danger)'); }
+}
 </script>
 </body>
 </html>
+
+}
