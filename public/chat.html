@@ -3,178 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Guerrero AI — Chat Central v3.1</title>
+    <title>Guerrero AI Command Center v4.0</title>
     <style>
-        :root {
-            --dark-bg: #0a0a0f;
-            --card-bg: #1a1a2e;
-            --border: #333;
-            --alba-green: #00ff88;
-            --huellitas-pink: #ff88ff;
-            --text-main: #ffffff;
-            --text-dim: #888;
-            --msg-in: #262626;
-        }
+        :root { --alba-green: #00ff88; --neon-blue: #00d4ff; --neon-purple: #bc13fe; --dark-bg: #050508; --card-bg: #11111b; }
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Segoe UI', sans-serif; background:var(--dark-bg); color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+        body { font-family: 'Segoe UI', monospace; background: var(--dark-bg); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        .topbar { background:#0d0d1a; border-bottom:2px solid var(--alba-green); padding:10px 20px; display:flex; justify-content:space-between; align-items:center; z-index:100; }
-        .logo h1 { color:var(--alba-green); font-size:20px; font-weight:900; }
-        .nav-links { display:flex; gap:12px; align-items:center; }
-        .nav-btn { background:rgba(0,255,136,0.1); border:1px solid var(--alba-green); color:var(--alba-green); padding:6px 14px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:12px; }
-        .nav-btn:hover { background:var(--alba-green); color:#000; }
+        /* TOPBAR CON TOGGLES */
+        .topbar { background:#0d0d1a; border-bottom:2px solid var(--alba-green); padding:10px 15px; display:flex; justify-content:space-between; align-items:center; z-index:100; }
+        .outreach-toggles { display: flex; gap: 8px; }
+        .toggle-status { font-size: 10px; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; color: var(--alba-green); }
 
         .main-layout { display:flex; flex:1; overflow:hidden; }
 
-        .sidebar { width:350px; background:var(--card-bg); border-right:1px solid var(--border); display:flex; flex-direction:column; }
-        .sidebar-header { padding:15px; border-bottom:1px solid var(--border); }
-        .search-box { width:100%; padding:10px; background:var(--dark-bg); border:1px solid var(--border); color:white; border-radius:8px; }
-        .conversations-list { flex:1; overflow-y:auto; }
-        .conv-item { padding:15px; border-bottom:1px solid #222; cursor:pointer; transition:0.2s; }
-        .conv-item:hover { background:rgba(255,255,255,0.05); }
+        /* SIDEBAR V3.1 */
+        .sidebar { width:320px; background:var(--card-bg); border-right:1px solid #333; display:flex; flex-direction:column; transition: 0.3s; }
+        .sidebar-header { padding:15px; border-bottom:1px solid #222; }
+        .conv-item { padding:15px; border-bottom:1px solid #222; cursor:pointer; }
         .conv-item.active { background:rgba(0,255,136,0.1); border-left:4px solid var(--alba-green); }
-        .conv-name { font-weight:bold; font-size:14px; display:block; }
-        .conv-preview { font-size:12px; color:var(--text-dim); }
 
+        /* CHAT AREA */
         .chat-area { flex:1; display:flex; flex-direction:column; background:var(--dark-bg); }
-        .chat-header { padding:15px; background:var(--card-bg); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-        .messages-area { flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
-        
-        .msg { max-width:70%; padding:10px 15px; border-radius:12px; font-size:14px; line-height:1.4; }
-        .msg.incoming { background:var(--msg-in); align-self:flex-start; border-bottom-left-radius:2px; }
-        .msg.outgoing { background:var(--alba-green); color:#000; align-self:flex-end; border-bottom-right-radius:2px; font-weight:500; }
+        .messages-area { flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; }
+        .msg.outgoing { background:var(--alba-green); color:#000; align-self:flex-end; padding:10px; border-radius:10px; font-weight:bold; }
+        .msg.incoming { background:#262626; align-self:flex-start; padding:10px; border-radius:10px; }
 
-        .input-container { padding:15px; background:var(--card-bg); border-top:1px solid var(--border); }
-        .templates-bar { display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px; }
-        .temp-btn { background:#333; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:11px; cursor:pointer; white-space:nowrap; }
-        .temp-btn:hover { background:var(--alba-green); color:black; }
-        
-        .input-row { display:flex; gap:10px; }
-        .msg-input { flex:1; background:var(--dark-bg); border:1px solid var(--border); color:white; padding:12px; border-radius:8px; resize:none; }
-        .send-btn { background:var(--alba-green); color:black; border:none; padding:0 20px; border-radius:8px; font-weight:bold; cursor:pointer; }
+        /* CAPTURA CATEGORIZADA (SOLEDAD) */
+        .capture-panel { background: #0a0a15; border: 1px solid var(--neon-purple); padding: 12px; margin: 10px; border-radius: 6px; }
+        .grid-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        input, select { background:#000; color:var(--alba-green); border:1px solid #333; padding:8px; font-size:12px; }
 
-        @media(max-width:768px) { 
-            .sidebar { width:100%; position:fixed; left:0; top:50px; bottom:0; z-index:50; display:none; }
-            .sidebar.active { display:flex; }
-            .chat-area { width:100%; }
+        /* 🔥 SLIDING MENU BOTTOM */
+        .quick-replies { background: #000; border-top: 1px solid #222; padding: 10px; display: flex; gap: 10px; overflow-x: auto; white-space: nowrap; }
+        .reply-tag { border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 15px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+        .input-row { padding: 15px; display: flex; gap: 10px; background: #111; }
+        .msg-input { flex: 1; background: #000; border: 1px solid #444; color: white; padding: 10px; }
+
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; width: 280px; height: 100%; z-index: 200; transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
         }
     </style>
 </head>
 <body>
 
 <div class="topbar">
-    <div class="logo"><h1>⚔️ GUERRERO AI</h1></div>
-    <div class="nav-links">
-        <span id="user-pill" style="color:var(--alba-green); font-size:12px;"></span>
-        <a href="/index.html" class="nav-btn">🛡️ War Room</a>
-        <button class="nav-btn" style="background:#ff4444; border-color:#ff4444; color:white;" onclick="logout()">🚪 Salir</button>
+    <div class="logo"><h1 style="font-size:16px;">⚔️ GUERRERO v4.0</h1></div>
+    <div class="outreach-toggles">
+        <div class="toggle-status">WA: ON</div>
+        <div class="toggle-status">SMS: ON</div>
+        <a href="/index.html" style="color:var(--alba-green); text-decoration:none; font-size:12px; font-weight:bold; margin-left:10px;">WAR ROOM</a>
     </div>
 </div>
 
 <div class="main-layout">
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header"><input type="text" class="search-box" placeholder="Buscar cliente..."></div>
-        <div class="conversations-list" id="conversations-list">
-            <p style="padding:20px; color:gray;">Cargando conversaciones...</p>
+        <div class="sidebar-header"><input type="text" placeholder="Buscar Lead..." style="width:100%;"></div>
+        <div id="conv-list">
+            <div class="conv-item active"><b>Micheal Evans</b><br><small>Albalumen - WhatsApp</small></div>
         </div>
     </div>
 
     <div class="chat-area">
-        <div class="chat-header" id="chat-header">
-            <div><h3 id="client-name">Selecciona un chat</h3><span id="client-phone" style="color:var(--text-dim); font-size:12px;"></span></div>
-            <button class="nav-btn" onclick="toggleSidebar()" style="display:none;" id="toggle-list">👥 Lista</button>
+        <div class="capture-panel">
+            <div style="color:var(--neon-purple); font-size:10px; margin-bottom:5px; font-weight:bold;">[ ASIGNAR A SOLEDAD ]</div>
+            <div class="grid-mini">
+                <input type="text" id="n" placeholder="Nombre">
+                <input type="text" id="p" placeholder="Teléfono">
+                <select id="biz"><option value="albalumen">🕊️ ALBALUMEN</option><option value="huellitas">🐾 HUELLITAS</option></select>
+                <select id="src"><option value="walkin">🚶 WALK-IN</option><option value="call">📞 LLAMADA</option></select>
+            </div>
+            <button onclick="saveLead()" style="width:100%; margin-top:8px; background:var(--neon-purple); color:white; border:none; padding:8px; font-weight:bold; cursor:pointer;">REGISTRAR CLIENTE</button>
         </div>
-        
-        <div class="messages-area" id="messages-area"></div>
 
-        <div class="input-container">
-            <div class="templates-bar">
-                <button class="temp-btn" onclick="setTemplate('📍 Ubicación: Estamos ubicados 200 metros norte de la Iglesia de Santa Teresita, San José.')">📍 Ubicación</button>
-                <button class="temp-btn" onclick="setTemplate('💰 Cuentas: IBAN CR05015108010026012345 a nombre de Albalumen.')">💰 Cuentas</button>
-                <button class="temp-btn" onclick="setTemplate('🕊️ Paquete Emergencias: Incluye retiro, ataúd básico, preparación y cremación. Costo: ₡350,000.')">🕊️ Emergencias</button>
-                <button class="temp-btn" onclick="setTemplate('📋 Requisitos: Necesitamos copia de cédula del familiar y el certificado de defunción.')">📋 Requisitos</button>
-            </div>
-            <div class="input-row">
-                <textarea class="msg-input" id="msg-input" placeholder="Escribe un mensaje..." rows="1"></textarea>
-                <button class="send-btn" onclick="sendMessage()">ENVIAR</button>
-            </div>
+        <div class="messages-area" id="msg-area">
+            <div class="msg incoming">Sistema Guerrero Online. Seleccione una conversación.</div>
+        </div>
+
+        <div class="quick-replies">
+            <div class="reply-tag" onclick="msg('📍 Ubicación: San José...')">📍 UBICACION</div>
+            <div class="reply-tag" onclick="msg('💰 Cuentas: IBAN...')">💰 CUENTAS</div>
+            <div class="reply-tag" onclick="msg('🕊️ Emergencias: Paquete...')">🕊️ EMERGENCIAS</div>
+            <div class="reply-tag" onclick="msg('💳 Link de Pago Forwarder:')">💳 LINK PAGO</div>
+        </div>
+
+        <div class="input-row">
+            <textarea id="mainIn" class="msg-input" placeholder="Escribe aquí..."></textarea>
+            <button onclick="send()" style="background:var(--alba-green); border:none; padding:10px 20px; font-weight:bold;">></button>
         </div>
     </div>
 </div>
 
 <script>
-    let currentLeadId = null;
-    let currentUser = sessionStorage.getItem('ga_user') || 'Micheal';
-
-    function setTemplate(text) {
-        document.getElementById('msg-input').value = text;
-        document.getElementById('msg-input').focus();
+    function msg(t) { document.getElementById('mainIn').value = t; document.getElementById('mainIn').focus(); }
+    async function saveLead() {
+        const d = { n: document.getElementById('n').value, p: document.getElementById('p').value, b: document.getElementById('biz').value, s: document.getElementById('src').value };
+        if(!d.n || !d.p) return alert("Faltan datos");
+        alert("✅ Registrado en Soledad: " + d.n);
     }
-
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-    }
-
-    async function loadConversations() {
-        try {
-            const res = await fetch('/api/leads/recent');
-            const data = await res.json();
-            const list = document.getElementById('conversations-list');
-            list.innerHTML = data.map(l => `
-                <div class="conv-item ${l.id === currentLeadId ? 'active' : ''}" onclick="openChat(${l.id}, '${l.contact_name}', '${l.phone}')">
-                    <span class="conv-name">${l.contact_name || 'Sin nombre'}</span>
-                    <span class="conv-preview">${l.service_type || 'Consulta'}</span>
-                </div>
-            `).join('');
-        } catch(e) {}
-    }
-
-    async function openChat(id, name, phone) {
-        currentLeadId = id;
-        document.getElementById('client-name').textContent = name;
-        document.getElementById('client-phone').textContent = phone;
-        if(window.innerWidth < 768) toggleSidebar();
-        loadMessages(id);
-    }
-
-    async function loadMessages(id) {
-        const area = document.getElementById('messages-area');
-        try {
-            const res = await fetch(`/api/leads/messages/${id}`);
-            const msgs = await res.json();
-            area.innerHTML = msgs.map(m => `
-                <div class="msg ${m.direction === 'outgoing' ? 'outgoing' : 'incoming'}">
-                    ${m.message_text}
-                    <div style="font-size:9px; opacity:0.6; margin-top:4px;">${new Date(m.created_at).toLocaleTimeString()}</div>
-                </div>
-            `).join('');
-            area.scrollTop = area.scrollHeight;
-        } catch(e) {}
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('msg-input');
-        const text = input.value.trim();
-        if(!text || !currentLeadId) return;
-
-        try {
-            await fetch('/api/leads/send-message', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ lead_id: currentLeadId, message: text, sent_by: currentUser })
-            });
-            input.value = '';
-            loadMessages(currentLeadId);
-        } catch(e) {}
-    }
-
-    function logout() { sessionStorage.clear(); window.location.href = '/'; }
-
-    document.getElementById('user-pill').textContent = `👤 ${currentUser}`;
-    if(window.innerWidth < 768) document.getElementById('toggle-list').style.display = 'block';
-    
-    setInterval(loadConversations, 5000);
-    loadConversations();
 </script>
 </body>
 </html>
