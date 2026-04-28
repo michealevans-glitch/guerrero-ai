@@ -53,7 +53,6 @@
     </style>
 </head>
 <body>
-
 <div class="topbar">
     <div class="logo">
         <h1>⚔️ GUERRERO AI</h1>
@@ -65,9 +64,7 @@
         <button class="btn btn-logout" onclick="logout()">🚪 Salir</button>
     </div>
 </div>
-
 <audio id="siren" src="siren.mp3" loop preload="auto"></audio>
-
 <div id="login-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0f;z-index:99999;display:flex;align-items:center;justify-content:center;">
     <div style="background:#1a1a2e;border:2px solid #00ff88;border-radius:16px;padding:40px;min-width:320px;text-align:center;">
         <h1 style="color:#00ff88;margin-bottom:8px;">⚔️ GUERRERO AI</h1>
@@ -78,21 +75,18 @@
         <p id="login-error" style="color:#ff4444;margin-top:10px;font-size:13px;"></p>
     </div>
 </div>
-
 <div class="main" id="main-app" style="display:none;">
     <div class="tabs">
         <button class="tab active-alba" id="tab-alba" onclick="switchTab('alba')">🕊️ ALBALUMEN</button>
         <button class="tab" id="tab-huellitas" onclick="switchTab('huellitas')">🐾 HUELLITAS AL CIELO</button>
         <button class="tab" id="tab-prospectos" onclick="switchTab('prospectos')" style="display:none;">🎯 PROSPECTOS</button>
     </div>
-
     <div class="stat-grid">
         <div class="stat-card"><div class="number" id="stat-total" style="color:#00ff88;">0</div><div class="label">Total Leads</div></div>
         <div class="stat-card"><div class="number" id="stat-active" style="color:#ffaa00;">0</div><div class="label">Pendientes</div></div>
         <div class="stat-card"><div class="number" id="stat-claimed" style="color:#00ff88;">0</div><div class="label">Atendidos</div></div>
         <div class="stat-card"><div class="number" id="stat-lost" style="color:#ff4444;">0</div><div class="label">Perdidos</div></div>
     </div>
-
     <div class="new-lead-form alba-form" id="form-alba">
         <h2 style="color:#00ff88;margin-bottom:20px;">🕊️ Registrar Cliente — Albalumen</h2>
         <div class="form-grid">
@@ -125,7 +119,6 @@
         </div>
         <button class="btn-register-alba" onclick="createLead('alba')">🕊️ REGISTRAR LEAD ALBALUMEN Y ENVIAR ALERTA</button>
     </div>
-
     <div class="new-lead-form huellitas-form" id="form-huellitas" style="display:none;">
         <h2 style="color:#ff88ff;margin-bottom:20px;">🐾 Registrar Cliente — Huellitas al Cielo</h2>
         <div class="form-grid">
@@ -154,11 +147,9 @@
         </div>
         <button class="btn-register-huellitas" onclick="createLead('huellitas')">🐾 REGISTRAR LEAD HUELLITAS Y ENVIAR ALERTA</button>
     </div>
-
     <div id="panel-prospectos" style="display:none;">
         <div class="card" style="margin-bottom:20px;">
             <h2 style="color:#ffaa00;margin-bottom:15px;">🎯 Panel de Prospectos — Solo Administradores</h2>
-
             <div style="background:#0d0d1a;border:1px solid #444;border-radius:12px;padding:16px;margin-bottom:16px;">
                 <h3 style="color:#ffaa00;margin-bottom:12px;font-size:15px;">⚡ Control de Outreach Multicanal</h3>
                 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
@@ -215,7 +206,6 @@
                 </div>
                 <div id="outreach-result" style="font-size:13px;color:#00ff88;min-height:20px;"></div>
             </div>
-
             <div style="background:#0d0d1a;border:1px solid #00ff88;border-radius:12px;padding:16px;margin-bottom:16px;">
                 <h3 style="color:#00ff88;margin-bottom:12px;font-size:15px;">🎯 Search & Destroy — Robot Autónomo</h3>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
@@ -241,7 +231,6 @@
                 <div id="sd-result" style="margin-top:10px;font-size:13px;min-height:20px;"></div>
                 <div id="sd-jobs" style="margin-top:12px;"></div>
             </div>
-
             <div style="background:#0d0d1a;border:1px solid #444;border-radius:12px;padding:16px;margin-bottom:16px;">
                 <h3 style="color:#ffaa00;margin-bottom:12px;font-size:15px;">📊 Estadísticas de Outreach</h3>
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
@@ -251,7 +240,6 @@
                     <div style="text-align:center;"><div style="font-size:28px;font-weight:900;color:#ff4444;" id="stat-excluded-p">0</div><div style="font-size:11px;color:#888;">Excluidos</div></div>
                 </div>
             </div>
-
             <!-- GESTIÓN DE USUARIOS — SOLO ADMIN -->
             <div style="background:#0d0d1a;border:1px solid #6600cc;border-radius:12px;padding:16px;margin-bottom:16px;">
                 <h3 style="color:#cc88ff;margin-bottom:12px;font-size:15px;">👥 Gestión de Usuarios</h3>
@@ -267,7 +255,6 @@
                 </div>
                 <button onclick="createNewUser()" style="background:#6600cc;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:13px;">+ Crear Usuario</button>
             </div>
-
             <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center;">
                 <select id="filter-city" onchange="loadProspects()" style="background:#0a0a0f;border:1px solid #333;color:white;padding:8px;border-radius:6px;">
                     <option value="">Todas las ciudades</option>
@@ -295,7 +282,6 @@
             </div>
         </div>
     </div>
-
     <div class="grid" id="war-room-grid">
         <div class="card">
             <h2>🚨 Embudo Activo <span id="active-count" style="background:#ff4444;color:white;padding:2px 8px;border-radius:10px;font-size:12px;margin-left:8px;">0</span></h2>
@@ -307,13 +293,11 @@
         </div>
     </div>
 </div>
-
 <script>
     let currentUser = null;
     let currentRole = null;
     let currentTab = 'alba';
     let authToken = null;
-
     async function doLogin() {
         const username = document.getElementById('login-user').value.toLowerCase().trim();
         const password = document.getElementById('login-pass').value;
@@ -339,7 +323,6 @@
             document.getElementById('login-error').textContent = '❌ Error de conexión';
         }
     }
-
     function showApp() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
@@ -352,7 +335,6 @@
         }
         loadStats(); loadActiveLeads(); loadRecentLeads();
     }
-
     function logout() {
         currentUser = null; currentRole = null; authToken = null;
         sessionStorage.clear();
@@ -361,7 +343,6 @@
         document.getElementById('login-user').value = '';
         document.getElementById('login-pass').value = '';
     }
-
     window.addEventListener('load', () => {
         const token = sessionStorage.getItem('ga_token');
         const user = sessionStorage.getItem('ga_user');
@@ -373,12 +354,10 @@
             showApp();
         }
     });
-
     const authHeaders = () => ({
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authToken}`
     });
-
     function updateClock() {
         const crTime = new Intl.DateTimeFormat('es-CR', { timeZone:'America/Costa_Rica', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).format(new Date());
         const hour = parseInt(crTime.split(':')[0]);
@@ -387,7 +366,6 @@
         return isOpen;
     }
     setInterval(updateClock, 1000); updateClock();
-
     function switchTab(tab) {
         if (tab === 'prospectos' && currentRole !== 'admin') return;
         currentTab = tab;
@@ -407,7 +385,6 @@
             loadProspects(); loadOutreachStats();
         }
     }
-
     async function createLead(business) {
         const n = (id) => document.getElementById(id).value;
         const phone = n(`${business}-phone`);
@@ -424,13 +401,11 @@
             }
         } catch(e) { showNotification('❌ Error de conexión', 'error'); }
     }
-
     function maskPhone(phone) {
         if (!phone) return 'N/A';
         const c = phone.replace(/\s/g,'');
         return c.length <= 4 ? '****' : c.slice(0,-4) + '****';
     }
-
     async function loadStats() {
         try {
             const res = await fetch('/api/leads/recent');
@@ -442,7 +417,6 @@
             document.getElementById('active-count').textContent = data.filter(l => l.status === 'New').length;
         } catch(e) {}
     }
-
     async function loadActiveLeads() {
         try {
             const res = await fetch('/api/leads/active');
@@ -481,7 +455,6 @@
             }).join('');
         } catch(e) {}
     }
-
     async function claimLead(id, fullPhone) {
         const res = await fetch(`/api/leads/claim/${id}`, {
             method:'PUT', headers: authHeaders(),
@@ -503,9 +476,7 @@
             loadStats();
         }
     }
-
     const REASONS = ['No contestó el teléfono','Precio muy alto','Eligió a la competencia','Familiar tomó la decisión','Lead falso/spam','Fuera de área','Respuesta muy lenta','Sin dinero','Otro'];
-
     function openLostModal(id, claimedBy) {
         const e = document.getElementById('lost-modal'); if (e) e.remove();
         const m = document.createElement('div'); m.id = 'lost-modal';
@@ -530,11 +501,9 @@
         </div>`;
         document.body.appendChild(m);
     }
-
     function toggleCompetitor() {
         document.getElementById('competitor-field').style.display = document.getElementById('lost-reason-sel').value === 'Eligió a la competencia' ? 'block' : 'none';
     }
-
     async function confirmLost(id) {
         const reason = document.getElementById('lost-reason-sel').value;
         const competitor = document.getElementById('competitor-name-input')?.value || null;
@@ -544,7 +513,6 @@
         });
         if (res.ok) { document.getElementById('lost-modal').remove(); showNotification(`📊 Perdido: ${reason} — cerrado por ${currentUser}`, 'warning'); loadActiveLeads(); loadStats(); }
     }
-
     async function loadRecentLeads() {
         try {
             const res = await fetch('/api/leads/recent');
@@ -562,7 +530,6 @@
             </table>`;
         } catch(e) {}
     }
-
     async function loadUsers() {
         try {
             const res = await fetch('/api/auth/users', { headers: authHeaders() });
@@ -581,7 +548,6 @@
                 </div>`).join('');
         } catch(e) {}
     }
-
     async function createNewUser() {
         const username = document.getElementById('new-username').value.trim();
         const password = document.getElementById('new-password').value;
@@ -603,14 +569,12 @@
             showNotification(`❌ ${data.error}`, 'error');
         }
     }
-
     async function deactivateUser(username) {
         if (!confirm(`¿Desactivar al usuario ${username}?`)) return;
         await fetch(`/api/auth/users/${username}`, { method: 'DELETE', headers: authHeaders() });
         showNotification(`✅ Usuario ${username} desactivado`, 'warning');
         loadUsers();
     }
-
     async function loadOutreachSettings() {
         try {
             const res = await fetch('/api/outreach/settings');
@@ -624,7 +588,6 @@
             });
         } catch(e) {}
     }
-
     async function toggleOutreach(key, value) {
         await fetch('/api/outreach/settings', {
             method:'POST', headers: authHeaders(),
@@ -635,7 +598,6 @@
         if (slider) slider.classList.toggle('on', value);
         showNotification(value ? `✅ ${ch} activado` : `⏸️ ${ch} desactivado`, value ? 'success' : 'warning');
     }
-
     async function fireOutreach(channel) {
         const business = document.getElementById('outreach-business').value;
         const niche = document.getElementById('outreach-niche').value;
@@ -653,7 +615,6 @@
             else { resultDiv.style.color = '#00ff88'; resultDiv.textContent = `✅ Enviados: ${data.sent} | Fallidos: ${data.failed||0} | Total: ${data.total}`; loadOutreachStats(); }
         } catch(e) { resultDiv.style.color = '#ff4444'; resultDiv.textContent = `❌ Error`; }
     }
-
     async function loadOutreachStats() {
         try {
             const res = await fetch('/api/outreach/stats');
@@ -664,7 +625,6 @@
             document.getElementById('stat-excluded-p').textContent = data.excluded || 0;
         } catch(e) {}
     }
-
     async function importFile(input) {
         const file = input.files[0]; if (!file) return;
         const resultDiv = document.getElementById('outreach-result');
@@ -685,7 +645,6 @@
             loadProspects(); loadOutreachStats();
         } catch(e) { resultDiv.style.color = '#ff4444'; resultDiv.textContent = `❌ ${e.message}`; }
     }
-
     async function launchSearchDestroy() {
         const keyword = document.getElementById('sd-keyword').value.trim();
         const city = document.getElementById('sd-city').value.trim();
@@ -711,7 +670,6 @@
             }
         } catch(e) { resultDiv.style.color = '#ff4444'; resultDiv.textContent = `❌ ${e.message}`; }
     }
-
     async function loadJobStatus() {
         try {
             const res = await fetch('/api/scraper/jobs');
@@ -729,7 +687,6 @@
             }).join('');
         } catch(e) {}
     }
-
     async function loadProspects() {
         if (currentRole !== 'admin') return;
         try {
@@ -753,17 +710,14 @@
             }).join('');
         } catch(e) {}
     }
-
     async function markProspectContacted(id) {
         await fetch('/api/outreach/mark-contacted', { method:'POST', headers: authHeaders(), body: JSON.stringify({ id, channel:'manual' }) });
         showNotification('✅ Prospecto marcado', 'success');
         loadProspects(); loadOutreachStats();
     }
-
     let sirenPlaying = false;
     function startSiren() { if (!sirenPlaying) { document.getElementById('siren').play().catch(()=>{}); sirenPlaying = true; } }
     function stopSiren() { const s = document.getElementById('siren'); s.pause(); s.currentTime = 0; sirenPlaying = false; }
-
     function showNotification(msg, type) {
         const colors = { success:'#00ff88', warning:'#ffaa00', error:'#ff4444' };
         const n = document.createElement('div');
@@ -773,7 +727,6 @@
         document.body.appendChild(n);
         setTimeout(() => n.remove(), 4000);
     }
-
     setInterval(loadActiveLeads, 3000);
     setInterval(loadRecentLeads, 10000);
     setInterval(loadStats, 15000);
