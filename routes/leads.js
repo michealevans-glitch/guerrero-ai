@@ -14,10 +14,7 @@ router.get('/test-email', testEmail);
 
 router.get('/messages/:leadId', async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT * FROM messages WHERE lead_id = $1 ORDER BY created_at ASC`,
-      [req.params.leadId]
-    );
+    const result = await pool.query(`SELECT * FROM messages WHERE lead_id = $1 ORDER BY created_at ASC`, [req.params.leadId]);
     res.json(result.rows);
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
@@ -27,8 +24,8 @@ router.post('/send-message', async (req, res) => {
     const { lead_id, message, sent_by, business, message_type, call_result, call_duration } = req.body;
     const result = await pool.query(
       `INSERT INTO messages (lead_id, message_text, direction, sent_by, message_type, call_result, call_duration)
-       VALUES ($1, $2, 'outgoing', $3, $4, $5, $6) RETURNING *`,
-      [lead_id, message, sent_by, message_type || 'text', call_result || null, call_duration || null]
+       VALUES ($1,$2,'outgoing',$3,$4,$5,$6) RETURNING *`,
+      [lead_id, message, sent_by, message_type||'text', call_result||null, call_duration||null]
     );
     res.json(result.rows[0]);
   } catch(err) { res.status(500).json({ error: err.message }); }
@@ -48,7 +45,7 @@ router.post('/quick-replies', async (req, res) => {
   try {
     const { business, user_name, reply_text } = req.body;
     const result = await pool.query(
-      `INSERT INTO quick_replies (business, user_name, reply_text) VALUES ($1, $2, $3) RETURNING *`,
+      `INSERT INTO quick_replies (business, user_name, reply_text) VALUES ($1,$2,$3) RETURNING *`,
       [business, user_name, reply_text]
     );
     res.json(result.rows[0]);
