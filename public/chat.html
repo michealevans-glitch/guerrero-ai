@@ -513,6 +513,7 @@ function useQR(text) {
     if (qrPanelOpen) toggleQRPanel();
 }
 async function addQuickReply() {
+    console.log('USER:', currentUser, 'BIZ:', currentBusiness, 'TOKEN:', sessionStorage.getItem('ga_token'));
     const text = document.getElementById('new-qr-text').value.trim();
     if (!text) return;
     try {
@@ -731,7 +732,7 @@ async function saveCallRecord() {
             method:'POST', headers: authHeaders(),
             body: JSON.stringify({ lead_id: currentLeadId, message: notes, sent_by: currentUser, business: currentBusiness, message_type: 'call', call_result: result, call_duration: duration })
         });
-        closeCallModal();
+        closeCallModal()addQuickReply;
         document.getElementById('call-duration-input').value = '';
         document.getElementById('call-notes-input').value = '';
         showNotification('📞 Llamada registrada', 'success');
