@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,7 +23,6 @@
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         html, body { height:100%; overflow:hidden; }
         body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text-dark); display:flex; flex-direction:column; }
-
         #login-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:var(--cream); z-index:99999; display:flex; align-items:center; justify-content:center; }
         .login-card { background:white; border-radius:24px; padding:40px 32px; width:90%; max-width:360px; box-shadow:var(--shadow-lg); text-align:center; }
         .login-card h1 { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:6px; }
@@ -31,7 +31,6 @@
         .login-input:focus { border-color:var(--alba-green); }
         .login-btn { width:100%; padding:13px; background:var(--text-dark); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; margin-top:6px; }
         #login-error { color:var(--huellitas-pink); font-size:13px; margin-top:8px; min-height:20px; }
-
         .topbar { background:white; border-bottom:1px solid var(--cream-darker); padding:0 10px; height:56px; display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow); z-index:100; flex-shrink:0; }
         .logo { font-family:'Playfair Display',serif; font-size:15px; color:var(--text-dark); }
         .business-tabs { display:flex; gap:4px; }
@@ -42,7 +41,6 @@
         .topbar-actions { display:flex; align-items:center; gap:4px; overflow-x:auto; }
         .nav-btn { padding:5px 8px; border-radius:8px; border:1.5px solid var(--cream-darker); background:white; color:var(--text-mid); font-size:10px; font-weight:500; cursor:pointer; text-decoration:none; white-space:nowrap; flex-shrink:0; }
         .nav-btn.highlight { background:var(--alba-green); color:white; border-color:var(--alba-green); }
-
         .main-layout { display:flex; flex:1; overflow:hidden; height:calc(100vh - 56px); }
         .sidebar { width:260px; background:white; border-right:1px solid var(--cream-darker); display:flex; flex-direction:column; flex-shrink:0; }
         @media(max-width:768px) {
@@ -70,7 +68,6 @@
         .badge-lost { background:#FFE0E0; color:#dc3545; }
         .unread-dot { width:6px; height:6px; background:var(--orange); border-radius:50%; }
         .attended-by { font-size:9px; color:var(--text-light); font-style:italic; }
-
         .chat-area { flex:1; display:flex; flex-direction:column; background:var(--cream); overflow:hidden; }
         .chat-header { background:white; border-bottom:1px solid var(--cream-darker); padding:8px 12px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
         .chat-header-left { display:flex; align-items:center; gap:6px; }
@@ -90,7 +87,6 @@
         .action-btn.orange { background:var(--orange); color:white; border-color:var(--orange); }
         .action-btn.purple { background:#6600cc; color:white; border-color:#6600cc; }
         .action-btn:disabled { opacity:0.5; cursor:not-allowed; }
-
         .messages-area { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:7px; }
         .msg-wrapper { display:flex; flex-direction:column; }
         .msg-wrapper.outgoing { align-items:flex-end; }
@@ -106,7 +102,6 @@
         .date-divider { text-align:center; font-size:10px; color:var(--text-light); padding:5px 0; display:flex; align-items:center; gap:8px; }
         .date-divider::before,.date-divider::after { content:''; flex:1; height:1px; background:var(--cream-darker); }
         .call-bubble { background:white; border:1.5px solid var(--cream-darker); border-radius:12px; padding:10px 13px; max-width:72%; box-shadow:var(--shadow); }
-
         /* QUICK REPLIES SLIDE PANEL */
         .qr-panel { background:white; border-top:1px solid var(--cream-darker); flex-shrink:0; }
         .qr-toggle-bar { display:flex; justify-content:space-between; align-items:center; padding:7px 12px; cursor:pointer; user-select:none; }
@@ -130,24 +125,20 @@
         .qr-edit-row { display:flex; gap:5px; margin-top:6px; }
         .qr-add-input { flex:1; padding:7px 10px; border:1.5px solid var(--cream-darker); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:12px; background:var(--cream); outline:none; }
         .qr-add-btn { padding:7px 12px; background:var(--text-dark); color:white; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; }
-
         .input-area { background:white; border-top:1px solid var(--cream-darker); padding:8px 12px; display:flex; gap:7px; align-items:flex-end; flex-shrink:0; padding-bottom:max(8px, env(safe-area-inset-bottom)); }
         .msg-input { flex:1; padding:9px 13px; border:1.5px solid var(--cream-darker); border-radius:14px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-dark); background:var(--cream); outline:none; resize:none; max-height:90px; line-height:1.4; }
         .msg-input:focus { border-color:var(--alba-green); }
         .send-btn { width:40px; height:40px; border-radius:50%; border:none; background:var(--alba-green); color:white; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         .send-btn.huellitas { background:var(--huellitas-pink); }
-
         .no-conv { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-light); gap:10px; padding:20px; text-align:center; }
         .no-conv .big-icon { font-size:48px; opacity:0.3; }
         .no-conv h3 { font-family:'Playfair Display',serif; font-size:18px; color:var(--text-mid); }
-
         .notification { position:fixed; top:66px; right:12px; left:12px; padding:11px 15px; border-radius:12px; font-weight:500; font-size:13px; z-index:10000; box-shadow:var(--shadow-lg); animation:slideIn 0.3s ease; }
         @media(min-width:480px) { .notification { left:auto; width:300px; } }
         @keyframes slideIn { from{transform:translateY(-20px);opacity:0} to{transform:translateY(0);opacity:1} }
         .notification.success { background:var(--alba-green); color:white; }
         .notification.warning { background:#FF9500; color:white; }
         .notification.error { background:var(--huellitas-pink); color:white; }
-
         .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9998; }
         .modal-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:20px; padding:20px; z-index:9999; width:92%; max-width:440px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow-lg); }
         .modal-box h3 { font-family:'Playfair Display',serif; font-size:16px; margin-bottom:12px; }
@@ -164,7 +155,6 @@
     </style>
 </head>
 <body>
-
 <div id="login-screen">
     <div class="login-card">
         <h1>⚔️ Guerrero AI</h1>
@@ -175,7 +165,6 @@
         <p id="login-error"></p>
     </div>
 </div>
-
 <div id="app" style="display:none;flex-direction:column;height:100%;height:100dvh;">
     <div class="topbar">
         <div style="display:flex;align-items:center;gap:8px;">
@@ -203,7 +192,6 @@
             <button class="nav-btn" onclick="logout()">Salir</button>
         </div>
     </div>
-
     <div class="main-layout">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -214,7 +202,6 @@
                 <p style="padding:14px;color:var(--text-light);font-size:12px;text-align:center;">Cargando...</p>
             </div>
         </div>
-
         <div class="chat-area" id="chat-area">
             <div class="no-conv" id="no-conv">
                 <div class="big-icon">💬</div>
@@ -222,7 +209,6 @@
                 <p style="font-size:13px;">Los mensajes de clientes aparecerán aquí</p>
                 <button class="nav-btn" onclick="showSidebar()" style="margin-top:8px;">Ver conversaciones</button>
             </div>
-
             <div id="active-chat" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
                 <div class="chat-header">
                     <div class="chat-header-left">
@@ -241,9 +227,7 @@
                         <button class="action-btn red" id="lost-btn" onclick="openLostModal()">❌ Perdido</button>
                     </div>
                 </div>
-
                 <div class="messages-area" id="messages-area"></div>
-
                 <!-- QUICK REPLIES SLIDE PANEL -->
                 <div class="qr-panel">
                     <div class="qr-toggle-bar" onclick="toggleQRPanel()">
@@ -259,7 +243,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="input-area">
                     <textarea class="msg-input" id="msg-input" placeholder="Escribí tu mensaje..." rows="1"
                         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"
@@ -270,7 +253,6 @@
         </div>
     </div>
 </div>
-
 <!-- MODAL PERDIDO -->
 <div id="lost-modal" style="display:none;">
     <div class="modal-overlay" onclick="closeLostModal()"></div>
@@ -297,7 +279,6 @@
         <button class="modal-btn secondary" onclick="closeLostModal()">Cancelar</button>
     </div>
 </div>
-
 <!-- MODAL REGISTRAR LLAMADA -->
 <div id="call-modal" style="display:none;">
     <div class="modal-overlay" onclick="closeCallModal()"></div>
@@ -318,7 +299,6 @@
         <button class="modal-btn secondary" onclick="closeCallModal()">Cancelar</button>
     </div>
 </div>
-
 <!-- MODAL TRANSFERIR -->
 <div id="transfer-modal" style="display:none;">
     <div class="modal-overlay" onclick="closeTransferModal()"></div>
@@ -330,7 +310,6 @@
         <button class="modal-btn secondary" onclick="closeTransferModal()">Cancelar</button>
     </div>
 </div>
-
 <!-- MODAL AGREGAR CONTACTO -->
 <div id="add-contact-modal" style="display:none;">
     <div class="modal-overlay" onclick="closeAddContactModal()"></div>
@@ -364,12 +343,10 @@
         <button class="modal-btn secondary" onclick="closeAddContactModal()">Cancelar</button>
     </div>
 </div>
-
 <script>
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(e => {});
 }
-
 const SYSTEM_QR = {
     alba: [
         { id: 's1', label: '👋 Bienvenida', text: 'Bienvenidos a un espacio donde la despedida se convierte en un homenaje de amor.\n\nPara emergencias puede contactarnos al número ☎️ 22217372.\n\nBuenas, ¿cómo puedo ayudarle?' },
@@ -393,7 +370,6 @@ const SYSTEM_QR = {
         { id: 'h4', label: '🙏 Despedida', text: 'Gracias por confiar en Huellitas al Cielo en este momento tan especial. Esperamos haber sido un apoyo para ustedes y su familia peluda.\n\nCon cariño,\nEquipo Huellitas al Cielo 🐾' }
     ]
 };
-
 let currentUser = null;
 let currentRole = null;
 let currentBusiness = 'alba';
@@ -406,7 +382,6 @@ let qrPanelOpen = false;
 let activeQRTab = 'system';
 let alertSounded = false;
 let refreshInterval = null;
-
 function doLogin() {
     const user = document.getElementById('login-user').value.toLowerCase().trim();
     const pass = document.getElementById('login-pass').value;
@@ -429,7 +404,6 @@ function doLogin() {
         document.getElementById('login-error').textContent = '❌ Error de conexión';
     });
 }
-
 function showApp() {
     document.getElementById('login-screen').style.display = 'none';
     const app = document.getElementById('app');
@@ -440,13 +414,11 @@ function showApp() {
     loadUnreadCounts();
     refreshInterval = setInterval(() => { loadConversations(); loadUnreadCounts(); }, 5000);
 }
-
 function logout() {
     sessionStorage.clear();
     clearInterval(refreshInterval);
     location.reload();
 }
-
 window.addEventListener('load', () => {
     const token = sessionStorage.getItem('ga_token');
     const user = sessionStorage.getItem('ga_user');
@@ -457,15 +429,12 @@ window.addEventListener('load', () => {
         showApp();
     }
 });
-
 const authHeaders = () => ({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${sessionStorage.getItem('ga_token')}`
 });
-
 function showSidebar() { document.getElementById('sidebar').classList.add('open'); }
 function hideSidebar() { document.getElementById('sidebar').classList.remove('open'); }
-
 async function loadUnreadCounts() {
     try {
         const res = await fetch('/api/leads/unread-count');
@@ -477,9 +446,9 @@ async function loadUnreadCounts() {
             alertSounded = true;
             setTimeout(() => { alertSounded = false; }, 60000);
         }
-    } catch(e) {}
+   } catch(e) { showNotification('❌ Error: ' + e.message, 'error'); }
 }
-
+}
 function playAlert() {
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -490,7 +459,6 @@ function playAlert() {
         osc.start(); setTimeout(() => { osc.stop(); ctx.close(); }, 800);
     } catch(e) {}
 }
-
 // ═══ QUICK REPLIES ═══
 function toggleQRPanel() {
     qrPanelOpen = !qrPanelOpen;
@@ -499,7 +467,6 @@ function toggleQRPanel() {
     content.classList.toggle('open', qrPanelOpen);
     arrow.classList.toggle('open', qrPanelOpen);
 }
-
 async function loadUserQR() {
     try {
         const r1 = await fetch(`/api/leads/quick-replies/alba/${encodeURIComponent(currentUser)}`);
@@ -511,7 +478,6 @@ async function loadUserQR() {
     } catch(e) {}
     renderQRTabs();
 }
-
 function renderQRTabs() {
     const tabs = document.getElementById('qr-tabs');
     tabs.innerHTML = `
@@ -519,23 +485,19 @@ function renderQRTabs() {
         <button class="qr-tab ${activeQRTab === 'mine' ? 'active' : ''}" onclick="switchQRTab('mine')">✏️ Mis respuestas</button>`;
     renderQRMessages();
 }
-
 function switchQRTab(tab) {
     activeQRTab = tab;
     renderQRTabs();
 }
-
 function renderQRMessages() {
     const list = document.getElementById('qr-messages-list');
     const messages = activeQRTab === 'system'
         ? SYSTEM_QR[currentBusiness]
         : userQR[currentBusiness].map(r => ({ id: r.id, label: r.reply_text.substring(0, 30) + '...', text: r.reply_text, deletable: true }));
-
     if (!messages.length) {
         list.innerHTML = '<p style="font-size:12px;color:var(--text-light);padding:8px;">No hay respuestas personalizadas aún.</p>';
         return;
     }
-
     list.innerHTML = messages.map(r => `
         <div class="qr-msg-item" onclick="useQR(\`${r.text.replace(/`/g,'\\`')}\`)">
             <div style="font-size:13px;flex-shrink:0;">${r.label.split(' ')[0]}</div>
@@ -544,14 +506,12 @@ function renderQRMessages() {
             ${r.deletable ? `<button onclick="event.stopPropagation();deleteUserQR(${r.id})" style="background:none;border:none;color:#dc3545;cursor:pointer;font-size:12px;flex-shrink:0;">🗑️</button>` : ''}
         </div>`).join('');
 }
-
 function useQR(text) {
     document.getElementById('msg-input').value = text;
     document.getElementById('msg-input').focus();
     autoResize(document.getElementById('msg-input'));
     if (qrPanelOpen) toggleQRPanel();
 }
-
 async function addQuickReply() {
     const text = document.getElementById('new-qr-text').value.trim();
     if (!text) return;
@@ -568,14 +528,12 @@ async function addQuickReply() {
         showNotification('✅ Respuesta agregada', 'success');
     } catch(e) {}
 }
-
 async function deleteUserQR(id) {
     await fetch(`/api/leads/quick-replies/${id}`, { method: 'DELETE', headers: authHeaders() });
     userQR[currentBusiness] = userQR[currentBusiness].filter(r => r.id !== id);
     renderQRMessages();
     showNotification('🗑️ Eliminada', 'warning');
 }
-
 // ═══ CONVERSATIONS ═══
 function switchBusiness(biz) {
     currentBusiness = biz;
@@ -589,7 +547,6 @@ function switchBusiness(biz) {
     renderQRTabs();
     loadConversations();
 }
-
 async function loadConversations() {
     try {
         const res = await fetch('/api/leads/recent');
@@ -598,7 +555,6 @@ async function loadConversations() {
         renderConversations(data);
     } catch(e) {}
 }
-
 function renderConversations(data) {
     const list = document.getElementById('conversations-list');
     const filtered = data.filter(l => {
@@ -630,7 +586,6 @@ function renderConversations(data) {
         </div>`;
     }).join('');
 }
-
 function filterConversations(query) {
     const filtered = allConversations.filter(l =>
         (l.contact_name||'').toLowerCase().includes(query.toLowerCase()) ||
@@ -639,7 +594,6 @@ function filterConversations(query) {
     );
     renderConversations(filtered);
 }
-
 function openConversation(id, phone, name, isH, status, claimedBy) {
     currentLeadId = id;
     currentLeadPhone = phone;
@@ -668,7 +622,6 @@ function openConversation(id, phone, name, isH, status, claimedBy) {
     loadMessages(id);
     renderConversations(allConversations);
 }
-
 async function loadMessages(leadId) {
     const area = document.getElementById('messages-area');
     area.innerHTML = '';
@@ -705,7 +658,6 @@ async function loadMessages(leadId) {
         area.scrollTop = area.scrollHeight;
     } catch(e) { area.innerHTML = '<div class="date-divider">Inicio de conversación</div>'; }
 }
-
 async function sendMessage() {
     const input = document.getElementById('msg-input');
     const text = input.value.trim();
@@ -726,7 +678,6 @@ async function sendMessage() {
         });
     } catch(e) {}
 }
-
 async function claimCurrentLead() {
     if (!currentLeadId) return;
     const res = await fetch(`/api/leads/claim/${currentLeadId}`, {
@@ -741,11 +692,9 @@ async function claimCurrentLead() {
         loadConversations(); loadUnreadCounts();
     }
 }
-
 function callClient() {
     if (currentLeadPhone) window.location.href = `tel:${currentLeadPhone}`;
 }
-
 function openLostModal() { document.getElementById('lost-modal').style.display = 'block'; }
 function closeLostModal() { document.getElementById('lost-modal').style.display = 'none'; }
 function toggleLostFields() {
@@ -753,7 +702,6 @@ function toggleLostFields() {
     document.getElementById('competitor-field').style.display = reason === 'Eligió a la competencia' ? 'block' : 'none';
     document.getElementById('other-field').style.display = reason === 'Otro' ? 'block' : 'none';
 }
-
 async function confirmLost() {
     if (!currentLeadId) return;
     const reason = document.getElementById('lost-reason-sel').value;
@@ -771,10 +719,8 @@ async function confirmLost() {
     document.getElementById('active-chat').style.display = 'none';
     if (window.innerWidth <= 768) showSidebar();
 }
-
 function openCallModal() { document.getElementById('call-modal').style.display = 'block'; }
 function closeCallModal() { document.getElementById('call-modal').style.display = 'none'; }
-
 async function saveCallRecord() {
     if (!currentLeadId) return;
     const result = document.getElementById('call-result-sel').value;
@@ -792,7 +738,6 @@ async function saveCallRecord() {
         loadMessages(currentLeadId);
     } catch(e) {}
 }
-
 function openTransferModal() {
     const USERS_LIST = [
         { name: 'Oscar Evans', role: 'admin' },
@@ -808,9 +753,7 @@ function openTransferModal() {
         </div>`).join('');
     document.getElementById('transfer-modal').style.display = 'block';
 }
-
 function closeTransferModal() { document.getElementById('transfer-modal').style.display = 'none'; }
-
 async function confirmTransfer(toName) {
     if (!currentLeadId) return;
     const note = document.getElementById('transfer-note').value;
@@ -828,10 +771,8 @@ async function confirmTransfer(toName) {
         loadConversations();
     } catch(e) {}
 }
-
 function openAddContactModal() { document.getElementById('add-contact-modal').style.display = 'block'; }
 function closeAddContactModal() { document.getElementById('add-contact-modal').style.display = 'none'; }
-
 async function saveContact() {
     const name = document.getElementById('c-name').value.trim();
     const phone = document.getElementById('c-phone').value.trim();
@@ -862,12 +803,10 @@ async function saveContact() {
         }
     } catch(e) { showNotification('❌ Error guardando contacto', 'error'); }
 }
-
 function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 90) + 'px';
 }
-
 function showNotification(msg, type) {
     const n = document.createElement('div');
     n.className = `notification ${type}`;
