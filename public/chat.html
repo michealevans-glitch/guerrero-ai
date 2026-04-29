@@ -118,7 +118,11 @@
         .qr-tabs { display:flex; gap:5px; margin-bottom:7px; overflow-x:auto; padding-bottom:2px; }
         .qr-tab { padding:4px 10px; border-radius:12px; border:1.5px solid var(--cream-darker); background:var(--cream); font-size:10px; font-weight:600; color:var(--text-mid); cursor:pointer; white-space:nowrap; flex-shrink:0; }
         .qr-tab.active { background:var(--text-dark); color:white; border-color:var(--text-dark); }
-        .qr-messages-list { max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:4px; }
+.qr-messages-list { display:flex; flex-direction:row; gap:6px; overflow-x:auto; padding-bottom:4px; scroll-snap-type:x mandatory; }
+.qr-messages-list::-webkit-scrollbar { height:2px; }
+.qr-messages-list::-webkit-scrollbar-thumb { background:var(--cream-darker); }
+.qr-msg-item { min-width:200px; max-width:220px; flex-shrink:0; scroll-snap-align:start; flex-direction:column; align-items:flex-start; }
+.qr-msg-preview { white-space:normal; font-size:11px; line-height:1.3; max-height:40px; overflow:hidden; }
         .qr-msg-item { display:flex; align-items:center; gap:6px; padding:6px 8px; border-radius:8px; background:var(--cream); cursor:pointer; border:1px solid transparent; }
         .qr-msg-item:hover { border-color:var(--alba-green); background:var(--alba-light); }
         .qr-msg-preview { flex:1; font-size:11px; color:var(--text-dark); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -185,7 +189,13 @@
                 </button>
             </div>
         </div>
-        <div class="topbar-actions">
+<div class="topbar-actions" style="display:flex;align-items:center;gap:4px;overflow-x:auto;max-width:55vw;">
+    <span id="user-pill" style="font-size:10px;color:var(--text-mid);white-space:nowrap;display:none;"></span>
+    <button class="nav-btn" style="background:#00aa44;color:white;border-color:#00aa44;" onclick="openAddContactModal()">➕</button>
+    <a href="/clients.html" class="nav-btn" style="background:#6600cc;color:white;border-color:#6600cc;">👥</a>
+    <a href="/" class="nav-btn">⚔️</a>
+    <button class="nav-btn" onclick="logout()">🚪</button>
+</div>
             <span id="user-pill" style="font-size:10px;color:var(--text-mid);white-space:nowrap;"></span>
             <button class="nav-btn highlight" onclick="openAddContactModal()">➕ Contacto</button>
             <a href="/clients.html" class="nav-btn" style="background:#6600cc;color:white;border-color:#6600cc;">👥 Clientes</a>
