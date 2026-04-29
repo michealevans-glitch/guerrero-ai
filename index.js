@@ -15,6 +15,7 @@ app.use('/api/leads', require('./routes/leads'));
 app.use('/api/scraper', require('./routes/scraper'));
 app.use('/api/outreach', require('./routes/outreach'));
 app.use('/api/webhook', require('./routes/webhook'));
+app.use('/api/contacts', require('./routes/contacts'));
 app.use('/api/contacts', require('./routes/outreach'));
 app.use('/api/contacts', require('./routes/contacts'));
 
