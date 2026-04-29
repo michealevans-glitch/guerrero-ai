@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guerrero AI — Clientes</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        :root { --cream:#F5F0E8; --cream-dark:#EDE7D9; --cream-darker:#E0D8C8; --alba-green:#2D6A4F; --huellitas-pink:#C9184A; --text-dark:#2C2416; --text-mid:#6B5E4E; --text-light:#9C8E7E; --shadow:0 2px 20px rgba(44,36,22,0.08); --shadow-lg:0 8px 40px rgba(44,36,22,0.12); }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text-dark); min-height:100vh; }
+        .topbar { background:white; border-bottom:1px solid var(--cream-darker); padding:0 16px; height:56px; display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow); position:sticky; top:0; z-index:100; }
+        .logo { font-family:'Playfair Display',serif; font-size:16px; }
+        .nav-btn { padding:7px 12px; border-radius:8px; border:1.5px solid var(--cream-darker); background:white; color:var(--text-mid); font-size:12px; font-weight:500; cursor:pointer; text-decoration:none; white-space:nowrap; }
+        .nav-btn.green { background:var(--alba-green); color:white; border-color:var(--alba-green); }
+        .main { padding:20px; max-width:900px; margin:0 auto; }
+        .search-bar { display:flex; gap:10px; margin-bottom:20px; align-items:center; }
+        .search-input { flex:1; padding:12px 16px; border:1.5px solid var(--cream-darker); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:14px; background:white; outline:none; }
+        .search-input:focus { border-color:var(--alba-green); }
+        .filter-select { padding:12px; border:1.5px solid var(--cream-darker); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:13px; background:white; outline:none; }
+        .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+        .stat-box { background:white; border-radius:12px; padding:16px; text-align:center; box-shadow:var(--shadow); }
+        .stat-box .num { font-size:28px; font-weight:700; color:var(--alba-green); }
+        .stat-box .lbl { font-size:12px; color:var(--text-light); margin-top:4px; }
+        .contacts-grid { display:flex; flex-direction:column; gap:10px; }
+        .contact-card { background:white; border-radius:14px; padding:16px; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:box-shadow 0.2s; }
+        .contact-card:hover { box-shadow:var(--shadow-lg); }
+        .contact-left { display:flex; align-items:center; gap:12px; }
+        .contact-avatar { width:44px; height:44px; border-radius:50%; background:var(--cream-dark); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+        .contact-name { font-weight:600; font-size:14px; margin-bottom:2px; }
+        .contact-meta { font-size:12px; color:var(--text-mid); }
+        .contact-badges { display:flex; gap:5px; margin-top:4px; flex-wrap:wrap; }
+        .badge { padding:2px 7px; border-radius:6px; font-size:10px; font-weight:600; }
+        .badge-alba { background:#D8F3DC; color:var(--alba-green); }
+        .badge-huellitas { background:#FFD6E0; color:var(--huellitas-pink); }
+        .badge-source { background:#F0F0F0; color:var(--text-mid); }
+        .contact-actions { display:flex; gap:6px; flex-shrink:0; }
+        .action-btn { padding:8px 12px; border-radius:8px; border:1.5px solid var(--cream-darker); background:white; font-size:12px; font-weight:600; cursor:pointer; text-decoration:none; color:var(--text-dark); white-space:nowrap; }
+        .action-btn.call { background:#0066cc; color:white; border-color:#0066cc; }
+        .action-btn.wa { background:#25d366; color:white; border-color:#25d366; }
+        .empty-state { text-align:center; padding:60px 20px; color:var(--text-light); }
+        .empty-state .icon { font-size:48px; opacity:0.3; margin-bottom:12px; }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9998; display:none; }
+        .modal-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:20px; padding:22px; z-index:9999; width:92%; max-width:440px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow-lg); display:none; }
+        .modal-box h3 { font-family:'Playfair Display',serif; font-size:17px; margin-bottom:14px; }
+        .modal-close { float:right; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-light); }
+        .modal-input { width:100%; padding:10px 12px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; background:var(--cream); margin-bottom:9px; outline:none; }
+        .modal-select { width:100%; padding:10px 12px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; background:var(--cream); margin-bottom:9px; outline:none; }
+        .modal-btn { width:100%; padding:11px; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; margin-bottom:5px; }
+        .modal-btn.primary { background:var(--text-dark); color:white; }
+        .modal-btn.secondary { background:var(--cream); color:var(--text-mid); }
+        .profile-row { display:flex; gap:8px; margin-bottom:8px; }
+        .profile-label { font-size:11px; color:var(--text-light); font-weight:600; margin-bottom:3px; }
+        .profile-value { font-size:14px; color:var(--text-dark); }
+        .notification { position:fixed; top:70px; right:16px; padding:12px 18px; border-radius:12px; font-weight:500; font-size:13px; z-index:10000; box-shadow:var(--shadow-lg); }
+        .notification.success { background:var(--alba-green); color:white; }
+        .notification.error { background:var(--huellitas-pink); color:white; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <span class="logo">⚔️ Clientes</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+        <span id="user-pill" style="font-size:11px;color:var(--text-mid);"></span>
+        <button class="nav-btn green" onclick="openAddModal()">➕ Agregar</button>
+        <a href="/chat.html" class="nav-btn">💬 Chat</a>
+        <a href="/" class="nav-btn">⚔️ War Room</a>
+        <button class="nav-btn" onclick="doLogout()">🚪 Salir</button>
+    </div>
+</div>
+
+<div class="main">
+    <div class="stats-row">
+        <div class="stat-box"><div class="num" id="stat-total">0</div><div class="lbl">Total Clientes</div></div>
+        <div class="stat-box"><div class="num" id="stat-alba" style="color:var(--alba-green);">0</div><div class="lbl">Albalumen</div></div>
+        <div class="stat-box"><div class="num" id="stat-huellitas" style="color:var(--huellitas-pink);">0</div><div class="lbl">Huellitas</div></div>
+    </div>
+
+    <div class="search-bar">
+        <input type="search" class="search-input" id="search-input" placeholder="🔍 Buscar por nombre, teléfono..." oninput="filterContacts()">
+        <select class="filter-select" id="filter-business" onchange="filterContacts()">
+            <option value="">Todos</option>
+            <option value="alba">🕊️ Albalumen</option>
+            <option value="huellitas">🐾 Huellitas</option>
+        </select>
+        <select class="filter-select" id="filter-source" onchange="filterContacts()">
+            <option value="">Todas las fuentes</option>
+            <option value="WhatsApp">💬 WhatsApp</option>
+            <option value="Llamada">📞 Llamada</option>
+            <option value="Facebook">📘 Facebook</option>
+            <option value="Instagram">📷 Instagram</option>
+            <option value="Walk-in">🚶 Walk-in</option>
+            <option value="Referido">👥 Referido</option>
+            <option value="Google">🔍 Google</option>
+        </select>
+    </div>
+
+    <div class="contacts-grid" id="contacts-grid">
+        <div class="empty-state"><div class="icon">👥</div><p>Cargando clientes...</p></div>
+    </div>
+</div>
+
+<!-- MODAL AGREGAR -->
+<div class="modal-overlay" id="add-overlay" onclick="closeAddModal()"></div>
+<div class="modal-box" id="add-modal">
+    <button class="modal-close" onclick="closeAddModal()">✕</button>
+    <h3>➕ Agregar Cliente</h3>
+    <input type="text" class="modal-input" id="c-name" placeholder="Nombre completo *">
+    <input type="tel" class="modal-input" id="c-phone" placeholder="Teléfono *">
+    <input type="email" class="modal-input" id="c-email" placeholder="Email (opcional)">
+    <input type="text" class="modal-input" id="c-address" placeholder="Dirección (opcional)">
+    <select class="modal-select" id="c-source">
+        <option value="">¿Cómo llegó el cliente?</option>
+        <option value="WhatsApp">💬 WhatsApp</option>
+        <option value="Llamada">📞 Llamada telefónica</option>
+        <option value="Facebook">📘 Facebook</option>
+        <option value="Instagram">📷 Instagram</option>
+        <option value="TikTok">🎵 TikTok</option>
+        <option value="Walk-in">🚶 Walk-in / Visita</option>
+        <option value="Referido">👥 Referido</option>
+        <option value="Google">🔍 Google</option>
+        <option value="Otro">🔮 Otro</option>
+    </select>
+    <select class="modal-select" id="c-business">
+        <option value="alba">🕊️ Albalumen</option>
+        <option value="huellitas">🐾 Huellitas al Cielo</option>
+    </select>
+    <textarea class="modal-input" id="c-notes" placeholder="Notas adicionales..." rows="2"></textarea>
+    <button class="modal-btn primary" onclick="saveContact()">💾 Guardar Cliente</button>
+    <button class="modal-btn secondary" onclick="closeAddModal()">Cancelar</button>
+</div>
+
+<!-- MODAL PERFIL -->
+<div class="modal-overlay" id="profile-overlay" onclick="closeProfile()"></div>
+<div class="modal-box" id="profile-modal">
+    <button class="modal-close" onclick="closeProfile()">✕</button>
+    <h3 id="profile-name">Cliente</h3>
+    <div id="profile-content"></div>
+</div>
+
+<script>
+let allContacts = [];
+let currentUser = null;
+let authToken = null;
+
+window.addEventListener('load', () => {
+    const token = sessionStorage.getItem('ga_token');
+    const user = sessionStorage.getItem('ga_user');
+    if (!token || !user) { window.location.href = '/chat.html'; return; }
+    authToken = token;
+    currentUser = user;
+    document.getElementById('user-pill').textContent = `👤 ${user}`;
+    loadContacts();
+});
+
+const authHeaders = () => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` });
+
+function doLogout() { sessionStorage.clear(); window.location.href = '/chat.html'; }
+
+async function loadContacts() {
+    try {
+        const res = await fetch('/api/contacts/list', { headers: authHeaders() });
+        const data = await res.json();
+        allContacts = data;
+        updateStats(data);
+        renderContacts(data);
+    } catch(e) {
+        document.getElementById('contacts-grid').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Error cargando clientes</p></div>';
+    }
+}
+
+function updateStats(data) {
+    document.getElementById('stat-total').textContent = data.length;
+    document.getElementById('stat-alba').textContent = data.filter(c => c.business === 'alba').length;
+    document.getElementById('stat-huellitas').textContent = data.filter(c => c.business === 'huellitas').length;
+}
+
+function renderContacts(data) {
+    const grid = document.getElementById('contacts-grid');
+    if (!data.length) {
+        grid.innerHTML = '<div class="empty-state"><div class="icon">👥</div><h3 style="font-family:\'Playfair Display\',serif;margin-bottom:8px;">Sin clientes aún</h3><p>Agregá el primer cliente con el botón ➕</p></div>';
+        return;
+    }
+    const sorted = [...data].sort((a,b) => a.full_name.localeCompare(b.full_name));
+    grid.innerHTML = sorted.map(c => {
+        const isH = c.business === 'huellitas';
+        const cp = (c.phone||'').replace(/\D/g,'');
+        const wp = cp.length === 8 ? `506${cp}` : cp;
+        return `<div class="contact-card" onclick="openProfile(${c.id})">
+            <div class="contact-left">
+                <div class="contact-avatar">${isH ? '🐾' : '🕊️'}</div>
+                <div>
+                    <div class="contact-name">${c.full_name}</div>
+                    <div class="contact-meta">📞 ${c.phone || 'Sin teléfono'}</div>
+                    <div class="contact-badges">
+                        <span class="badge ${isH ? 'badge-huellitas' : 'badge-alba'}">${isH ? 'Huellitas' : 'Albalumen'}</span>
+                        ${c.source ? `<span class="badge badge-source">${c.source}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+                ${c.phone ? `<a class="action-btn call" href="tel:${c.phone}">📞</a>` : ''}
+                ${c.phone ? `<a class="action-btn wa" href="https://wa.me/${wp}" target="_blank">💬</a>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function filterContacts() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const biz = document.getElementById('filter-business').value;
+    const source = document.getElementById('filter-source').value;
+    const filtered = allContacts.filter(c =>
+        (!query || c.full_name.toLowerCase().includes(query) || (c.phone||'').includes(query)) &&
+        (!biz || c.business === biz) &&
+        (!source || c.source === source)
+    );
+    renderContacts(filtered);
+}
+
+function openProfile(id) {
+    const c = allContacts.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('profile-name').textContent = c.full_name;
+    const isH = c.business === 'huellitas';
+    const cp = (c.phone||'').replace(/\D/g,'');
+    const wp = cp.length === 8 ? `506${cp}` : cp;
+    document.getElementById('profile-content').innerHTML = `
+        <div style="display:grid;gap:10px;margin-bottom:16px;">
+            <div><div class="profile-label">📞 Teléfono</div><div class="profile-value">${c.phone||'—'}</div></div>
+            <div><div class="profile-label">📧 Email</div><div class="profile-value">${c.email||'—'}</div></div>
+            <div><div class="profile-label">📍 Dirección</div><div class="profile-value">${c.address||'—'}</div></div>
+            <div><div class="profile-label">📢 Fuente</div><div class="profile-value">${c.source||'—'}</div></div>
+            <div><div class="profile-label">🏢 Negocio</div><div class="profile-value">${isH ? '🐾 Huellitas al Cielo' : '🕊️ Albalumen'}</div></div>
+            <div><div class="profile-label">👤 Registrado por</div><div class="profile-value">${c.created_by||'—'}</div></div>
+            <div><div class="profile-label">📝 Notas</div><div class="profile-value">${c.notes||'—'}</div></div>
+            <div><div class="profile-label">📅 Fecha</div><div class="profile-value">${new Date(c.created_at).toLocaleDateString('es-CR')}</div></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            ${c.phone ? `<a class="modal-btn" style="background:#0066cc;color:white;text-align:center;text-decoration:none;padding:11px;border-radius:10px;font-weight:600;font-size:14px;" href="tel:${c.phone}">📞 Llamar</a>` : ''}
+            ${c.phone ? `<a class="modal-btn" style="background:#25d366;color:white;text-align:center;text-decoration:none;padding:11px;border-radius:10px;font-weight:600;font-size:14px;" href="https://wa.me/${wp}" target="_blank">💬 WhatsApp</a>` : ''}
+        </div>`;
+    document.getElementById('profile-overlay').style.display = 'block';
+    document.getElementById('profile-modal').style.display = 'block';
+}
+
+function closeProfile() {
+    document.getElementById('profile-overlay').style.display = 'none';
+    document.getElementById('profile-modal').style.display = 'none';
+}
+
+function openAddModal() {
+    document.getElementById('add-overlay').style.display = 'block';
+    document.getElementById('add-modal').style.display = 'block';
+}
+
+function closeAddModal() {
+    document.getElementById('add-overlay').style.display = 'none';
+    document.getElementById('add-modal').style.display = 'none';
+}
+
+async function saveContact() {
+    const name = document.getElementById('c-name').value.trim();
+    const phone = document.getElementById('c-phone').value.trim();
+    if (!name || !phone) { showNotification('⚠️ Nombre y teléfono requeridos', 'error'); return; }
+    try {
+        const res = await fetch('/api/contacts/add', {
+            method: 'POST', headers: authHeaders(),
+            body: JSON.stringify({
+                full_name: name, phone,
+                email: document.getElementById('c-email').value,
+                address: document.getElementById('c-address').value,
+                source: document.getElementById('c-source').value,
+                business: document.getElementById('c-business').value,
+                notes: document.getElementById('c-notes').value,
+                created_by: currentUser
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            closeAddModal();
+            showNotification(`✅ ${name} guardado`, 'success');
+            ['c-name','c-phone','c-email','c-address','c-notes'].forEach(id => document.getElementById(id).value = '');
+            loadContacts();
+        }
+    } catch(e) { showNotification('❌ Error guardando', 'error'); }
+}
+
+function showNotification(msg, type) {
+    const n = document.createElement('div');
+    n.className = `notification ${type}`;
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(() => n.remove(), 3000);
+}
+</script>
+</body>
+</html>
