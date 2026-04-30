@@ -29,5 +29,20 @@ router.post('/quick-replies', async (req, res) => {
     res.json({ success: true });
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
-
+router.get('/unread-count', async (req, res) => {
+  try {
+    const alba = await pool.query(
+      "SELECT COUNT(*) FROM leads WHERE status = 'New' AND (source NOT LIKE '%huellitas%' OR source IS NULL)"
+    );
+    const huellitas = await pool.query(
+      "SELECT COUNT(*) FROM leads WHERE status = 'New' AND source LIKE '%huellitas%'"
+    );
+    res.json({
+      alba: parseInt(alba.rows[0].count),
+      huellitas: parseInt(huellitas.rows[0].count)
+    });
+  } catch(err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
