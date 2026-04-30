@@ -3,874 +3,827 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Guerrero AI — Chat Central v4.1</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Guerrero AI">
+    <meta name="theme-color" content="#2D6A4F">
+    <link rel="manifest" href="/manifest.json">
+    <title>Guerrero AI — Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dark-bg: #0a0a0f;
-            --card-bg: #1a1a2e;
-            --card-bg2: #0d0d1a;
-            --border: #2a2a3e;
-            --alba-green: #00ff88;
-            --huellitas-pink: #ff88ff;
-            --neon-blue: #00d4ff;
-            --neon-orange: #ff6600;
-            --neon-purple: #bc13fe;
-            --neon-yellow: #ffd700;
-            --text-main: #ffffff;
-            --text-dim: #888;
-            --msg-in: #1e1e2e;
-            --msg-out-alba: #00ff88;
-            --msg-out-hue: #ff88ff;
-            --danger: #ff4444;
+            --cream: #F5F0E8; --cream-dark: #EDE7D9; --cream-darker: #E0D8C8;
+            --alba-green: #2D6A4F; --alba-light: #B7E4C7;
+            --huellitas-pink: #C9184A; --huellitas-light: #FFB3C6;
+            --orange: #FF6B00; --green-badge: #00C853;
+            --text-dark: #2C2416; --text-mid: #6B5E4E; --text-light: #9C8E7E;
+            --shadow: 0 2px 20px rgba(44,36,22,0.08); --shadow-lg: 0 8px 40px rgba(44,36,22,0.12);
         }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:'Segoe UI', system-ui, sans-serif; background:var(--dark-bg); color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
-
-        /* ===== TOPBAR ===== */
-        .topbar {
-            background:var(--card-bg2);
-            border-bottom:2px solid var(--alba-green);
-            padding:8px 16px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            z-index:100;
-            flex-shrink:0;
-        }
-        .logo-area h1 { color:var(--alba-green); font-size:18px; font-weight:900; }
-        .topbar-right { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-        .nav-btn {
-            background:rgba(0,255,136,0.1);
-            border:1px solid var(--alba-green);
-            color:var(--alba-green);
-            padding:6px 12px;
-            border-radius:8px;
-            font-size:11px;
-            font-weight:bold;
-            cursor:pointer;
-            text-decoration:none;
-        }
-        .nav-btn.danger { background:rgba(255,68,68,0.2); border-color:var(--danger); color:var(--danger); }
-        .outreach-indicator {
-            font-size:10px;
-            padding:4px 8px;
-            border-radius:4px;
-            font-weight:bold;
-            border:1px solid;
-        }
-        .oi-on { color:var(--alba-green); border-color:var(--alba-green); }
-        .oi-off { color:var(--text-dim); border-color:var(--border); }
-
-        /* ===== LAYOUT ===== */
-        .main-layout { display:flex; flex:1; overflow:hidden; }
-
-        /* ===== SIDEBAR ===== */
-        .sidebar {
-            width:300px;
-            background:var(--card-bg);
-            border-right:1px solid var(--border);
-            display:flex;
-            flex-direction:column;
-            flex-shrink:0;
-        }
-        .sidebar-tabs { display:flex; border-bottom:1px solid var(--border); }
-        .sidebar-tab {
-            flex:1;
-            padding:10px;
-            text-align:center;
-            font-size:11px;
-            font-weight:bold;
-            cursor:pointer;
-            color:var(--text-dim);
-            border:none;
-            background:none;
-        }
-        .sidebar-tab.active.alba { color:var(--alba-green); border-bottom:2px solid var(--alba-green); }
-        .sidebar-tab.active.hue { color:var(--huellitas-pink); border-bottom:2px solid var(--huellitas-pink); }
-        .sidebar-search { padding:10px; border-bottom:1px solid var(--border); }
-        .search-box {
-            width:100%;
-            padding:8px 12px;
-            background:#0a0a0f;
-            border:1px solid var(--border);
-            color:white;
-            border-radius:8px;
-            font-size:12px;
-        }
-        .search-box:focus { outline:none; border-color:var(--alba-green); }
-        .conversations-list { flex:1; overflow-y:auto; }
-        .conversations-list::-webkit-scrollbar { width:3px; }
-        .conversations-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-
-        .conv-item {
-            padding:12px 14px;
-            border-bottom:1px solid #1a1a2e;
-            cursor:pointer;
-            transition:background 0.15s;
-            position:relative;
-        }
-        .conv-item:hover { background:rgba(255,255,255,0.03); }
-        .conv-item.active { background:rgba(0,255,136,0.08); border-left:3px solid var(--alba-green); }
-        .conv-item.active.hue { background:rgba(255,136,255,0.08); border-left-color:var(--huellitas-pink); }
-        .conv-name { font-weight:bold; font-size:13px; margin-bottom:2px; }
-        .conv-preview { font-size:11px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .conv-meta { display:flex; justify-content:space-between; align-items:center; }
-        .conv-time { font-size:10px; color:var(--text-dim); }
-        .conv-badge {
-            background:var(--danger);
-            color:white;
-            border-radius:50%;
-            width:16px; height:16px;
-            font-size:9px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-weight:bold;
-        }
-        .conv-business-tag {
-            font-size:9px;
-            padding:1px 5px;
-            border-radius:3px;
-            font-weight:bold;
-            margin-bottom:4px;
-            display:inline-block;
-        }
-        .tag-alba { background:rgba(0,255,136,0.15); color:var(--alba-green); border:1px solid rgba(0,255,136,0.3); }
-        .tag-hue { background:rgba(255,136,255,0.15); color:var(--huellitas-pink); border:1px solid rgba(255,136,255,0.3); }
-        .conv-unread { color:var(--neon-blue); font-weight:bold; }
-
-        /* ===== CHAT AREA ===== */
-        .chat-area { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-
-        .chat-header {
-            padding:12px 16px;
-            background:var(--card-bg);
-            border-bottom:1px solid var(--border);
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            flex-shrink:0;
-        }
-        .chat-header-left .client-name { font-size:15px; font-weight:bold; }
-        .chat-header-left .client-info { font-size:11px; color:var(--text-dim); margin-top:2px; }
-        .chat-header-actions { display:flex; gap:6px; }
-        .hdr-btn {
-            padding:6px 10px;
-            border-radius:6px;
-            font-size:11px;
-            font-weight:bold;
-            cursor:pointer;
-            border:none;
-        }
-        .hdr-btn.wa { background:#25D366; color:white; }
-        .hdr-btn.claim { background:var(--alba-green); color:#000; }
-        .hdr-btn.lost { background:var(--danger); color:white; }
-
-        /* ===== MESSAGES AREA ===== */
-        .messages-area {
-            flex:1;
-            padding:16px;
-            overflow-y:auto;
-            display:flex;
-            flex-direction:column;
-            gap:8px;
-        }
-        .messages-area::-webkit-scrollbar { width:3px; }
-        .messages-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-
-        .msg-group { display:flex; flex-direction:column; gap:2px; }
-        .msg-sender { font-size:10px; color:var(--text-dim); padding:0 4px; margin-bottom:2px; }
-        .msg-sender.right { text-align:right; }
-
-        .msg {
-            max-width:75%;
-            padding:10px 14px;
-            border-radius:14px;
-            font-size:13px;
-            line-height:1.5;
-            word-break:break-word;
-        }
-        .msg.incoming {
-            background:var(--msg-in);
-            align-self:flex-start;
-            border-bottom-left-radius:3px;
-            border:1px solid var(--border);
-        }
-        .msg.outgoing {
-            background:var(--alba-green);
-            color:#000;
-            align-self:flex-end;
-            border-bottom-right-radius:3px;
-            font-weight:500;
-        }
-        .msg.outgoing.hue { background:var(--huellitas-pink); }
-        .msg-time { font-size:9px; opacity:0.6; margin-top:4px; }
-        .msg-time.right { text-align:right; }
-
-        .date-separator {
-            text-align:center;
-            font-size:10px;
-            color:var(--text-dim);
-            padding:8px 0;
-            position:relative;
-        }
-        .date-separator::before {
-            content:'';
-            position:absolute;
-            top:50%;
-            left:0; right:0;
-            height:1px;
-            background:var(--border);
-            z-index:0;
-        }
-        .date-separator span {
-            background:var(--dark-bg);
-            padding:0 10px;
-            position:relative;
-            z-index:1;
-        }
-
-        /* ===== QUICK REPLIES ===== */
-        .quick-replies-bar {
-            display:flex;
-            gap:6px;
-            overflow-x:auto;
-            padding:8px 12px;
-            background:var(--card-bg2);
-            border-top:1px solid var(--border);
-            flex-shrink:0;
-        }
-        .quick-replies-bar::-webkit-scrollbar { display:none; }
-        .qr-btn {
-            background:var(--card-bg);
-            color:var(--neon-blue);
-            border:1px solid var(--border);
-            padding:6px 12px;
-            border-radius:6px;
-            font-size:11px;
-            font-weight:bold;
-            cursor:pointer;
-            white-space:nowrap;
-            flex-shrink:0;
-            transition:all 0.15s;
-        }
-        .qr-btn:hover { background:var(--neon-blue); color:#000; border-color:var(--neon-blue); }
-
-        /* ===== TEMPLATES BAR ===== */
-        .templates-bar {
-            display:flex;
-            gap:6px;
-            overflow-x:auto;
-            padding:8px 12px;
-            background:var(--card-bg2);
-            border-top:1px solid #111;
-            flex-shrink:0;
-        }
-        .templates-bar::-webkit-scrollbar { display:none; }
-        .temp-btn {
-            background:var(--card-bg);
-            color:var(--text-dim);
-            border:1px solid var(--border);
-            padding:6px 12px;
-            border-radius:6px;
-            font-size:10px;
-            cursor:pointer;
-            white-space:nowrap;
-            flex-shrink:0;
-        }
-        .temp-btn:hover { background:rgba(0,255,136,0.1); color:var(--alba-green); border-color:var(--alba-green); }
-
-        /* ===== INPUT AREA ===== */
-        .input-container {
-            padding:12px;
-            background:var(--card-bg);
-            border-top:1px solid var(--border);
-            flex-shrink:0;
-        }
-        .input-row { display:flex; gap:8px; align-items:flex-end; }
-        .msg-input {
-            flex:1;
-            background:#0a0a0f;
-            border:1px solid var(--border);
-            color:white;
-            padding:12px 14px;
-            border-radius:10px;
-            font-size:13px;
-            resize:none;
-            line-height:1.4;
-            max-height:100px;
-            font-family:inherit;
-        }
-        .msg-input:focus { outline:none; border-color:var(--alba-green); }
-        .send-btn {
-            background:var(--alba-green);
-            color:#000;
-            border:none;
-            padding:12px 20px;
-            border-radius:10px;
-            font-weight:900;
-            font-size:13px;
-            cursor:pointer;
-            white-space:nowrap;
-        }
-        .send-btn:hover { opacity:0.9; }
-        .send-btn.hue { background:var(--huellitas-pink); }
-
-        /* ===== CAPTURE PANEL (SOLEDAD) ===== */
-        .capture-card {
-            background:var(--card-bg2);
-            border-bottom:1px solid var(--neon-purple);
-            padding:12px 16px;
-            flex-shrink:0;
-        }
-        .capture-label { font-size:9px; color:var(--neon-purple); font-weight:bold; margin-bottom:8px; letter-spacing:1px; }
-        .capture-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-        .c-input {
-            background:#0a0a0f;
-            border:1px solid var(--border);
-            color:var(--text-main);
-            padding:8px 10px;
-            border-radius:6px;
-            font-size:12px;
-            font-family:inherit;
-        }
-        .c-input:focus { outline:none; border-color:var(--neon-purple); }
-        .c-select {
-            background:#0a0a0f;
-            border:1px solid var(--border);
-            color:var(--text-main);
-            padding:8px 10px;
-            border-radius:6px;
-            font-size:12px;
-        }
-        .btn-capture {
-            grid-column: span 2;
-            background:var(--neon-purple);
-            color:white;
-            border:none;
-            padding:10px;
-            border-radius:6px;
-            font-weight:bold;
-            font-size:12px;
-            cursor:pointer;
-            text-transform:uppercase;
-            letter-spacing:0.5px;
-        }
-        .btn-capture:hover { opacity:0.9; }
-
-        /* ===== EMPTY STATE ===== */
-        .empty-state {
-            flex:1;
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            justify-content:center;
-            color:var(--text-dim);
-        }
-        .empty-state h2 { font-size:18px; margin-bottom:8px; }
-        .empty-state p { font-size:13px; }
-
-        /* ===== ALERT BANNER ===== */
-        .alert-banner {
-            background:rgba(255,68,68,0.15);
-            border:1px solid var(--danger);
-            border-radius:8px;
-            padding:8px 12px;
-            font-size:11px;
-            color:var(--danger);
-            font-weight:bold;
-            margin:8px 12px 0;
-        }
-
-        /* ===== TOAST ===== */
-        .toast {
-            position:fixed;
-            bottom:24px;
-            left:50%;
-            transform:translateX(-50%);
-            background:var(--alba-green);
-            color:#000;
-            padding:10px 20px;
-            border-radius:10px;
-            font-weight:bold;
-            font-size:12px;
-            z-index:10000;
-            opacity:0;
-            transition:opacity 0.3s;
-            pointer-events:none;
-            white-space:nowrap;
-        }
-        .toast.show { opacity:1; }
-
-        /* ===== MOBILE ===== */
+        html, body { height:100%; overflow:hidden; }
+        body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text-dark); display:flex; flex-direction:column; }
+        #login-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:var(--cream); z-index:99999; display:flex; align-items:center; justify-content:center; }
+        .login-card { background:white; border-radius:24px; padding:40px 32px; width:90%; max-width:360px; box-shadow:var(--shadow-lg); text-align:center; }
+        .login-card h1 { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:6px; }
+        .login-card p { color:var(--text-light); font-size:14px; margin-bottom:28px; }
+        .login-input { width:100%; padding:13px 16px; border:1.5px solid var(--cream-darker); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text-dark); background:var(--cream); margin-bottom:10px; outline:none; }
+        .login-input:focus { border-color:var(--alba-green); }
+        .login-btn { width:100%; padding:13px; background:var(--text-dark); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; margin-top:6px; }
+        #login-error { color:var(--huellitas-pink); font-size:13px; margin-top:8px; min-height:20px; }
+        .topbar { background:white; border-bottom:1px solid var(--cream-darker); padding:0 10px; height:56px; display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow); z-index:100; flex-shrink:0; }
+        .logo { font-family:'Playfair Display',serif; font-size:15px; color:var(--text-dark); }
+        .business-tabs { display:flex; gap:4px; }
+        .biz-tab { padding:6px 10px; border-radius:18px; border:1.5px solid transparent; font-size:11px; font-weight:600; cursor:pointer; background:var(--cream); color:var(--text-mid); display:flex; align-items:center; gap:4px; }
+        .biz-tab.active-alba { background:var(--alba-green); color:white; }
+        .biz-tab.active-huellitas { background:var(--huellitas-pink); color:white; }
+        .badge-count { background:var(--green-badge); color:white; border-radius:10px; padding:1px 5px; font-size:10px; font-weight:700; min-width:16px; text-align:center; }
+        .topbar-actions { display:flex; align-items:center; gap:4px; overflow-x:auto; max-width:55vw; }
+        .nav-btn { padding:5px 8px; border-radius:8px; border:1.5px solid var(--cream-darker); background:white; color:var(--text-mid); font-size:10px; font-weight:500; cursor:pointer; text-decoration:none; white-space:nowrap; flex-shrink:0; }
+        .nav-btn.highlight { background:var(--alba-green); color:white; border-color:var(--alba-green); }
+        .main-layout { display:flex; flex:1; overflow:hidden; height:calc(100vh - 56px); }
+        .sidebar { width:260px; background:white; border-right:1px solid var(--cream-darker); display:flex; flex-direction:column; flex-shrink:0; }
         @media(max-width:768px) {
-            .sidebar { display:none; }
-            .sidebar.mobile-open { display:flex; position:fixed; inset:0; z-index:500; width:100%; }
+            .sidebar { position:fixed; top:56px; left:0; width:100%; height:calc(100% - 56px); z-index:50; transform:translateX(-100%); transition:transform 0.3s; }
+            .sidebar.open { transform:translateX(0); }
         }
-
-        /* ===== USER PILL ===== */
-        .user-pill {
-            font-size:11px;
-            color:var(--alba-green);
-            font-weight:bold;
-        }
+        .sidebar-header { padding:10px 12px; border-bottom:1px solid var(--cream-darker); }
+        .sidebar-header h2 { font-size:12px; font-weight:600; margin-bottom:6px; }
+        .search-box { width:100%; padding:8px 10px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:12px; background:var(--cream); outline:none; }
+        .conversations-list { flex:1; overflow-y:auto; }
+        .conv-item { padding:10px 12px; cursor:pointer; border-left:3px solid transparent; transition:background 0.15s; }
+        .conv-item:hover { background:var(--cream); }
+        .conv-item.active { background:var(--cream-dark); border-left-color:var(--alba-green); }
+        .conv-item.active.huellitas { border-left-color:var(--huellitas-pink); }
+        .conv-top { display:flex; justify-content:space-between; margin-bottom:2px; }
+        .conv-name { font-weight:600; font-size:12px; }
+        .conv-time { font-size:10px; color:var(--text-light); }
+        .conv-preview { font-size:11px; color:var(--text-mid); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .conv-badges { display:flex; gap:3px; margin-top:3px; align-items:center; flex-wrap:wrap; }
+        .badge { padding:1px 5px; border-radius:5px; font-size:9px; font-weight:600; }
+        .badge-new { background:#FFF3CD; color:#856404; }
+        .badge-alba { background:#D8F3DC; color:var(--alba-green); }
+        .badge-huellitas { background:#FFD6E0; color:var(--huellitas-pink); }
+        .badge-claimed { background:#E8F4FD; color:#0066cc; }
+        .badge-lost { background:#FFE0E0; color:#dc3545; }
+        .unread-dot { width:6px; height:6px; background:var(--orange); border-radius:50%; }
+        .attended-by { font-size:9px; color:var(--text-light); font-style:italic; }
+        .chat-area { flex:1; display:flex; flex-direction:column; background:var(--cream); overflow:hidden; }
+        .chat-header { background:white; border-bottom:1px solid var(--cream-darker); padding:8px 12px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+        .chat-header-left { display:flex; align-items:center; gap:6px; }
+        .mobile-back { display:none; background:none; border:none; font-size:18px; cursor:pointer; color:var(--text-mid); padding:4px; }
+        @media(max-width:768px) { .mobile-back { display:block; } }
+        .avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+        .avatar-alba { background:var(--alba-light); }
+        .avatar-huellitas { background:var(--huellitas-light); }
+        .chat-client-name { font-weight:600; font-size:13px; }
+        .chat-client-info { font-size:10px; color:var(--text-light); }
+        .chat-header-right { display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; }
+        .action-btn { padding:5px 8px; border-radius:7px; border:1.5px solid var(--cream-darker); background:white; font-family:'DM Sans',sans-serif; font-size:10px; font-weight:600; cursor:pointer; color:var(--text-dark); white-space:nowrap; }
+        .action-btn.green { background:var(--alba-green); color:white; border-color:var(--alba-green); }
+        .action-btn.pink { background:var(--huellitas-pink); color:white; border-color:var(--huellitas-pink); }
+        .action-btn.red { background:#dc3545; color:white; border-color:#dc3545; }
+        .action-btn.blue { background:#0066cc; color:white; border-color:#0066cc; }
+        .action-btn.orange { background:var(--orange); color:white; border-color:var(--orange); }
+        .action-btn.purple { background:#6600cc; color:white; border-color:#6600cc; }
+        .action-btn:disabled { opacity:0.5; cursor:not-allowed; }
+        .messages-area { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:7px; }
+        .msg-wrapper { display:flex; flex-direction:column; }
+        .msg-wrapper.outgoing { align-items:flex-end; }
+        .msg-wrapper.incoming { align-items:flex-start; }
+        .msg-bubble { max-width:75%; padding:9px 13px; border-radius:16px; font-size:13px; line-height:1.5; word-break:break-word; white-space:pre-wrap; }
+        .msg-wrapper.outgoing .msg-bubble { background:var(--alba-green); color:white; border-bottom-right-radius:4px; }
+        .msg-wrapper.outgoing.huellitas .msg-bubble { background:var(--huellitas-pink); }
+        .msg-wrapper.incoming .msg-bubble { background:white; color:var(--text-dark); border-bottom-left-radius:4px; box-shadow:var(--shadow); }
+        .msg-wrapper.system .msg-bubble { background:var(--cream-darker); color:var(--text-mid); font-size:11px; font-style:italic; border-radius:10px; max-width:90%; }
+        .msg-wrapper.system { align-items:center; }
+        .msg-meta { font-size:10px; color:var(--text-light); margin-top:2px; padding:0 3px; }
+        .msg-wrapper.outgoing .msg-meta { text-align:right; }
+        .date-divider { text-align:center; font-size:10px; color:var(--text-light); padding:5px 0; display:flex; align-items:center; gap:8px; }
+        .date-divider::before,.date-divider::after { content:''; flex:1; height:1px; background:var(--cream-darker); }
+        .call-bubble { background:white; border:1.5px solid var(--cream-darker); border-radius:12px; padding:10px 13px; max-width:72%; box-shadow:var(--shadow); }
+        /* QUICK REPLIES SLIDE PANEL */
+        .qr-panel { background:white; border-top:1px solid var(--cream-darker); flex-shrink:0; }
+        .qr-toggle-bar { display:flex; justify-content:space-between; align-items:center; padding:7px 12px; cursor:pointer; user-select:none; }
+        .qr-toggle-label { font-size:10px; color:var(--text-light); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+        .qr-toggle-arrow { font-size:12px; color:var(--text-light); transition:transform 0.2s; }
+        .qr-toggle-arrow.open { transform:rotate(180deg); }
+        .qr-content { display:none; padding:0 10px 8px; }
+        .qr-content.open { display:block; }
+        .qr-tabs { display:flex; gap:5px; margin-bottom:7px; overflow-x:auto; padding-bottom:2px; }
+        .qr-tab { padding:4px 10px; border-radius:12px; border:1.5px solid var(--cream-darker); background:var(--cream); font-size:10px; font-weight:600; color:var(--text-mid); cursor:pointer; white-space:nowrap; flex-shrink:0; }
+        .qr-tab.active { background:var(--text-dark); color:white; border-color:var(--text-dark); }
+        /* FIX: single clean definition — no duplicates */
+        .qr-messages-list { display:flex; flex-direction:row; gap:6px; overflow-x:auto; padding-bottom:4px; scroll-snap-type:x mandatory; }
+        .qr-messages-list::-webkit-scrollbar { height:2px; }
+        .qr-messages-list::-webkit-scrollbar-thumb { background:var(--cream-darker); }
+        .qr-msg-item { min-width:180px; max-width:210px; flex-shrink:0; scroll-snap-align:start; display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:8px 10px; border-radius:10px; background:var(--cream); cursor:pointer; border:1.5px solid transparent; }
+        .qr-msg-item:hover { border-color:var(--alba-green); background:var(--alba-light); }
+        .qr-msg-label { font-size:11px; font-weight:700; color:var(--text-dark); }
+        .qr-msg-preview { font-size:11px; color:var(--text-mid); line-height:1.3; max-height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+        .qr-msg-footer { display:flex; justify-content:space-between; align-items:center; width:100%; margin-top:2px; }
+        .qr-msg-send { font-size:11px; color:var(--alba-green); font-weight:700; }
+        .qr-edit-row { display:flex; gap:5px; margin-top:6px; }
+        .qr-add-input { flex:1; padding:7px 10px; border:1.5px solid var(--cream-darker); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:12px; background:var(--cream); outline:none; }
+        .qr-add-btn { padding:7px 12px; background:var(--text-dark); color:white; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; }
+        .input-area { background:white; border-top:1px solid var(--cream-darker); padding:8px 12px; display:flex; gap:7px; align-items:flex-end; flex-shrink:0; padding-bottom:max(8px, env(safe-area-inset-bottom)); }
+        .msg-input { flex:1; padding:9px 13px; border:1.5px solid var(--cream-darker); border-radius:14px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-dark); background:var(--cream); outline:none; resize:none; max-height:90px; line-height:1.4; }
+        .msg-input:focus { border-color:var(--alba-green); }
+        .send-btn { width:40px; height:40px; border-radius:50%; border:none; background:var(--alba-green); color:white; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .send-btn.huellitas { background:var(--huellitas-pink); }
+        .no-conv { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-light); gap:10px; padding:20px; text-align:center; }
+        .no-conv .big-icon { font-size:48px; opacity:0.3; }
+        .no-conv h3 { font-family:'Playfair Display',serif; font-size:18px; color:var(--text-mid); }
+        .notification { position:fixed; top:66px; right:12px; left:12px; padding:11px 15px; border-radius:12px; font-weight:500; font-size:13px; z-index:10000; box-shadow:var(--shadow-lg); animation:slideIn 0.3s ease; }
+        @media(min-width:480px) { .notification { left:auto; width:300px; } }
+        @keyframes slideIn { from{transform:translateY(-20px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .notification.success { background:var(--alba-green); color:white; }
+        .notification.warning { background:#FF9500; color:white; }
+        .notification.error { background:var(--huellitas-pink); color:white; }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9998; }
+        .modal-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:20px; padding:20px; z-index:9999; width:92%; max-width:440px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow-lg); }
+        .modal-box h3 { font-family:'Playfair Display',serif; font-size:16px; margin-bottom:12px; }
+        .modal-close { float:right; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-light); }
+        .modal-select { width:100%; padding:9px 11px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; background:var(--cream); margin-bottom:9px; outline:none; }
+        .modal-input { width:100%; padding:9px 11px; border:1.5px solid var(--cream-darker); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; background:var(--cream); margin-bottom:9px; outline:none; resize:none; }
+        .modal-btn { width:100%; padding:11px; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-bottom:5px; }
+        .modal-btn.primary { background:var(--text-dark); color:white; }
+        .modal-btn.secondary { background:var(--cream); color:var(--text-mid); }
+        .modal-btn.danger { background:#dc3545; color:white; }
+        .transfer-item { padding:9px; border:1.5px solid var(--cream-darker); border-radius:10px; margin-bottom:5px; cursor:pointer; display:flex; align-items:center; gap:8px; }
+        .transfer-item:hover { background:var(--cream); border-color:var(--alba-green); }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:0; }
     </style>
 </head>
 <body>
-
-<!-- TOPBAR -->
-<div class="topbar">
-    <div class="logo-area"><h1>⚔️ GUERRERO AI</h1></div>
-    <div class="topbar-right">
-        <span class="user-pill" id="user-pill">👤 ...</span>
-        <div class="outreach-indicator oi-on" id="ind-wa">WA: ON</div>
-        <div class="outreach-indicator oi-on" id="ind-sms">SMS: ON</div>
-        <a href="/" class="nav-btn">🛡️ War Room</a>
-        <button class="nav-btn danger" onclick="doLogout()">🚪 Salir</button>
+<div id="login-screen">
+    <div class="login-card">
+        <h1>⚔️ Guerrero AI</h1>
+        <p>Centro de Mensajes</p>
+        <input type="text" class="login-input" id="login-user" placeholder="Usuario" autocomplete="username">
+        <input type="password" class="login-input" id="login-pass" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="login-btn" onclick="doLogin()">Entrar</button>
+        <p id="login-error"></p>
     </div>
 </div>
-
-<div class="main-layout">
-
-    <!-- ===== SIDEBAR ===== -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-tabs">
-            <button class="sidebar-tab active alba" id="tab-alba" onclick="switchBusiness('albalumen', this)">🕊️ ALBALUMEN</button>
-            <button class="sidebar-tab hue" id="tab-hue" onclick="switchBusiness('huellitas', this)">🐾 HUELLITAS</button>
+<div id="app" style="display:none;flex-direction:column;height:100%;height:100dvh;">
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:8px;">
+            <span class="logo">⚔️</span>
+            <div class="business-tabs">
+                <button class="biz-tab active-alba" id="tab-alba" onclick="switchBusiness('alba')">
+                    🕊️ Alba <span class="badge-count" id="count-alba">0</span>
+                </button>
+                <button class="biz-tab" id="tab-huellitas" onclick="switchBusiness('huellitas')">
+                    🐾 Huellitas <span class="badge-count" id="count-huellitas">0</span>
+                </button>
+            </div>
         </div>
-        <div class="sidebar-search">
-            <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar cliente..." oninput="filterConvs(this.value)">
-        </div>
-        <div class="conversations-list" id="conversations-list">
-            <div style="padding:20px; color:var(--text-dim); font-size:12px;">Cargando conversaciones...</div>
+        <div class="topbar-actions">
+            <span id="user-pill" style="font-size:10px;color:var(--text-mid);white-space:nowrap;"></span>
+            <button class="nav-btn" style="background:#00aa44;color:white;border-color:#00aa44;" onclick="openAddContactModal()">➕</button>
+            <a href="/clients.html" class="nav-btn" style="background:#6600cc;color:white;border-color:#6600cc;">👥</a>
+            <a href="/" class="nav-btn">⚔️</a>
+            <button class="nav-btn" onclick="logout()">🚪</button>
         </div>
     </div>
-
-    <!-- ===== CHAT AREA ===== -->
-    <div class="chat-area" id="chat-area">
-
-        <!-- Empty state when no chat selected -->
-        <div class="empty-state" id="empty-state">
-            <h2>⚔️ Chat Central v4.1</h2>
-            <p>Selecciona una conversación para comenzar</p>
+    <div class="main-layout">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 id="sidebar-title">💬 Albalumen</h2>
+                <input type="search" class="search-box" placeholder="🔍 Buscar..." oninput="filterConversations(this.value)">
+            </div>
+            <div class="conversations-list" id="conversations-list">
+                <p style="padding:14px;color:var(--text-light);font-size:12px;text-align:center;">Cargando...</p>
+            </div>
         </div>
-
-        <!-- Chat view (hidden until a conv is selected) -->
-        <div id="chat-view" style="display:none; flex:1; flex-direction:column; overflow:hidden; display:none;">
-
-            <div class="chat-header">
-                <div class="chat-header-left">
-                    <div class="client-name" id="client-name">—</div>
-                    <div class="client-info" id="client-info">—</div>
+        <div class="chat-area" id="chat-area">
+            <div class="no-conv" id="no-conv">
+                <div class="big-icon">💬</div>
+                <h3>Seleccioná una conversación</h3>
+                <p style="font-size:13px;">Los mensajes de clientes aparecerán aquí</p>
+                <button class="nav-btn" onclick="showSidebar()" style="margin-top:8px;">Ver conversaciones</button>
+            </div>
+            <div id="active-chat" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+                <div class="chat-header">
+                    <div class="chat-header-left">
+                        <button class="mobile-back" onclick="showSidebar()">←</button>
+                        <div class="avatar avatar-alba" id="chat-avatar">👤</div>
+                        <div>
+                            <div class="chat-client-name" id="chat-name">Cliente</div>
+                            <div class="chat-client-info" id="chat-info">Sin información</div>
+                        </div>
+                    </div>
+                    <div class="chat-header-right">
+                        <button class="action-btn blue" onclick="callClient()">📞</button>
+                        <button class="action-btn orange" onclick="openCallModal()">📝</button>
+                        <button class="action-btn" onclick="openTransferModal()">🔄</button>
+                        <button class="action-btn green" id="claim-btn" onclick="claimCurrentLead()">✅ Reclamar</button>
+                        <button class="action-btn red" id="lost-btn" onclick="openLostModal()">❌</button>
+                    </div>
                 </div>
-                <div class="chat-header-actions" id="header-actions">
-                    <button class="hdr-btn wa" id="btn-wa" onclick="openWAChat()">💬 WA</button>
-                    <button class="hdr-btn claim" id="btn-claim" onclick="claimCurrentLead()">✋ Reclamar</button>
-                    <button class="hdr-btn lost" onclick="markCurrentLost()">💀 Perdido</button>
+                <div class="messages-area" id="messages-area"></div>
+                <div class="qr-panel">
+                    <div class="qr-toggle-bar" onclick="toggleQRPanel()">
+                        <span class="qr-toggle-label">⚡ Respuestas rápidas</span>
+                        <span class="qr-toggle-arrow" id="qr-arrow">▼</span>
+                    </div>
+                    <div class="qr-content" id="qr-content">
+                        <div class="qr-tabs" id="qr-tabs"></div>
+                        <div class="qr-messages-list" id="qr-messages-list"></div>
+                        <div class="qr-edit-row">
+                            <textarea class="qr-add-input" id="new-qr-text" placeholder="Nueva respuesta rápida..." rows="1"></textarea>
+                            <button class="qr-add-btn" onclick="addQuickReply()">+</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Capture panel for manual registration (Soledad flow) -->
-            <div class="capture-card" id="capture-panel" style="display:none;">
-                <div class="capture-label">[ REGISTRO_RÁPIDO — NUEVO CLIENTE ]</div>
-                <div class="capture-grid">
-                    <input type="text" class="c-input" id="cap-nombre" placeholder="NOMBRE">
-                    <input type="text" class="c-input" id="cap-phone" placeholder="WHATSAPP">
-                    <select class="c-select" id="cap-business">
-                        <option value="albalumen">🕊️ ALBALUMEN</option>
-                        <option value="huellitas">🐾 HUELLITAS</option>
-                    </select>
-                    <select class="c-select" id="cap-source">
-                        <option>📞 LLAMADA</option>
-                        <option>🚶 WALK-IN</option>
-                        <option>💬 WHATSAPP</option>
-                        <option>🌐 WEB</option>
-                    </select>
-                    <button class="btn-capture" onclick="captureClient()">REGISTRAR EN BASE DE DATOS</button>
-                </div>
-            </div>
-
-            <div class="messages-area" id="messages-area"></div>
-
-            <!-- Quick replies -->
-            <div class="quick-replies-bar" id="quick-replies-bar">
-                <!-- Filled dynamically -->
-            </div>
-
-            <!-- Templates -->
-            <div class="templates-bar" id="templates-bar">
-                <!-- Filled dynamically based on business -->
-            </div>
-
-            <!-- Input -->
-            <div class="input-container">
-                <div class="input-row">
-                    <textarea class="msg-input" id="msg-input" placeholder="Escribe un mensaje... (Enter para nueva línea, Ctrl+Enter para enviar)" rows="2" onkeydown="handleKeydown(event)"></textarea>
-                    <button class="send-btn" id="send-btn" onclick="sendMessage()">ENVIAR ▶</button>
+                <div class="input-area">
+                    <textarea class="msg-input" id="msg-input" placeholder="Escribí tu mensaje..." rows="1"
+                        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"
+                        oninput="autoResize(this)"></textarea>
+                    <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
                 </div>
             </div>
-
         </div>
-
     </div>
 </div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
+<!-- MODAL PERDIDO -->
+<div id="lost-modal" style="display:none;">
+    <div class="modal-overlay" onclick="closeLostModal()"></div>
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeLostModal()">✕</button>
+        <h3>❌ ¿Por qué se perdió?</h3>
+        <select class="modal-select" id="lost-reason-sel" onchange="toggleLostFields()">
+            <option value="No contestó">No contestó el teléfono</option>
+            <option value="Precio muy alto">Precio muy alto</option>
+            <option value="Eligió a la competencia">Eligió a la competencia</option>
+            <option value="Solo cotización">Solo cotización / No decidió</option>
+            <option value="Fuera de área">Fuera de área de servicio</option>
+            <option value="Respuesta lenta">Respuesta muy lenta</option>
+            <option value="Sin dinero">Sin dinero por ahora</option>
+            <option value="Otro">Otro</option>
+        </select>
+        <div id="competitor-field" style="display:none;">
+            <input type="text" class="modal-input" id="competitor-input" placeholder="Nombre del competidor">
+        </div>
+        <div id="other-field" style="display:none;">
+            <textarea class="modal-input" id="other-input" placeholder="Explicá el motivo..." rows="2"></textarea>
+        </div>
+        <button class="modal-btn primary" onclick="confirmLost()">Confirmar pérdida</button>
+        <button class="modal-btn secondary" onclick="closeLostModal()">Cancelar</button>
+    </div>
+</div>
+<!-- MODAL LLAMADA -->
+<div id="call-modal" style="display:none;">
+    <div class="modal-overlay" onclick="closeCallModal()"></div>
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeCallModal()">✕</button>
+        <h3>📞 Registrar Llamada</h3>
+        <select class="modal-select" id="call-result-sel">
+            <option value="Interesado">✅ Interesado</option>
+            <option value="Cita agendada">📅 Cita agendada</option>
+            <option value="Venta cerrada">💰 Venta cerrada</option>
+            <option value="Solo información">ℹ️ Solo información</option>
+            <option value="No interesado">❌ No interesado</option>
+            <option value="No contestó">📵 No contestó</option>
+        </select>
+        <input type="number" class="modal-input" id="call-duration-input" placeholder="Duración en minutos" min="0" max="120">
+        <textarea class="modal-input" id="call-notes-input" placeholder="Notas de la llamada..." rows="2"></textarea>
+        <button class="modal-btn primary" onclick="saveCallRecord()">💾 Guardar</button>
+        <button class="modal-btn secondary" onclick="closeCallModal()">Cancelar</button>
+    </div>
+</div>
+<!-- MODAL TRANSFERIR -->
+<div id="transfer-modal" style="display:none;">
+    <div class="modal-overlay" onclick="closeTransferModal()"></div>
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeTransferModal()">✕</button>
+        <h3>🔄 Transferir conversación</h3>
+        <div id="transfer-list"></div>
+        <textarea class="modal-input" id="transfer-note" placeholder="Nota de transferencia..." rows="2" style="margin-top:8px;"></textarea>
+        <button class="modal-btn secondary" onclick="closeTransferModal()">Cancelar</button>
+    </div>
+</div>
+<!-- MODAL AGREGAR CONTACTO -->
+<div id="add-contact-modal" style="display:none;">
+    <div class="modal-overlay" onclick="closeAddContactModal()"></div>
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeAddContactModal()">✕</button>
+        <h3>➕ Agregar Contacto</h3>
+        <div class="form-row">
+            <input type="text" class="modal-input" id="c-name" placeholder="Nombre completo *">
+            <input type="tel" class="modal-input" id="c-phone" placeholder="Teléfono *">
+        </div>
+        <input type="email" class="modal-input" id="c-email" placeholder="Email (opcional)">
+        <input type="text" class="modal-input" id="c-address" placeholder="Dirección (opcional)">
+        <select class="modal-select" id="c-source">
+            <option value="">¿Cómo llegó el cliente?</option>
+            <option value="WhatsApp">💬 WhatsApp</option>
+            <option value="Llamada">📞 Llamada telefónica</option>
+            <option value="Facebook">📘 Facebook</option>
+            <option value="Instagram">📷 Instagram</option>
+            <option value="TikTok">🎵 TikTok</option>
+            <option value="Walk-in">🚶 Walk-in / Visita</option>
+            <option value="Referido">👥 Referido</option>
+            <option value="Google">🔍 Google</option>
+            <option value="Otro">🔮 Otro</option>
+        </select>
+        <select class="modal-select" id="c-business">
+            <option value="alba">🕊️ Albalumen</option>
+            <option value="huellitas">🐾 Huellitas al Cielo</option>
+        </select>
+        <textarea class="modal-input" id="c-notes" placeholder="Notas adicionales..." rows="2"></textarea>
+        <button class="modal-btn primary" onclick="saveContact()">💾 Guardar Contacto</button>
+        <button class="modal-btn secondary" onclick="closeAddContactModal()">Cancelar</button>
+    </div>
+</div>
 <script>
-// ===== STATE =====
-let currentUser = sessionStorage.getItem('ga_user') || 'Micheal';
-let currentRole = sessionStorage.getItem('ga_role') || 'admin';
-let currentBusiness = 'albalumen';
-let currentLeadId = null;
-let currentLeadPhone = null;
-let allLeads = [];
-let msgPolling = null;
-
-document.getElementById('user-pill').textContent = `👤 ${currentUser}`;
-
-function doLogout() { sessionStorage.clear(); window.location.href = '/'; }
-
-// ===== TOAST =====
-function showToast(msg, color) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.background = color || 'var(--alba-green)';
-    t.style.color = color ? 'white' : '#000';
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(e => {});
 }
-
-// ===== BUSINESS SWITCH =====
-function switchBusiness(biz, btn) {
-    currentBusiness = biz;
-    document.querySelectorAll('.sidebar-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentLeadId = null;
-    document.getElementById('chat-view').style.display = 'none';
-    document.getElementById('empty-state').style.display = 'flex';
-    loadConversations();
-    loadOutreachIndicators();
-}
-
-// ===== LOAD OUTREACH INDICATORS =====
-async function loadOutreachIndicators() {
-    try {
-        const res = await fetch('/api/outreach/settings');
-        const s = await res.json();
-        const waInd = document.getElementById('ind-wa');
-        const smsInd = document.getElementById('ind-sms');
-        const waOn = s.whatsapp_active === 'true';
-        const smsOn = s.sms_active === 'true';
-        waInd.textContent = `WA: ${waOn ? 'ON' : 'OFF'}`;
-        waInd.className = `outreach-indicator ${waOn ? 'oi-on' : 'oi-off'}`;
-        smsInd.textContent = `SMS: ${smsOn ? 'ON' : 'OFF'}`;
-        smsInd.className = `outreach-indicator ${smsOn ? 'oi-on' : 'oi-off'}`;
-    } catch(e) {}
-}
-
-// ===== LOAD CONVERSATIONS =====
-async function loadConversations() {
-    try {
-        const res = await fetch('/api/leads/recent');
-        allLeads = await res.json();
-        renderConversations(allLeads);
-    } catch(e) {
-        document.getElementById('conversations-list').innerHTML = '<div style="padding:20px; color:var(--danger); font-size:12px;">❌ Error cargando</div>';
-    }
-}
-
-function renderConversations(leads) {
-    const list = document.getElementById('conversations-list');
-    const filtered = leads.filter(l => l.business === currentBusiness || !l.business);
-
-    if (!filtered.length) {
-        list.innerHTML = '<div style="padding:20px; color:var(--text-dim); font-size:12px;">Sin conversaciones.</div>';
-        return;
-    }
-
-    const isHue = currentBusiness === 'huellitas';
-    list.innerHTML = filtered.map(l => {
-        const active = l.id === currentLeadId;
-        const minAgo = Math.floor((Date.now() - new Date(l.created_at).getTime()) / 60000);
-        const timeLabel = minAgo < 60 ? `${minAgo}m` : minAgo < 1440 ? `${Math.floor(minAgo/60)}h` : `${Math.floor(minAgo/1440)}d`;
-        const urgent = l.status === 'nuevo' && minAgo >= 3;
-        const phone = currentRole === 'admin' ? (l.phone || '—') : maskPhone(l.phone);
-
-        return `
-        <div class="conv-item ${active ? 'active' + (isHue?' hue':'') : ''}" onclick="openChat(${l.id}, '${escStr(l.contact_name || l.name)}', '${l.phone}', '${l.service_type}', '${l.status}')">
-            <div class="conv-business-tag ${isHue ? 'tag-hue' : 'tag-alba'}">${isHue ? '🐾 HUELLITAS' : '🕊️ ALBALUMEN'}</div>
-            <div class="conv-meta">
-                <span class="conv-name ${urgent ? 'conv-unread' : ''}">${l.contact_name || l.name || 'Sin nombre'} ${urgent ? '🚨' : ''}</span>
-                <span class="conv-time">${timeLabel}</span>
-            </div>
-            <div class="conv-preview">${l.service_type || 'Consulta'} · ${phone}</div>
-        </div>`;
-    }).join('');
-}
-
-function filterConvs(q) {
-    if (!q) { renderConversations(allLeads); return; }
-    const filtered = allLeads.filter(l =>
-        (l.contact_name || l.name || '').toLowerCase().includes(q.toLowerCase()) ||
-        (l.phone || '').includes(q) ||
-        (l.service_type || '').toLowerCase().includes(q.toLowerCase())
-    );
-    renderConversations(filtered);
-}
-
-function maskPhone(phone) {
-    if (!phone) return '—';
-    const clean = phone.replace(/\D/g, '');
-    return clean.length > 4 ? '****' + clean.slice(-4) : '****';
-}
-
-function escStr(s) { return (s||'').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
-
-// ===== OPEN CHAT =====
-async function openChat(id, name, phone, service, status) {
-    currentLeadId = id;
-    currentLeadPhone = phone;
-
-    // Update UI
-    document.getElementById('empty-state').style.display = 'none';
-    const chatView = document.getElementById('chat-view');
-    chatView.style.display = 'flex';
-    chatView.style.flexDirection = 'column';
-    chatView.style.overflow = 'hidden';
-    chatView.style.flex = '1';
-
-    document.getElementById('client-name').textContent = name || 'Sin nombre';
-    const displayPhone = currentRole === 'admin' ? (phone || '—') : maskPhone(phone);
-    document.getElementById('client-info').innerHTML = `<span style="color:var(--neon-blue);">${displayPhone}</span> · ${service || 'Consulta'} · <span style="color:${status === 'In-Progress' ? 'var(--alba-green)' : 'var(--warning)'}">${status || 'nuevo'}</span>`;
-
-    // Show capture panel for operators
-    if (currentRole !== 'admin') {
-        document.getElementById('capture-panel').style.display = 'block';
-    }
-
-    // Update active conv
-    document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
-
-    // Load templates for business
-    loadTemplates();
-    loadQuickReplies();
-
-    // Load messages
-    await loadMessages();
-
-    // Start polling
-    if (msgPolling) clearInterval(msgPolling);
-    msgPolling = setInterval(loadMessages, 5000);
-}
-
-// ===== LOAD MESSAGES =====
-async function loadMessages() {
-    if (!currentLeadId) return;
-    try {
-        const res = await fetch(`/api/leads/messages/${currentLeadId}`);
-        const msgs = await res.json();
-        const area = document.getElementById('messages-area');
-        const wasAtBottom = area.scrollHeight - area.scrollTop <= area.clientHeight + 50;
-
-        const isHue = currentBusiness === 'huellitas';
-
-        if (!msgs.length) {
-            area.innerHTML = `<div style="text-align:center; color:var(--text-dim); font-size:12px; padding:20px;">Sin mensajes aún. Empieza la conversación. 👋</div>`;
-            return;
-        }
-
-        let lastDate = null;
-        area.innerHTML = msgs.map(m => {
-            const d = new Date(m.created_at);
-            const dateStr = d.toLocaleDateString('es-CR', {weekday:'short', day:'numeric', month:'short'});
-            const timeStr = d.toLocaleTimeString('es-CR', {hour:'2-digit', minute:'2-digit'});
-            const isOut = m.direction === 'outgoing';
-            let dateSep = '';
-            if (dateStr !== lastDate) {
-                dateSep = `<div class="date-separator"><span>${dateStr}</span></div>`;
-                lastDate = dateStr;
-            }
-            return `${dateSep}
-            <div>
-                ${isOut ? '' : `<div class="msg-sender">Cliente</div>`}
-                <div class="msg ${isOut ? 'outgoing' + (isHue?' hue':'') : 'incoming'}">
-                    ${m.message_text || ''}
-                    <div class="msg-time ${isOut ? 'right' : ''}">${timeStr}${isOut && m.sent_by ? ` · ${m.sent_by}` : ''}</div>
-                </div>
-                ${isOut ? `<div class="msg-sender right">${m.sent_by || currentUser}</div>` : ''}
-            </div>`;
-        }).join('');
-
-        if (wasAtBottom) area.scrollTop = area.scrollHeight;
-    } catch(e) {}
-}
-
-// ===== SEND MESSAGE =====
-async function sendMessage() {
-    const input = document.getElementById('msg-input');
-    const text = input.value.trim();
-    if (!text || !currentLeadId) { if(!currentLeadId) showToast('Selecciona un lead primero', 'var(--warning)'); return; }
-
-    // Anti-fraud check
-    const prohibited = ['mi número', 'personal', 'mi cuenta', 'pago directo', 'por fuera'];
-    const detected = prohibited.some(p => text.toLowerCase().includes(p));
-    if (detected) showToast('⚠️ ALERTA: Palabras sospechosas detectadas', 'var(--danger)');
-
-    try {
-        const res = await fetch('/api/leads/send-message', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({
-                lead_id: currentLeadId,
-                message: text,
-                sent_by: currentUser,
-                business: currentBusiness
-            })
-        });
-        if (res.ok) {
-            input.value = '';
-            input.style.height = 'auto';
-            await loadMessages();
-        } else { showToast('❌ Error enviando mensaje', 'var(--danger)'); }
-    } catch(e) { showToast('❌ Error de conexión', 'var(--danger)'); }
-}
-
-function handleKeydown(e) {
-    if (e.ctrlKey && e.key === 'Enter') { sendMessage(); return; }
-    // Auto-resize
-    setTimeout(() => {
-        const ta = document.getElementById('msg-input');
-        ta.style.height = 'auto';
-        ta.style.height = Math.min(ta.scrollHeight, 100) + 'px';
-    }, 0);
-}
-
-// ===== TEMPLATES =====
-const TEMPLATES = {
-    albalumen: [
-        { label:'📍 Ubicación', text:'📍 Estamos ubicados 150 metros oeste de la Clínica Bíblica, San José. Atendemos 24/7.' },
-        { label:'💰 Cuentas', text:'💰 Para pagos: IBAN CR05015108010026012345 a nombre de ALBALUMEN S.A.' },
-        { label:'🕊️ Emergencias ₡350K', text:'🕊️ Paquete Emergencias (₡350,000+IVA): Incluye retiro del cuerpo, ataúd básico, preparación y cremación. Contamos con atención inmediata 24/7.' },
-        { label:'🕊️ Completo ₡650K', text:'🕊️ Paquete Completo (₡650,000+IVA): Retiro, ataúd de madera, preparación, velatorio, cremación y entrega de cenizas. También en cuotas desde ₡13,000 quincenal.' },
-        { label:'⚰️ Sepultura ₡400K', text:'⚰️ Servicio de Sepultura (₡400,000+IVA): Incluye retiro, preparación del cuerpo y entierro en cementerio según coordinación.' },
-        { label:'🏛️ Columbario ₡910K', text:'🏛️ Columbarios: Pago único de ₡910,000. Espacio permanente y digno para los restos de su ser querido.' },
-        { label:'📋 Requisitos', text:'📋 Requisitos: Necesitamos copia de cédula del familiar a cargo y el certificado de defunción emitido por el INEC o el médico.' },
-        { label:'🔥 Cremación ₡210K', text:'🔥 Cremación directa: ₡210,000. Sin velatorio, traslado y entrega de cenizas en urna básica.' },
-        { label:'📞 Llamar ahora', text:'Le invitamos a llamarnos directamente: ☎️ +506 8528-1312. Estamos disponibles las 24 horas.' },
+const SYSTEM_QR = {
+    alba: [
+        { id: 's1', label: '👋 Bienvenida', text: 'Bienvenidos a un espacio donde la despedida se convierte en un homenaje de amor.\n\nPara emergencias puede contactarnos al número ☎️ 22217372.\n\nBuenas, ¿cómo puedo ayudarle?' },
+        { id: 's2', label: '🕊️ Emergencias ₡350k', text: 'Buenas. Con mucho gusto.\n\nEl paquete de Cremación en promoción es el paquete de emergencias.\nTiene un costo de ₡350.000 +IVA\nEste paquete le incluye:\n\n✅Traslado del cuerpo (GAM)\n✅Cofre de traslado\n✅️Servicio patológico\n✅Despedida del cuerpo\n✅Cremación\n✅Urna de madera.\n\nEntrega de cenizas: 12 a 24 horas.\n\nEstamos ubicados en San José, 150 oeste Clínica Bíblica frente al parqueo de los Bomberos.\n\nCualquier consulta, con mucho gusto.' },
+        { id: 's3', label: '⚱️ Plan ₡650k', text: 'Nuestro plan de Cremación tiene ⚱️ un costo de ₡650.000 +IVA.\n\nEste incluye:\n✅Traslado\n✅Cofre de traslado\n✅️Gestión de trámites\n✅Servicio patológico\n✅2 arreglos florales\n✅Despedida\n✅Cafetería\n✅Cremación\n✅️Urna de madera\n\nCuota Quincenal ₡13.000\nCuota fija y sin interés. Plan transferible.' },
+        { id: 's4', label: '⚰️ Exhumación ₡350k', text: 'Exhumación a Plazo\nEl costo sería ₡350.000+IVA a 18 meses.\n\nEste paquete le incluye:\n✅Asesoría para gestionar el trámite.\n✅Traslado de los restos\n✅Cofre de Traslado\n✅Cremación\n\nEstamos ubicados en San José, 150 oeste Clínica Bíblica.\n\nCualquier consulta, con mucho gusto.' },
+        { id: 's5', label: '🪦 Sepultura ₡400k', text: 'Sepultura tiene un costo de ₡400.000 +IVA.\n\nEste incluye:\n✅Traslados\n✅Cofre\n✅Servicio patológico\n✅2 arreglos florales\n✅Velación\n✅Cafetería\n✅Libro de firma\n\nCuota Mensual ₡10.000. Plan transferible.' },
+        { id: 's6', label: '⚰️ Sepultura Básica ₡310k', text: 'Buenas. Con mucho gusto.\n\nEl paquete de Sepultura Básico tiene un costo de ₡310.000 +IVA:\n\n✅Féretro de Madera\n✅Traslados\n✅Preservación del cuerpo\n✅Sala de velación (30 personas)\n✅2 Arreglos florales\n✅️Esquela digital\n\nEstamos ubicados en San José, 150 oeste Clínica Bíblica.\n\nCualquier consulta, con mucho gusto.' },
+        { id: 's7', label: '💰 Precios Especiales', text: 'Buenas tardes, como le comenté vía telefónica, le comparto información de servicios:\n\nPRECIOS:\nCremación con autopsia: ₡210.000\nCremación de medicatura: ₡175.000\nBebé/Óbito fetal: ₡115.000\nExhumación: ₡125.000\n\nTodos incluyen:\n✅Preparación de cuerpo\n✅Una hora de despedida\n✅Urna personalizada\n✅Diseño gráfico mensual para redes sociales\n\nSan José, 150 oeste Clínica Bíblica.\n\nCualquier consulta, con gusto.' },
+        { id: 's8', label: '💳 SIMPE & BN', text: 'Simpe móvil:\n📲 85281312\n🏢 Albalumen SA\n\nBanco Nacional:\nMariana Herrera Arias\nCR75015102020010874248\n200-01-020-087424-2' },
+        { id: 's9', label: '🏦 BAC & IBAN', text: 'Albalumen S.A\nIBAN: CR92010200009271680137\nCuenta BAC: 927168013' },
+        { id: 's10', label: '🕐 Horario 24/7', text: 'En este momento está abierto.\nNuestro horario comercial es:\n\n📅 Lunes a Domingo: Abierto las 24 horas, los 365 días del año.' },
+        { id: 's11', label: '🧾 Facturación', text: 'Nombre: Albalumen SA\nCédula jurídica: 3-101-694989\nTeléfono: 85281312\nCorreo: facturasdigitalesalbalumen@gmail.com\nDirección: San José Hospital Central' },
+        { id: 's12', label: '📋 Servicios Generales', text: 'Buenas, con mucho gusto...\nOfrecemos todos los servicios funerarios: sepulturas, cremaciones, exhumaciones y cremación de restos.\nTambién podemos apoyarle con la cremación de mascotas a través de nuestro convenio con Huellitas al Cielo.\n\nSi desea más información sobre precios, por favor indíquenos cuál le interesa.' },
+        { id: 's13', label: '🙏 Despedida', text: 'Gracias por confiar en nosotros en un momento tan delicado. Esperamos que nuestro servicio haya sido un apoyo en este proceso.\n\nCon afecto,\nPersonal de Crematorio Albalumen.' }
     ],
     huellitas: [
-        { label:'🐱 0-15kg ₡40K', text:'🐱 Cremación Peluditos (0-15kg): ₡40,000. Incluye traslado, cremación individual y entrega de cenizas en urna.' },
-        { label:'🐕 16-30kg ₡59K', text:'🐕 Cremación Huellita (16-30kg): ₡59,000. Servicio completo con entrega de cenizas en urna especial.' },
-        { label:'📋 Plan Preventivo', text:'📋 Plan Preventivo Huellitas: 18 cuotas de ₡4,900. Asegura el servicio de cremación para tu mascota desde hoy.' },
-        { label:'💉 Eutanasia', text:'💉 Contamos con servicio de eutanasia asistida para mascotas en estado terminal, con acompañamiento humano.' },
-        { label:'📞 Contacto', text:'Para más información o atención inmediata: 📞 +506 7046-9290. Estamos para acompañarte en este momento difícil.' },
-        { label:'❤️ Condolencias', text:'❤️ Lamentamos profundamente la pérdida de tu compañero. En Huellitas al Cielo los tratamos como lo que son: parte de tu familia.' },
+        { id: 'h1', label: '🐾 Cremación Peluditos', text: 'Cremación Peluditos\nDe 0 a 15 kilos\nEste paquete le incluye:\n\n✅Cremación\n✅Certificado de Cremación\n✅Urna personalizada\n✅️Esquela digital\n\nPrecio: ₡40.000\n\nCremación Huellitas\nDe 16 a 30 kg:\n✅Cremación\n✅Certificado de Cremación\n✅Urna personalizada\n✅️Esquela digital\n\nPrecio: ₡59.000\n\nSan José, 150 oeste Clínica Bíblica.\n\nCualquier consulta, con mucho gusto.' },
+        { id: 'h2', label: '📋 Datos de Mascota', text: 'Sería tan amable por favor de facilitarme los siguientes datos:\n\nNombre:\nEdad:\nRaza:\nColor:\nPeso:\nFecha de Fallecimiento:\nNombre del Encargado:\n\nUna fotografía de la mascota.' },
+        { id: 'h3', label: '📖 Obituario Facebook', text: '(Opcional) Puede escribir un breve mensaje conmemorativo para nuestro obituario en Facebook.\n\nEjemplo:\n"Con profundo amor despedimos a Max, nuestro fiel compañero durante 12 años. Max llenó nuestra vida de alegría con su energía y cariño incondicional. Siempre lo recordaremos por sus travesuras y su noble corazón. Gracias por ser parte de nuestra familia. Te llevaremos siempre en el corazón."' },
+        { id: 'h4', label: '🙏 Despedida', text: 'Gracias por confiar en Huellitas al Cielo en este momento tan especial. Esperamos haber sido un apoyo para ustedes y su familia peluda.\n\nCon cariño,\nEquipo Huellitas al Cielo 🐾' }
     ]
 };
+let currentUser = null;
+let currentRole = null;
+let currentBusiness = 'alba';
+let currentLeadId = null;
+let currentLeadPhone = null;
+let currentLeadStatus = null;
+let allConversations = [];
+let userQR = { alba: [], huellitas: [] };
+let qrPanelOpen = false;
+let activeQRTab = 'system';
+let alertSounded = false;
+let refreshInterval = null;
 
-function loadTemplates() {
-    const bar = document.getElementById('templates-bar');
-    const tmpl = TEMPLATES[currentBusiness] || TEMPLATES.albalumen;
-    bar.innerHTML = tmpl.map(t => `<button class="temp-btn" onclick="setTemplate('${escStr(t.text)}')">${t.label}</button>`).join('');
+function doLogin() {
+    const user = document.getElementById('login-user').value.toLowerCase().trim();
+    const pass = document.getElementById('login-pass').value;
+    fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, password: pass })
+    }).then(r => r.json()).then(data => {
+        if (data.success) {
+            currentUser = data.user.full_name;
+            currentRole = data.user.role;
+            sessionStorage.setItem('ga_token', data.token);
+            sessionStorage.setItem('ga_user', currentUser);
+            sessionStorage.setItem('ga_role', currentRole);
+            showApp();
+        } else {
+            document.getElementById('login-error').textContent = '❌ Usuario o contraseña incorrectos';
+        }
+    }).catch(() => {
+        document.getElementById('login-error').textContent = '❌ Error de conexión';
+    });
+}
+function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    const app = document.getElementById('app');
+    app.style.display = 'flex';
+    document.getElementById('user-pill').textContent = `👤 ${currentUser}`;
+    loadUserQR();
+    loadConversations();
+    loadUnreadCounts();
+    refreshInterval = setInterval(() => { loadConversations(); loadUnreadCounts(); }, 5000);
+}
+function logout() {
+    sessionStorage.clear();
+    clearInterval(refreshInterval);
+    location.reload();
+}
+window.addEventListener('load', () => {
+    const token = sessionStorage.getItem('ga_token');
+    const user = sessionStorage.getItem('ga_user');
+    const role = sessionStorage.getItem('ga_role');
+    if (token && user && role) {
+        currentUser = user;
+        currentRole = role;
+        showApp();
+    }
+});
+const authHeaders = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${sessionStorage.getItem('ga_token')}`
+});
+function showSidebar() { document.getElementById('sidebar').classList.add('open'); }
+function hideSidebar() { document.getElementById('sidebar').classList.remove('open'); }
+
+async function loadUnreadCounts() {
+    try {
+        const res = await fetch('/api/leads/unread-count', { headers: authHeaders() });
+        const data = await res.json();
+        document.getElementById('count-alba').textContent = data.alba || 0;
+        document.getElementById('count-huellitas').textContent = data.huellitas || 0;
+        if ((data.alba > 0 || data.huellitas > 0) && !alertSounded) {
+            playAlert();
+            alertSounded = true;
+            setTimeout(() => { alertSounded = false; }, 60000);
+        }
+    } catch(e) { /* fail silently */ }
+}
+function playAlert() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880; gain.gain.value = 0.3;
+        osc.start(); setTimeout(() => { osc.stop(); ctx.close(); }, 800);
+    } catch(e) {}
 }
 
-function setTemplate(text) {
+// ═══ QUICK REPLIES ═══
+function toggleQRPanel() {
+    qrPanelOpen = !qrPanelOpen;
+    const content = document.getElementById('qr-content');
+    const arrow = document.getElementById('qr-arrow');
+    content.classList.toggle('open', qrPanelOpen);
+    arrow.classList.toggle('open', qrPanelOpen);
+}
+async function loadUserQR() {
+    try {
+        const r1 = await fetch(`/api/leads/quick-replies/alba/${encodeURIComponent(currentUser)}`, { headers: authHeaders() });
+        const d1 = await r1.json();
+        userQR.alba = Array.isArray(d1) ? d1.filter(r => r.user_name !== 'system') : [];
+        const r2 = await fetch(`/api/leads/quick-replies/huellitas/${encodeURIComponent(currentUser)}`, { headers: authHeaders() });
+        const d2 = await r2.json();
+        userQR.huellitas = Array.isArray(d2) ? d2.filter(r => r.user_name !== 'system') : [];
+    } catch(e) {}
+    renderQRTabs();
+}
+function renderQRTabs() {
+    const tabs = document.getElementById('qr-tabs');
+    if (!tabs) return;
+    tabs.innerHTML = `
+        <button class="qr-tab ${activeQRTab === 'system' ? 'active' : ''}" onclick="switchQRTab('system')">📋 Predeterminados</button>
+        <button class="qr-tab ${activeQRTab === 'mine' ? 'active' : ''}" onclick="switchQRTab('mine')">✏️ Mis respuestas</button>`;
+    renderQRMessages();
+}
+function switchQRTab(tab) {
+    activeQRTab = tab;
+    renderQRTabs();
+}
+function renderQRMessages() {
+    const list = document.getElementById('qr-messages-list');
+    if (!list) return;
+    const messages = activeQRTab === 'system'
+        ? SYSTEM_QR[currentBusiness]
+        : (userQR[currentBusiness] || []).map(r => ({ id: r.id, label: r.reply_text.substring(0, 25), text: r.reply_text, deletable: true }));
+    if (!messages || !messages.length) {
+        list.innerHTML = '<p style="font-size:12px;color:var(--text-light);padding:8px;">No hay respuestas personalizadas aún.</p>';
+        return;
+    }
+    list.innerHTML = messages.map(r => `
+        <div class="qr-msg-item" onclick="useQR(\`${r.text.replace(/`/g,'\\`').replace(/\$/g,'\\$')}\`)">
+            <div class="qr-msg-label">${r.label}</div>
+            <div class="qr-msg-preview">${r.text.substring(0, 80)}</div>
+            <div class="qr-msg-footer">
+                <span class="qr-msg-send">➤ Usar</span>
+                ${r.deletable ? `<button onclick="event.stopPropagation();deleteUserQR(${r.id})" style="background:none;border:none;color:#dc3545;cursor:pointer;font-size:12px;">🗑️</button>` : ''}
+            </div>
+        </div>`).join('');
+}
+function useQR(text) {
     const input = document.getElementById('msg-input');
     input.value = text;
     input.focus();
-    input.style.height = 'auto';
-    input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+    autoResize(input);
+    if (qrPanelOpen) toggleQRPanel();
+}
+async function addQuickReply() {
+    const text = document.getElementById('new-qr-text').value.trim();
+    if (!text) return;
+    try {
+        const res = await fetch('/api/leads/quick-replies', {
+            method: 'POST', headers: authHeaders(),
+            body: JSON.stringify({ business: currentBusiness, user_name: currentUser, reply_text: text })
+        });
+        const data = await res.json();
+        if (data && data.id) {
+            userQR[currentBusiness].push(data);
+        } else {
+            userQR[currentBusiness].push({ id: Date.now(), user_name: currentUser, reply_text: text, business: currentBusiness });
+        }
+        document.getElementById('new-qr-text').value = '';
+        activeQRTab = 'mine';
+        renderQRTabs();
+        showNotification('✅ Respuesta agregada', 'success');
+    } catch(e) { showNotification('❌ Error guardando', 'error'); }
+}
+async function deleteUserQR(id) {
+    try {
+        await fetch(`/api/leads/quick-replies/${id}`, { method: 'DELETE', headers: authHeaders() });
+        userQR[currentBusiness] = userQR[currentBusiness].filter(r => r.id !== id);
+        renderQRMessages();
+        showNotification('🗑️ Eliminada', 'warning');
+    } catch(e) {}
 }
 
-// ===== QUICK REPLIES =====
-const QUICK_REPLIES = {
-    albalumen: [
-        '✅ Entendido, lo atiendo de inmediato.',
-        '🙏 Lamentamos su pérdida. Estamos para ayudarle.',
-        '📞 ¿Puede llamarnos? +506 8528-1312',
-        '⏳ Un momento por favor, le confirmo.',
-        '✅ Perfecto, todo está coordinado.',
-        '📋 ¿Tiene el certificado de defunción a mano?',
-    ],
-    huellitas: [
-        '❤️ Sentimos mucho la pérdida de su mascota.',
-        '✅ Con gusto le ayudo.',
-        '📞 ¿Puede llamarnos? +506 7046-9290',
-        '⏳ Un momento, le confirmo.',
-        '🐾 ¿Cuál es el peso aproximado de su mascota?',
-    ]
-};
-
-function loadQuickReplies() {
-    const bar = document.getElementById('quick-replies-bar');
-    const qr = QUICK_REPLIES[currentBusiness] || QUICK_REPLIES.albalumen;
-    bar.innerHTML = qr.map(r => `<button class="qr-btn" onclick="setTemplate('${escStr(r)}')">${r.length > 30 ? r.substring(0,30)+'…' : r}</button>`).join('');
+// ═══ CONVERSATIONS ═══
+function switchBusiness(biz) {
+    currentBusiness = biz;
+    currentLeadId = null;
+    document.getElementById('tab-alba').className = 'biz-tab' + (biz === 'alba' ? ' active-alba' : '');
+    document.getElementById('tab-huellitas').className = 'biz-tab' + (biz === 'huellitas' ? ' active-huellitas' : '');
+    document.getElementById('sidebar-title').textContent = biz === 'alba' ? '💬 Albalumen' : '💬 Huellitas al Cielo';
+    document.getElementById('send-btn').className = `send-btn ${biz === 'huellitas' ? 'huellitas' : ''}`;
+    document.getElementById('no-conv').style.display = 'flex';
+    document.getElementById('active-chat').style.display = 'none';
+    renderQRTabs();
+    loadConversations();
 }
-
-// ===== CLAIM / LOST =====
-function openWAChat() {
-    if (!currentLeadPhone) return;
-    const clean = currentLeadPhone.replace(/\D/g,'');
-    window.open(`https://wa.me/${clean}`, '_blank');
+async function loadConversations() {
+    try {
+        const res = await fetch('/api/leads/recent', { headers: authHeaders() });
+        const data = await res.json();
+        allConversations = Array.isArray(data) ? data : [];
+        renderConversations(allConversations);
+    } catch(e) {}
 }
-
+function renderConversations(data) {
+    const list = document.getElementById('conversations-list');
+    const filtered = data.filter(l => {
+        if (currentBusiness === 'alba') return !l.source?.includes('huellitas');
+        return l.source?.includes('huellitas');
+    });
+    if (!filtered.length) {
+        list.innerHTML = '<p style="padding:14px;color:var(--text-light);font-size:12px;text-align:center;">Sin conversaciones aún</p>';
+        return;
+    }
+    list.innerHTML = filtered.map(lead => {
+        const isH = lead.source?.includes('huellitas');
+        const time = new Date(lead.created_at).toLocaleTimeString('es-CR', {hour:'2-digit', minute:'2-digit'});
+        const isActive = lead.id === currentLeadId;
+        const statusClass = lead.status === 'New' ? 'badge-new' : lead.status === 'In-Progress' ? 'badge-claimed' : 'badge-lost';
+        return `<div class="conv-item ${isActive ? 'active' : ''} ${isH ? 'huellitas' : ''}"
+            onclick="openConversation(${lead.id}, '${(lead.phone||'').replace(/'/g,"\\'")}', '${(lead.contact_name||'Sin nombre').replace(/'/g,"\\'")}', ${isH}, '${lead.status}', '${lead.claimed_by||''}')">
+            <div class="conv-top">
+                <span class="conv-name">${lead.contact_name || 'Sin nombre'}</span>
+                <span class="conv-time">${time}</span>
+            </div>
+            <div class="conv-preview">${lead.service_type || 'Consulta'}</div>
+            <div class="conv-badges">
+                <span class="badge ${isH ? 'badge-huellitas' : 'badge-alba'}">${isH ? '🐾' : '🕊️'}</span>
+                <span class="badge ${statusClass}">${lead.status}</span>
+                ${lead.status === 'New' ? '<div class="unread-dot"></div>' : ''}
+            </div>
+            ${lead.claimed_by ? `<div class="attended-by">👤 ${lead.claimed_by}</div>` : ''}
+        </div>`;
+    }).join('');
+}
+function filterConversations(query) {
+    const filtered = allConversations.filter(l =>
+        (l.contact_name||'').toLowerCase().includes(query.toLowerCase()) ||
+        (l.phone||'').includes(query) ||
+        (l.service_type||'').toLowerCase().includes(query.toLowerCase())
+    );
+    renderConversations(filtered);
+}
+function openConversation(id, phone, name, isH, status, claimedBy) {
+    currentLeadId = id;
+    currentLeadPhone = phone;
+    currentLeadStatus = status;
+    if (window.innerWidth <= 768) hideSidebar();
+    document.getElementById('no-conv').style.display = 'none';
+    document.getElementById('active-chat').style.display = 'flex';
+    document.getElementById('chat-name').textContent = name;
+    document.getElementById('chat-avatar').textContent = isH ? '🐾' : '🕊️';
+    document.getElementById('chat-avatar').className = `avatar ${isH ? 'avatar-huellitas' : 'avatar-alba'}`;
+    const phoneDisplay = phone ? phone.slice(0,-4) + '****' : 'N/A';
+    document.getElementById('chat-info').textContent = claimedBy ? `📞 ${phoneDisplay} · 👤 ${claimedBy}` : `📞 ${phoneDisplay}`;
+    const claimBtn = document.getElementById('claim-btn');
+    const lostBtn = document.getElementById('lost-btn');
+    if (status === 'In-Progress' && claimedBy && claimedBy !== currentUser && currentRole !== 'admin') {
+        claimBtn.disabled = true; claimBtn.textContent = `🔒 ${claimedBy}`; lostBtn.disabled = true;
+    } else if (status === 'In-Progress') {
+        claimBtn.disabled = true; claimBtn.textContent = `✅ ${claimedBy||'Reclamado'}`; lostBtn.disabled = false;
+    } else if (status === 'Lost') {
+        claimBtn.disabled = true; claimBtn.textContent = '❌ Perdido'; lostBtn.disabled = true;
+    } else {
+        claimBtn.disabled = false; claimBtn.textContent = '✅ Reclamar';
+        claimBtn.className = `action-btn ${isH ? 'pink' : 'green'}`; lostBtn.disabled = false;
+    }
+    document.getElementById('send-btn').className = `send-btn ${isH ? 'huellitas' : ''}`;
+    loadMessages(id);
+    renderConversations(allConversations);
+}
+async function loadMessages(leadId) {
+    const area = document.getElementById('messages-area');
+    area.innerHTML = '';
+    const isH = currentBusiness === 'huellitas';
+    try {
+        const res = await fetch(`/api/leads/messages/${leadId}`, { headers: authHeaders() });
+        const messages = await res.json();
+        if (!Array.isArray(messages) || !messages.length) {
+            area.innerHTML = '<div class="date-divider">Inicio de conversación</div>';
+            return;
+        }
+        let lastDate = '';
+        messages.forEach(msg => {
+            const msgDate = new Date(msg.created_at).toLocaleDateString('es-CR');
+            if (msgDate !== lastDate) {
+                lastDate = msgDate;
+                area.innerHTML += `<div class="date-divider">${msgDate}</div>`;
+            }
+            const time = new Date(msg.created_at).toLocaleTimeString('es-CR', {hour:'2-digit', minute:'2-digit'});
+            if (msg.message_type === 'call') {
+                area.innerHTML += `<div class="msg-wrapper outgoing"><div class="call-bubble">
+                    <div style="font-size:14px;">📞</div>
+                    <div style="font-size:12px;font-weight:600;">${msg.call_result||'Llamada'}</div>
+                    ${msg.call_duration ? `<div style="font-size:11px;color:var(--text-light);">⏱️ ${msg.call_duration} min</div>` : ''}
+                    ${msg.message_text ? `<div style="font-size:11px;color:var(--text-mid);margin-top:3px;">${msg.message_text}</div>` : ''}
+                </div><div class="msg-meta">${msg.sent_by||'Sistema'} · ${time}</div></div>`;
+            } else if (msg.message_type === 'system') {
+                area.innerHTML += `<div class="msg-wrapper system"><div class="msg-bubble">${msg.message_text}</div><div class="msg-meta">${time}</div></div>`;
+            } else {
+                const isOut = msg.direction === 'outgoing';
+                area.innerHTML += `<div class="msg-wrapper ${isOut?'outgoing':'incoming'} ${isH?'huellitas':''}">
+                    <div class="msg-bubble">${msg.message_text}</div>
+                    <div class="msg-meta">${isOut?(msg.sent_by||'Sistema')+' · ':''}${time}</div>
+                </div>`;
+            }
+        });
+        area.scrollTop = area.scrollHeight;
+    } catch(e) {
+        area.innerHTML = '<div class="date-divider">Inicio de conversación</div>';
+    }
+}
+async function sendMessage() {
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if (!text || !currentLeadId) return;
+    const area = document.getElementById('messages-area');
+    const isH = currentBusiness === 'huellitas';
+    const time = new Date().toLocaleTimeString('es-CR', {hour:'2-digit', minute:'2-digit'});
+    area.innerHTML += `<div class="msg-wrapper outgoing ${isH?'huellitas':''}">
+        <div class="msg-bubble">${text}</div>
+        <div class="msg-meta">${currentUser} · ${time}</div>
+    </div>`;
+    area.scrollTop = area.scrollHeight;
+    input.value = ''; input.style.height = 'auto';
+    try {
+        await fetch('/api/leads/send-message', {
+            method:'POST', headers: authHeaders(),
+            body: JSON.stringify({ lead_id: currentLeadId, message: text, sent_by: currentUser, business: currentBusiness })
+        });
+    } catch(e) {}
+}
 async function claimCurrentLead() {
     if (!currentLeadId) return;
     try {
-        await fetch(`/api/leads/${currentLeadId}/claim`, {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
+        const res = await fetch(`/api/leads/claim/${currentLeadId}`, {
+            method:'PUT', headers: authHeaders(),
             body: JSON.stringify({ staff_name: currentUser })
         });
-        showToast('✅ Lead reclamado!');
-        loadConversations();
-    } catch(e) {}
-}
-
-async function markCurrentLost() {
-    if (!currentLeadId) return;
-    const reason = prompt('Motivo de pérdida: precio / competidor / no_contesta / no_procede / otro');
-    if (!reason) return;
-    try {
-        await fetch(`/api/leads/${currentLeadId}/lost`, {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ reason_lost: reason })
-        });
-        showToast('📊 Lead marcado como perdido');
-        loadConversations();
-    } catch(e) {}
-}
-
-// ===== CAPTURE PANEL =====
-async function captureClient() {
-    const nombre = document.getElementById('cap-nombre').value.trim();
-    const phone = document.getElementById('cap-phone').value.trim();
-    const business = document.getElementById('cap-business').value;
-    const source = document.getElementById('cap-source').value;
-    if (!nombre || !phone) { showToast('Nombre y teléfono requeridos', 'var(--warning)'); return; }
-    try {
-        const res = await fetch('/api/leads/new', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ contact_name: nombre, phone, business, source, registered_by: currentUser, service_type: 'Consulta General' })
-        });
         if (res.ok) {
-            showToast('✅ Cliente registrado!');
-            document.getElementById('cap-nombre').value = '';
-            document.getElementById('cap-phone').value = '';
-            loadConversations();
+            const btn = document.getElementById('claim-btn');
+            btn.textContent = `✅ ${currentUser}`; btn.disabled = true;
+            const phoneDisplay = currentLeadPhone ? currentLeadPhone.slice(0,-4) + '****' : 'N/A';
+            document.getElementById('chat-info').textContent = `📞 ${phoneDisplay} · 👤 ${currentUser}`;
+            showNotification(`✅ Reclamado por ${currentUser}`, 'success');
+            loadConversations(); loadUnreadCounts();
         }
-    } catch(e) { showToast('❌ Error', 'var(--danger)'); }
+    } catch(e) { showNotification('❌ Error al reclamar', 'error'); }
 }
-
-// ===== INIT =====
-loadConversations();
-loadOutreachIndicators();
-setInterval(loadConversations, 15000);
-setInterval(loadOutreachIndicators, 30000);
+function callClient() {
+    if (currentLeadPhone) window.location.href = `tel:${currentLeadPhone}`;
+}
+function openLostModal() { document.getElementById('lost-modal').style.display = 'block'; }
+function closeLostModal() { document.getElementById('lost-modal').style.display = 'none'; }
+function toggleLostFields() {
+    const reason = document.getElementById('lost-reason-sel').value;
+    document.getElementById('competitor-field').style.display = reason === 'Eligió a la competencia' ? 'block' : 'none';
+    document.getElementById('other-field').style.display = reason === 'Otro' ? 'block' : 'none';
+}
+async function confirmLost() {
+    if (!currentLeadId) return;
+    const reason = document.getElementById('lost-reason-sel').value;
+    const competitor = document.getElementById('competitor-input').value || null;
+    const other = document.getElementById('other-input').value || null;
+    const finalReason = reason === 'Otro' ? (other || 'Otro') : reason;
+    await fetch(`/api/leads/lost/${currentLeadId}`, {
+        method:'PUT', headers: authHeaders(),
+        body: JSON.stringify({ reason_lost: finalReason, competitor_name: competitor, closed_by: currentUser })
+    });
+    closeLostModal();
+    showNotification(`📊 Perdido: ${finalReason}`, 'warning');
+    loadConversations(); loadUnreadCounts();
+    document.getElementById('no-conv').style.display = 'flex';
+    document.getElementById('active-chat').style.display = 'none';
+    if (window.innerWidth <= 768) showSidebar();
+}
+function openCallModal() { document.getElementById('call-modal').style.display = 'block'; }
+function closeCallModal() { document.getElementById('call-modal').style.display = 'none'; }
+async function saveCallRecord() {
+    if (!currentLeadId) return;
+    const result = document.getElementById('call-result-sel').value;
+    const duration = parseInt(document.getElementById('call-duration-input').value) || 0;
+    const notes = document.getElementById('call-notes-input').value;
+    try {
+        await fetch('/api/leads/send-message', {
+            method:'POST', headers: authHeaders(),
+            body: JSON.stringify({ lead_id: currentLeadId, message: notes, sent_by: currentUser, business: currentBusiness, message_type: 'call', call_result: result, call_duration: duration })
+        });
+        closeCallModal();
+        document.getElementById('call-duration-input').value = '';
+        document.getElementById('call-notes-input').value = '';
+        showNotification('📞 Llamada registrada', 'success');
+        loadMessages(currentLeadId);
+    } catch(e) {}
+}
+function openTransferModal() {
+    const USERS_LIST = [
+        { name: 'Oscar Evans', role: 'admin' },
+        { name: 'Micheal Evans', role: 'admin' },
+        { name: 'Soledad', role: 'operador' },
+        { name: 'Manuel', role: 'operador' }
+    ].filter(u => u.name !== currentUser);
+    document.getElementById('transfer-list').innerHTML = USERS_LIST.map(u => `
+        <div class="transfer-item" onclick="confirmTransfer('${u.name}')">
+            <span style="font-size:18px;">👤</span>
+            <div><div style="font-weight:600;font-size:13px;">${u.name}</div>
+            <div style="font-size:11px;color:var(--text-light);">${u.role}</div></div>
+        </div>`).join('');
+    document.getElementById('transfer-modal').style.display = 'block';
+}
+function closeTransferModal() { document.getElementById('transfer-modal').style.display = 'none'; }
+async function confirmTransfer(toName) {
+    if (!currentLeadId) return;
+    const note = document.getElementById('transfer-note').value;
+    try {
+        await fetch('/api/leads/send-message', {
+            method:'POST', headers: authHeaders(),
+            body: JSON.stringify({ lead_id: currentLeadId, message: `🔄 Transferido de ${currentUser} a ${toName}${note ? ': ' + note : ''}`, sent_by: 'Sistema', business: currentBusiness, message_type: 'system' })
+        });
+        await fetch(`/api/leads/claim/${currentLeadId}`, {
+            method:'PUT', headers: authHeaders(),
+            body: JSON.stringify({ staff_name: toName })
+        });
+        closeTransferModal();
+        showNotification(`🔄 Transferido a ${toName}`, 'success');
+        loadConversations();
+    } catch(e) {}
+}
+function openAddContactModal() { document.getElementById('add-contact-modal').style.display = 'block'; }
+function closeAddContactModal() { document.getElementById('add-contact-modal').style.display = 'none'; }
+async function saveContact() {
+    const name = document.getElementById('c-name').value.trim();
+    const phone = document.getElementById('c-phone').value.trim();
+    if (!name || !phone) { showNotification('⚠️ Nombre y teléfono son requeridos', 'warning'); return; }
+    try {
+        const res = await fetch('/api/contacts/add', {
+            method: 'POST', headers: authHeaders(),
+            body: JSON.stringify({
+                full_name: name, phone,
+                email: document.getElementById('c-email').value,
+                address: document.getElementById('c-address').value,
+                source: document.getElementById('c-source').value,
+                business: document.getElementById('c-business').value,
+                notes: document.getElementById('c-notes').value,
+                created_by: currentUser
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            closeAddContactModal();
+            showNotification(`✅ Contacto guardado: ${name}`, 'success');
+            ['c-name','c-phone','c-email','c-address','c-notes'].forEach(id => document.getElementById(id).value = '');
+        }
+    } catch(e) { showNotification('❌ Error guardando contacto', 'error'); }
+}
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+}
+function showNotification(msg, type) {
+    const n = document.createElement('div');
+    n.className = `notification ${type}`;
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(() => n.remove(), 3500);
+}
 </script>
 </body>
 </html>
