@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Guerrero AI — Chat Central v4.3</title>
+    <title>Guerrero AI — Chat Central v4.4</title>
     <style>
         :root {
             --dark-bg: #f5f0e8;
@@ -21,17 +21,19 @@
         }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         html, body { height:100%; overflow:hidden; }
-        body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--dark-bg); color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; font-size:14px; }
+        body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--dark-bg); color:var(--text-main); height:100vh; display:flex; flex-direction:column; }
 
         /* TOPBAR */
         .topbar { background:var(--card-bg2); border-bottom:2px solid var(--alba-green); padding:0 12px; display:flex; justify-content:space-between; align-items:center; z-index:100; flex-shrink:0; height:48px; }
         .logo-area h1 { color:var(--alba-green); font-size:15px; font-weight:900; white-space:nowrap; }
         .topbar-right { display:flex; gap:5px; align-items:center; flex-wrap:nowrap; flex-shrink:0; }
-        .nav-btn { background:rgba(26,138,74,0.1); border:1px solid var(--alba-green); color:var(--alba-green); padding:5px 9px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer; text-decoration:none; white-space:nowrap; flex-shrink:0; display:inline-flex; align-items:center; gap:3px; }
+        .nav-btn { border:1px solid var(--alba-green); background:rgba(26,138,74,0.1); color:var(--alba-green); padding:5px 9px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer; text-decoration:none; white-space:nowrap; flex-shrink:0; display:inline-flex; align-items:center; gap:3px; }
         .nav-btn:hover { background:rgba(26,138,74,0.2); }
         .nav-btn.danger { background:rgba(220,38,38,0.1); border-color:var(--danger); color:var(--danger); }
-        .nav-btn.purple { background:rgba(124,58,237,0.1); border-color:var(--neon-purple); color:var(--neon-purple); }
         .nav-btn.blue { background:rgba(26,111,168,0.1); border-color:var(--neon-blue); color:var(--neon-blue); }
+        .nav-btn.purple { background:rgba(124,58,237,0.1); border-color:var(--neon-purple); color:var(--neon-purple); }
+        .nav-btn:hover.blue { background:rgba(26,111,168,0.2); }
+        .nav-btn:hover.purple { background:rgba(124,58,237,0.2); }
         .outreach-indicator { font-size:10px; padding:3px 6px; border-radius:4px; font-weight:bold; border:1px solid; white-space:nowrap; flex-shrink:0; }
         .oi-on { color:var(--alba-green); border-color:var(--alba-green); }
         .oi-off { color:var(--text-dim); border-color:var(--border); }
@@ -42,9 +44,9 @@
         .main-layout { display:flex; flex:1; overflow:hidden; min-height:0; }
 
         /* SIDEBAR */
-        .sidebar { width:280px; background:var(--card-bg); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; min-height:0; }
+        .sidebar { width:280px; background:var(--card-bg); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; min-height:0; overflow:hidden; }
         .sidebar-nav { display:flex; border-bottom:2px solid var(--border); flex-shrink:0; }
-        .sidebar-nav-btn { flex:1; padding:10px 6px; text-align:center; font-size:11px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all 0.15s; }
+        .sidebar-nav-btn { flex:1; padding:10px 4px; text-align:center; font-size:11px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:3px solid transparent; margin-bottom:-2px; }
         .sidebar-nav-btn.active { color:var(--alba-green); border-bottom-color:var(--alba-green); background:rgba(26,138,74,0.05); }
         .sidebar-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; }
         .sidebar-tab { flex:1; padding:9px 4px; text-align:center; font-size:10px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:2px solid transparent; }
@@ -57,24 +59,24 @@
         .conversations-list::-webkit-scrollbar { width:3px; }
         .conversations-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
-        /* Clientes panel */
-        .clients-panel { flex:1; overflow-y:auto; display:none; flex-direction:column; min-height:0; }
-        .clients-panel.visible { display:flex; }
-        .clients-toolbar { padding:10px; border-bottom:1px solid var(--border); display:flex; gap:6px; flex-shrink:0; }
-        .clients-search { flex:1; padding:7px 10px; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); border-radius:7px; font-size:12px; }
-        .clients-search:focus { outline:none; border-color:var(--alba-green); }
-        .btn-new-client { background:var(--alba-green); color:white; border:none; padding:7px 10px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer; white-space:nowrap; }
-        .clients-list-inner { flex:1; overflow-y:auto; }
-        .client-item { padding:11px 14px; border-bottom:1px solid #e8e0cc; cursor:pointer; transition:background 0.15s; }
-        .client-item:hover { background:rgba(26,138,74,0.04); }
-        .client-name-row { display:flex; justify-content:space-between; align-items:center; }
-        .client-name-txt { font-weight:bold; font-size:13px; color:var(--text-main); }
-        .client-tag { font-size:9px; padding:1px 5px; border-radius:3px; font-weight:bold; }
-        .client-phone { font-size:11px; color:var(--text-dim); margin-top:2px; }
-        .client-status { font-size:10px; margin-top:3px; }
-        .status-nuevo { color:var(--neon-blue); font-weight:bold; }
-        .status-progress { color:var(--alba-green); font-weight:bold; }
-        .status-lost { color:var(--danger); }
+        /* PERFILES panel */
+        .perfiles-panel { flex:1; display:none; flex-direction:column; overflow:hidden; min-height:0; }
+        .perfiles-panel.visible { display:flex; }
+        .perfiles-toolbar { padding:10px; border-bottom:1px solid var(--border); display:flex; gap:6px; flex-shrink:0; }
+        .perfiles-search { flex:1; padding:7px 10px; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); border-radius:7px; font-size:12px; }
+        .perfiles-search:focus { outline:none; border-color:var(--neon-blue); }
+        .btn-nuevo-perfil { background:var(--neon-blue); color:white; border:none; padding:7px 10px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+        .perfiles-list { flex:1; overflow-y:auto; min-height:0; }
+        .perfil-item { padding:11px 14px; border-bottom:1px solid #e8e0cc; cursor:pointer; transition:background 0.15s; }
+        .perfil-item:hover { background:rgba(26,111,168,0.04); }
+        .perfil-name-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
+        .perfil-name { font-weight:bold; font-size:13px; color:var(--text-main); }
+        .perfil-biz-tag { font-size:9px; padding:1px 5px; border-radius:3px; font-weight:bold; }
+        .perfil-phone { font-size:11px; color:var(--text-dim); }
+        .perfil-status { font-size:10px; margin-top:3px; }
+        .s-nuevo { color:var(--neon-blue); font-weight:bold; }
+        .s-progress { color:var(--alba-green); font-weight:bold; }
+        .s-lost { color:var(--danger); }
 
         /* Conv items */
         .conv-item { padding:12px 14px; border-bottom:1px solid #e8e0cc; cursor:pointer; transition:background 0.15s; }
@@ -102,15 +104,15 @@
         .hdr-btn.lost { background:var(--danger); color:white; }
 
         /* CHAT BODY */
-        .chat-body { display:flex; flex:1; overflow:hidden; background:var(--dark-bg); min-height:0; }
-        .chat-main { display:flex; flex-direction:column; flex:1; overflow:hidden; background:var(--dark-bg); min-height:0; min-width:0; }
+        .chat-body { display:flex; flex:1; overflow:hidden; min-height:0; }
+        .chat-main { display:flex; flex-direction:column; flex:1; overflow:hidden; min-height:0; min-width:0; }
         .messages-area { flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; background:var(--dark-bg); min-height:0; }
         .messages-area::-webkit-scrollbar { width:3px; }
         .messages-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
         .msg-sender { font-size:10px; color:var(--text-dim); padding:0 4px; margin-bottom:2px; }
         .msg-sender.right { text-align:right; }
         .msg { max-width:75%; padding:10px 14px; border-radius:14px; font-size:13px; line-height:1.5; word-break:break-word; }
-        .msg.incoming { background:#ffffff; align-self:flex-start; border-bottom-left-radius:3px; border:1px solid var(--border); color:var(--text-main); box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+        .msg.incoming { background:#fff; align-self:flex-start; border-bottom-left-radius:3px; border:1px solid var(--border); color:var(--text-main); box-shadow:0 1px 3px rgba(0,0,0,0.06); }
         .msg.outgoing { background:var(--alba-green); color:#fff; align-self:flex-end; border-bottom-right-radius:3px; font-weight:500; }
         .msg.outgoing.hue { background:var(--huellitas-pink); }
         .msg-time { font-size:9px; opacity:0.6; margin-top:4px; }
@@ -122,7 +124,7 @@
         /* INPUT */
         .input-container { padding:10px 12px; background:var(--card-bg); border-top:1px solid var(--border); flex-shrink:0; }
         .input-row { display:flex; gap:8px; align-items:flex-end; }
-        .msg-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:10px 12px; border-radius:10px; font-size:13px; resize:none; line-height:1.4; max-height:100px; font-family:inherit; }
+        .msg-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:10px 12px; border-radius:10px; font-size:14px; resize:none; line-height:1.4; max-height:100px; font-family:inherit; }
         .msg-input:focus { outline:none; border-color:var(--alba-green); }
         .send-btn { background:var(--alba-green); color:white; border:none; padding:10px 18px; border-radius:10px; font-weight:900; font-size:13px; cursor:pointer; white-space:nowrap; flex-shrink:0; }
         .send-btn:hover { opacity:0.9; }
@@ -137,11 +139,12 @@
         .quick-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; }
         .quick-tab { flex:1; padding:6px 4px; font-size:10px; font-weight:bold; text-align:center; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:2px solid transparent; }
         .quick-tab.active { color:var(--neon-blue); border-bottom-color:var(--neon-blue); }
-        .bubbles-list { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:5px; background:var(--card-bg); min-height:0; }
+        .bubbles-list { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:5px; }
         .bubbles-list::-webkit-scrollbar { width:2px; }
-        .bubble-btn { background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:18px; font-size:11px; line-height:1.3; cursor:pointer; text-align:left; transition:all 0.15s; width:100%; word-break:break-word; }
-        .bubble-btn:hover { background:rgba(26,106,168,0.08); border-color:var(--neon-blue); color:var(--neon-blue); }
-        .bubble-btn.template:hover { background:rgba(26,138,74,0.08); border-color:var(--alba-green); color:var(--alba-green); }
+        .bubble-btn { background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:8px 10px; border-radius:18px; font-size:11px; line-height:1.4; cursor:pointer; text-align:left; transition:all 0.15s; width:100%; word-break:break-word; display:block; }
+        .bubble-btn:hover { background:rgba(26,106,168,0.1); border-color:var(--neon-blue); color:var(--neon-blue); }
+        .bubble-btn.template { border-color:rgba(26,138,74,0.3); }
+        .bubble-btn.template:hover { background:rgba(26,138,74,0.1); border-color:var(--alba-green); color:var(--alba-green); }
 
         /* CAPTURE */
         .capture-card { background:var(--card-bg2); border-bottom:1px solid var(--neon-purple); padding:10px 14px; flex-shrink:0; }
@@ -151,6 +154,7 @@
         .c-input:focus { outline:none; border-color:var(--neon-purple); }
         .c-select { background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:6px; font-size:12px; width:100%; }
         .btn-capture { grid-column:span 2; background:var(--neon-purple); color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; font-size:12px; cursor:pointer; text-transform:uppercase; width:100%; }
+        .btn-capture:hover { opacity:0.9; }
 
         /* EMPTY STATE */
         .empty-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-dim); background:var(--dark-bg); }
@@ -159,22 +163,22 @@
         /* MODAL */
         .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2000; align-items:center; justify-content:center; padding:16px; }
         .modal-overlay.open { display:flex; }
-        .modal-box { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; width:480px; max-width:100%; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.15); }
+        .modal-box { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; width:500px; max-width:100%; max-height:88vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.18); }
         .modal-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; background:var(--card-bg2); }
         .modal-header h3 { font-size:13px; font-weight:bold; color:var(--alba-green); }
-        .modal-close { background:none; border:none; color:var(--text-dim); font-size:18px; cursor:pointer; padding:4px 8px; }
+        .modal-close { background:none; border:none; color:var(--text-dim); font-size:20px; cursor:pointer; padding:2px 8px; line-height:1; }
         .modal-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; }
-        .modal-tab { flex:1; padding:8px; text-align:center; font-size:11px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:2px solid transparent; }
+        .modal-tab { flex:1; padding:9px; text-align:center; font-size:11px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:2px solid transparent; }
         .modal-tab.active { color:var(--neon-blue); border-bottom-color:var(--neon-blue); }
-        .modal-body { flex:1; overflow-y:auto; padding:12px; }
-        .edit-item { display:flex; gap:6px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--border); }
+        .modal-body { flex:1; overflow-y:auto; padding:14px; }
+        .edit-item { display:flex; gap:8px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border); }
         .edit-item:last-child { border-bottom:none; }
-        .edit-item-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:8px; font-size:12px; font-family:inherit; resize:none; line-height:1.4; min-height:40px; }
+        .edit-item-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:8px 10px; border-radius:8px; font-size:12px; font-family:inherit; resize:vertical; line-height:1.4; min-height:42px; }
         .edit-item-input:focus { outline:none; border-color:var(--neon-blue); }
-        .del-btn { background:rgba(220,38,38,0.08); border:1px solid var(--danger); color:var(--danger); padding:6px 10px; border-radius:6px; font-size:13px; cursor:pointer; flex-shrink:0; line-height:1; }
+        .del-btn { background:rgba(220,38,38,0.08); border:1px solid var(--danger); color:var(--danger); padding:7px 10px; border-radius:6px; font-size:12px; cursor:pointer; flex-shrink:0; font-weight:bold; }
         .del-btn:hover { background:rgba(220,38,38,0.2); }
-        .add-row { display:flex; gap:6px; margin-top:12px; }
-        .add-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:9px 10px; border-radius:8px; font-size:12px; font-family:inherit; }
+        .add-row { display:flex; gap:8px; margin-top:14px; }
+        .add-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:9px 12px; border-radius:8px; font-size:12px; font-family:inherit; }
         .add-input:focus { outline:none; border-color:var(--alba-green); }
         .add-btn { background:var(--alba-green); color:white; border:none; padding:9px 16px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; white-space:nowrap; }
         .add-btn:hover { opacity:0.9; }
@@ -185,27 +189,16 @@
 
         /* MOBILE */
         @media(max-width:768px) {
-            body { font-size:16px; }
             .sidebar { display:none; width:100%; }
-            .sidebar.mobile-open { display:flex; position:fixed; top:48px; left:0; right:0; bottom:0; z-index:500; width:100%; }
+            .sidebar.mobile-open { display:flex; position:fixed; top:48px; left:0; right:0; bottom:0; z-index:500; }
             .hamburger-btn { display:inline-flex; align-items:center; }
             .outreach-indicator { display:none; }
             .user-pill { display:none; }
             .quick-panel { display:none; }
             .nav-btn .btn-txt { display:none; }
-            .topbar { padding:0 8px; gap:4px; }
-            .topbar-right { gap:4px; }
-            /* Make chat comfortable on mobile */
-            .chat-header { padding:8px 10px; }
-            .chat-header-left .client-name { font-size:14px; }
-            .hdr-btn { padding:5px 8px; font-size:10px; }
-            .messages-area { padding:10px; }
-            .msg { max-width:85%; font-size:13px; }
-            .input-container { padding:8px; }
-            .msg-input { font-size:16px; } /* prevents iOS zoom on input */
-            .send-btn { padding:10px 14px; font-size:12px; }
+            .msg-input { font-size:16px; }
         }
-        @media(max-width:900px) and (min-width:769px) {
+        @media(max-width:960px) and (min-width:769px) {
             .quick-panel { width:160px; }
         }
     </style>
@@ -216,13 +209,12 @@
 <div class="topbar">
     <div class="logo-area"><h1>⚔️ GUERRERO AI</h1></div>
     <div class="topbar-right">
-        <button class="hamburger-btn" id="hamburger" onclick="toggleSidebar()">☰</button>
+        <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
         <span class="user-pill" id="user-pill">👤 ...</span>
         <div class="outreach-indicator oi-on" id="ind-wa">WA: ON</div>
         <div class="outreach-indicator oi-on" id="ind-sms">SMS: ON</div>
-        <!-- Clientes button visible always in topbar -->
-        <button class="nav-btn blue" onclick="openClientesPanel()">👥 <span class="btn-txt">Clientes</span></button>
-        <button class="nav-btn purple" onclick="openNuevoCliente()">➕ <span class="btn-txt">Nuevo</span></button>
+        <button class="nav-btn blue" onclick="abrirPerfiles()">👥 <span class="btn-txt">Perfiles</span></button>
+        <button class="nav-btn purple" onclick="abrirNuevoPerfil()">➕ <span class="btn-txt">Agregar</span></button>
         <a href="/" class="nav-btn">🛡️ <span class="btn-txt">War Room</span></a>
         <button class="nav-btn danger" onclick="doLogout()">🚪 <span class="btn-txt">Salir</span></button>
     </div>
@@ -234,11 +226,11 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-nav">
             <button class="sidebar-nav-btn active" id="snav-chat" onclick="switchSidebarNav('chat')">💬 Chat</button>
-            <button class="sidebar-nav-btn" id="snav-clientes" onclick="switchSidebarNav('clientes')">👥 Clientes</button>
+            <button class="sidebar-nav-btn" id="snav-perfiles" onclick="switchSidebarNav('perfiles')">👥 Perfiles</button>
         </div>
 
         <!-- CHAT SECTION -->
-        <div id="section-chat" style="display:flex; flex-direction:column; flex:1; overflow:hidden; min-height:0;">
+        <div id="section-chat" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;">
             <div class="sidebar-tabs">
                 <button class="sidebar-tab active alba" id="tab-alba" onclick="switchBusiness('albalumen',this)">🕊️ ALBALUMEN</button>
                 <button class="sidebar-tab hue" id="tab-hue" onclick="switchBusiness('huellitas',this)">🐾 HUELLITAS</button>
@@ -251,14 +243,14 @@
             </div>
         </div>
 
-        <!-- CLIENTES SECTION -->
-        <div id="section-clientes" class="clients-panel">
-            <div class="clients-toolbar">
-                <input type="text" class="clients-search" placeholder="🔍 Buscar..." oninput="filterClients(this.value)">
-                <button class="btn-new-client" onclick="openNuevoCliente()">+ Nuevo</button>
+        <!-- PERFILES SECTION -->
+        <div id="section-perfiles" class="perfiles-panel">
+            <div class="perfiles-toolbar">
+                <input type="text" class="perfiles-search" placeholder="🔍 Buscar perfil..." oninput="filterPerfiles(this.value)">
+                <button class="btn-nuevo-perfil" onclick="abrirNuevoPerfil()">+ Nuevo</button>
             </div>
-            <div class="clients-list-inner" id="clients-list">
-                <div style="padding:20px;color:var(--text-dim);font-size:12px;">Cargando...</div>
+            <div class="perfiles-list" id="perfiles-list">
+                <div style="padding:20px;color:var(--text-dim);font-size:12px;">Cargando perfiles...</div>
             </div>
         </div>
     </div>
@@ -266,11 +258,11 @@
     <!-- CHAT AREA -->
     <div class="chat-area" id="chat-area">
         <div class="empty-state" id="empty-state">
-            <h2>⚔️ Chat Central v4.3</h2>
+            <h2>⚔️ Chat Central v4.4</h2>
             <p>Selecciona una conversación para comenzar</p>
         </div>
 
-        <div id="chat-view" style="display:none; flex:1; flex-direction:column; overflow:hidden; min-height:0;">
+        <div id="chat-view" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;">
             <div class="chat-header">
                 <div class="chat-header-left">
                     <div class="client-name" id="client-name">—</div>
@@ -283,23 +275,24 @@
                 </div>
             </div>
 
-            <!-- Capture panel -->
+            <!-- Registro rápido -->
             <div class="capture-card" id="capture-panel" style="display:none;">
-                <div class="capture-label">[ REGISTRO_RÁPIDO — NUEVO CLIENTE ]</div>
+                <div class="capture-label">[ PERFIL DE CLIENTELA — NUEVO REGISTRO ]</div>
                 <div class="capture-grid">
-                    <input type="text" class="c-input" id="cap-nombre" placeholder="NOMBRE">
-                    <input type="text" class="c-input" id="cap-phone" placeholder="WHATSAPP">
+                    <input type="text" class="c-input" id="cap-nombre" placeholder="NOMBRE COMPLETO">
+                    <input type="text" class="c-input" id="cap-phone" placeholder="WHATSAPP (+506...)">
                     <select class="c-select" id="cap-business">
                         <option value="albalumen">🕊️ ALBALUMEN</option>
                         <option value="huellitas">🐾 HUELLITAS</option>
                     </select>
                     <select class="c-select" id="cap-source">
-                        <option>📞 LLAMADA</option>
-                        <option>🚶 WALK-IN</option>
-                        <option>💬 WHATSAPP</option>
-                        <option>🌐 WEB</option>
+                        <option value="llamada">📞 LLAMADA</option>
+                        <option value="walk-in">🚶 WALK-IN</option>
+                        <option value="whatsapp">💬 WHATSAPP</option>
+                        <option value="web">🌐 WEB</option>
+                        <option value="referido">🤝 REFERIDO</option>
                     </select>
-                    <button class="btn-capture" onclick="captureClient()">REGISTRAR EN BASE DE DATOS</button>
+                    <button class="btn-capture" onclick="captureClient()">💾 GUARDAR EN PERFIL DE CLIENTELA</button>
                 </div>
             </div>
 
@@ -314,7 +307,7 @@
                     </div>
                 </div>
 
-                <!-- QUICK PANEL -->
+                <!-- QUICK PANEL — burbujas verticales -->
                 <div class="quick-panel">
                     <div class="quick-panel-header">
                         <span class="quick-panel-title">Mensajes</span>
@@ -355,7 +348,7 @@ let currentBusiness = 'albalumen';
 let currentLeadId = null;
 let currentLeadPhone = null;
 let allLeads = [];
-let allClients = [];
+let allPerfiles = [];
 let msgPolling = null;
 let currentQuickTab = 'quick';
 let currentModalTab = 'quick';
@@ -388,20 +381,20 @@ const DEFAULT_TEMPLATES = {
         '📍 Estamos ubicados 150 metros oeste de la Clínica Bíblica, San José. Atendemos 24/7.',
         '💰 Para pagos: IBAN CR05015108010026012345 a nombre de ALBALUMEN S.A.',
         '🕊️ Paquete Emergencias (₡350,000+IVA): Retiro del cuerpo, ataúd básico, preparación y cremación.',
-        '🕊️ Paquete Completo (₡650,000+IVA): Retiro, ataúd de madera, preparación, velatorio, cremación y cenizas.',
+        '🕊️ Paquete Completo (₡650,000+IVA): Retiro, ataúd, preparación, velatorio, cremación y cenizas.',
         '⚰️ Sepultura (₡400,000+IVA): Retiro, preparación y entierro en cementerio.',
         '🏛️ Columbarios: Pago único ₡910,000. Espacio permanente y digno.',
-        '📋 Requisitos: Cédula del familiar a cargo y certificado de defunción.',
+        '📋 Requisitos: Cédula del familiar a cargo y certificado de defunción del INEC o médico.',
         '🔥 Cremación directa: ₡210,000. Sin velatorio, traslado y urna básica.',
         '☎️ Llámenos: +506 8528-1312. Disponibles 24 horas.',
     ],
     huellitas: [
         '🐱 Cremación Peluditos (0-15kg): ₡40,000. Traslado, cremación y entrega de cenizas.',
         '🐕 Cremación Huellita (16-30kg): ₡59,000. Servicio completo con urna especial.',
-        '📋 Plan Preventivo: 18 cuotas de ₡4,900.',
-        '💉 Eutanasia asistida para mascotas en estado terminal.',
-        '📞 Atención inmediata: +506 7046-9290.',
-        '❤️ Lamentamos la pérdida de tu compañero. Los tratamos como familia.',
+        '📋 Plan Preventivo: 18 cuotas de ₡4,900. Asegura el servicio desde hoy.',
+        '💉 Eutanasia asistida para mascotas en estado terminal, con acompañamiento.',
+        '📞 Atención inmediata: +506 7046-9290. Estamos para acompañarte.',
+        '❤️ Lamentamos la pérdida de tu compañero. Los tratamos como parte de tu familia.',
     ]
 };
 
@@ -415,42 +408,33 @@ function escStr(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").repla
 function doLogout(){sessionStorage.clear();window.location.href='/';}
 
 function toggleSidebar(){
-    const sb=document.getElementById('sidebar');
-    sb.classList.toggle('mobile-open');
+    document.getElementById('sidebar').classList.toggle('mobile-open');
 }
-
-// Close sidebar when tapping chat area on mobile
-document.getElementById('chat-area').addEventListener('click', function(e){
-    const sb=document.getElementById('sidebar');
-    if(sb.classList.contains('mobile-open') && !sb.contains(e.target)){
-        sb.classList.remove('mobile-open');
-    }
-});
 
 function showToast(msg,color){
     const t=document.getElementById('toast');
-    t.textContent=msg;t.style.background=color||'var(--alba-green)';t.style.color='white';
-    t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
+    t.textContent=msg;
+    t.style.background=color||'var(--alba-green)';
+    t.style.color='white';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// ===== TOPBAR CLIENTES + NUEVO =====
-function openClientesPanel(){
-    // On mobile, open sidebar to clientes
+// ===== TOPBAR ACTIONS =====
+function abrirPerfiles(){
     const sb=document.getElementById('sidebar');
     sb.classList.add('mobile-open');
-    switchSidebarNav('clientes');
+    switchSidebarNav('perfiles');
 }
-
-function openNuevoCliente(){
-    // Close sidebar on mobile, show capture panel
+function abrirNuevoPerfil(){
     document.getElementById('sidebar').classList.remove('mobile-open');
     document.getElementById('empty-state').style.display='none';
     const cv=document.getElementById('chat-view');
     cv.style.display='flex';cv.style.flexDirection='column';cv.style.overflow='hidden';cv.style.flex='1';
     document.getElementById('capture-panel').style.display='block';
-    // Clear fields
     document.getElementById('cap-nombre').value='';
     document.getElementById('cap-phone').value='';
+    document.getElementById('cap-nombre').focus();
 }
 
 // ===== SIDEBAR NAV =====
@@ -458,51 +442,51 @@ function switchSidebarNav(section){
     document.querySelectorAll('.sidebar-nav-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById(`snav-${section}`).classList.add('active');
     const chatSec=document.getElementById('section-chat');
-    const clientSec=document.getElementById('section-clientes');
+    const perfilesSec=document.getElementById('section-perfiles');
     if(section==='chat'){
         chatSec.style.display='flex';
-        clientSec.classList.remove('visible');
+        perfilesSec.classList.remove('visible');
     } else {
         chatSec.style.display='none';
-        clientSec.classList.add('visible');
-        loadClients();
+        perfilesSec.classList.add('visible');
+        loadPerfiles();
     }
 }
 
-// ===== CLIENTS =====
-async function loadClients(){
+// ===== PERFILES =====
+async function loadPerfiles(){
     try{
         const res=await fetch('/api/leads/recent');
-        allClients=await res.json();
-        renderClients(allClients);
+        allPerfiles=await res.json();
+        renderPerfiles(allPerfiles);
     }catch(e){
-        document.getElementById('clients-list').innerHTML='<div style="padding:20px;color:var(--danger);font-size:12px;">❌ Error cargando</div>';
+        document.getElementById('perfiles-list').innerHTML='<div style="padding:20px;color:var(--danger);font-size:12px;">❌ Error cargando perfiles</div>';
     }
 }
-function renderClients(leads){
-    const list=document.getElementById('clients-list');
-    if(!leads.length){list.innerHTML='<div style="padding:20px;color:var(--text-dim);font-size:12px;">Sin clientes.</div>';return;}
+function renderPerfiles(leads){
+    const list=document.getElementById('perfiles-list');
+    if(!leads.length){list.innerHTML='<div style="padding:20px;color:var(--text-dim);font-size:12px;">Sin perfiles registrados.</div>';return;}
     list.innerHTML=leads.map(l=>{
         const isHue=l.business==='huellitas';
         const phone=currentRole==='admin'?(l.phone||'—'):maskPhone(l.phone);
-        const statusClass=l.status==='nuevo'?'status-nuevo':l.status==='In-Progress'?'status-progress':'status-lost';
-        return `<div class="client-item" onclick="selectClient(${l.id},'${escStr(l.contact_name||l.name)}','${l.phone}','${l.service_type}','${l.status}')">
-            <div class="client-name-row">
-                <span class="client-name-txt">${l.contact_name||l.name||'Sin nombre'}</span>
-                <span class="client-tag ${isHue?'tag-hue':'tag-alba'}">${isHue?'🐾':'🕊️'}</span>
+        const sc=l.status==='nuevo'?'s-nuevo':l.status==='In-Progress'?'s-progress':'s-lost';
+        return `<div class="perfil-item" onclick="seleccionarPerfil(${l.id},'${escStr(l.contact_name||l.name)}','${l.phone}','${l.service_type}','${l.status}')">
+            <div class="perfil-name-row">
+                <span class="perfil-name">${l.contact_name||l.name||'Sin nombre'}</span>
+                <span class="perfil-biz-tag ${isHue?'tag-hue':'tag-alba'}">${isHue?'🐾':'🕊️'}</span>
             </div>
-            <div class="client-phone">📞 ${phone}</div>
-            <div class="client-status ${statusClass}">${l.status||'nuevo'} · ${l.service_type||'Consulta'}</div>
+            <div class="perfil-phone">📞 ${phone}</div>
+            <div class="perfil-status ${sc}">${l.status||'nuevo'} · ${l.service_type||'Consulta'}</div>
         </div>`;
     }).join('');
 }
-function selectClient(id,name,phone,service,status){
+function seleccionarPerfil(id,name,phone,service,status){
     switchSidebarNav('chat');
     document.getElementById('sidebar').classList.remove('mobile-open');
     openChat(id,name,phone,service,status);
 }
-function filterClients(q){
-    renderClients(!q?allClients:allClients.filter(l=>
+function filterPerfiles(q){
+    renderPerfiles(!q?allPerfiles:allPerfiles.filter(l=>
         (l.contact_name||l.name||'').toLowerCase().includes(q.toLowerCase())||
         (l.phone||'').includes(q)||
         (l.service_type||'').toLowerCase().includes(q.toLowerCase())
@@ -522,13 +506,19 @@ function renderBubbles(){
     const list=document.getElementById('bubbles-list');
     const isTpl=currentQuickTab==='template';
     if(!msgs.length){
-        list.innerHTML=`<div style="padding:12px;color:var(--text-dim);font-size:11px;text-align:center;">Sin mensajes.<br>Usa ✏️ Editar.</div>`;
+        list.innerHTML='<div style="padding:12px;color:var(--text-dim);font-size:11px;text-align:center;">Sin mensajes.<br>Usa ✏️ Editar.</div>';
         return;
     }
-    list.innerHTML=msgs.map((m,i)=>{
-        const label=m.substring(0,50)+(m.length>50?'…':'');
-        return `<button class="bubble-btn${isTpl?' template':''}" onclick="insertBubble(${i})" type="button">${label}</button>`;
-    }).join('');
+    // Build HTML string — NO inline onclick with quotes that can break
+    list.innerHTML='';
+    msgs.forEach(function(m,i){
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.className='bubble-btn'+(isTpl?' template':'');
+        btn.textContent=m.length>52?m.substring(0,52)+'…':m;
+        btn.addEventListener('click',function(){insertBubble(i);});
+        list.appendChild(btn);
+    });
 }
 
 function insertBubble(i){
@@ -540,42 +530,85 @@ function insertBubble(i){
     inp.focus();
     inp.style.height='auto';
     inp.style.height=Math.min(inp.scrollHeight,100)+'px';
-    showToast('✅ Mensaje listo — presiona ENVIAR');
+    // Visual feedback
+    showToast('✅ Listo — presiona ENVIAR ▶');
 }
 
 // ===== EDIT MODAL =====
-function openEditModal(){document.getElementById('edit-modal').classList.add('open');renderModalBody();}
-function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');renderBubbles();}
-
+function openEditModal(){
+    currentModalTab=currentQuickTab; // sync tabs
+    document.getElementById('edit-modal').classList.add('open');
+    // Reset modal tab UI
+    document.querySelectorAll('.modal-tab').forEach((b,i)=>{
+        b.classList.toggle('active', i===(currentModalTab==='quick'?0:1));
+    });
+    renderModalBody();
+}
+function closeEditModal(){
+    document.getElementById('edit-modal').classList.remove('open');
+    renderBubbles();
+}
 function switchModalTab(tab,btn){
     currentModalTab=tab;
     document.querySelectorAll('.modal-tab').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     renderModalBody();
 }
-
 function renderModalBody(){
     const msgs=getMsgs(currentModalTab,currentBusiness);
-    document.getElementById('modal-body').innerHTML=`
-        <div id="edit-list">${msgs.map((m,i)=>`
-        <div class="edit-item">
-            <textarea class="edit-item-input" rows="2" id="ei_${i}">${m.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
-            <button class="del-btn" onclick="deleteMsg(${i})" type="button">✕</button>
-        </div>`).join('')}</div>
-        <div class="add-row">
-            <input type="text" class="add-input" id="new-msg-input" placeholder="Escribe el nuevo mensaje...">
-            <button class="add-btn" onclick="addMsg()" type="button">+ Agregar</button>
-        </div>`;
-    // Save on blur for each textarea
-    msgs.forEach((_,i)=>{
-        const ta=document.getElementById(`ei_${i}`);
-        if(ta) ta.addEventListener('blur',()=>updateMsg(i,ta.value));
+    const body=document.getElementById('modal-body');
+    body.innerHTML='';
+
+    // Edit list
+    const editList=document.createElement('div');
+    msgs.forEach(function(m,i){
+        const row=document.createElement('div');
+        row.className='edit-item';
+
+        const ta=document.createElement('textarea');
+        ta.className='edit-item-input';
+        ta.rows=2;
+        ta.value=m;
+        ta.addEventListener('change',function(){updateMsg(i,ta.value);});
+        ta.addEventListener('blur',function(){updateMsg(i,ta.value);});
+
+        const delBtn=document.createElement('button');
+        delBtn.className='del-btn';
+        delBtn.type='button';
+        delBtn.textContent='✕';
+        delBtn.addEventListener('click',function(){deleteMsg(i);});
+
+        row.appendChild(ta);
+        row.appendChild(delBtn);
+        editList.appendChild(row);
     });
+    body.appendChild(editList);
+
+    // Add row
+    const addRow=document.createElement('div');
+    addRow.className='add-row';
+
+    const addInp=document.createElement('input');
+    addInp.type='text';
+    addInp.className='add-input';
+    addInp.id='new-msg-input';
+    addInp.placeholder='Escribe el nuevo mensaje...';
+    addInp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addMsg();}});
+
+    const addBtn=document.createElement('button');
+    addBtn.type='button';
+    addBtn.className='add-btn';
+    addBtn.textContent='+ Agregar';
+    addBtn.addEventListener('click',addMsg);
+
+    addRow.appendChild(addInp);
+    addRow.appendChild(addBtn);
+    body.appendChild(addRow);
 }
 
 function updateMsg(i,val){
     const m=getMsgs(currentModalTab,currentBusiness);
-    m[i]=val;
+    m[i]=val.trim()||m[i];
     saveMsgs(currentModalTab,currentBusiness,m);
 }
 function deleteMsg(i){
@@ -583,7 +616,7 @@ function deleteMsg(i){
     m.splice(i,1);
     saveMsgs(currentModalTab,currentBusiness,m);
     renderModalBody();
-    showToast('🗑️ Mensaje eliminado');
+    showToast('🗑️ Eliminado');
 }
 function addMsg(){
     const inp=document.getElementById('new-msg-input');
@@ -596,7 +629,9 @@ function addMsg(){
     renderModalBody();
     showToast('✅ Mensaje agregado');
 }
-document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
+document.getElementById('edit-modal').addEventListener('click',function(e){
+    if(e.target===this)closeEditModal();
+});
 
 // ===== BUSINESS SWITCH =====
 function switchBusiness(biz,btn){
@@ -650,12 +685,12 @@ function maskPhone(p){if(!p)return'—';const c=p.replace(/\D/g,'');return c.len
 async function openChat(id,name,phone,service,status){
     currentLeadId=id;currentLeadPhone=phone;
     document.getElementById('empty-state').style.display='none';
+    document.getElementById('capture-panel').style.display='none';
     const cv=document.getElementById('chat-view');
     cv.style.display='flex';cv.style.flexDirection='column';cv.style.overflow='hidden';cv.style.flex='1';
     document.getElementById('client-name').textContent=name||'Sin nombre';
     const dp=currentRole==='admin'?(phone||'—'):maskPhone(phone);
     document.getElementById('client-info').innerHTML=`<span style="color:var(--neon-blue);">${dp}</span> · ${service||'Consulta'} · <span style="color:${status==='In-Progress'?'var(--alba-green)':'var(--warning)'}">${status||'nuevo'}</span>`;
-    document.getElementById('capture-panel').style.display='none';
     document.querySelectorAll('.conv-item').forEach(e=>e.classList.remove('active'));
     renderBubbles();
     await loadMessages();
@@ -672,7 +707,7 @@ async function loadMessages(){
         const area=document.getElementById('messages-area');
         const atBottom=area.scrollHeight-area.scrollTop<=area.clientHeight+50;
         const isHue=currentBusiness==='huellitas';
-        if(!msgs.length){area.innerHTML=`<div style="text-align:center;color:var(--text-dim);font-size:12px;padding:20px;">Sin mensajes aún. 👋</div>`;return;}
+        if(!msgs.length){area.innerHTML='<div style="text-align:center;color:var(--text-dim);font-size:12px;padding:20px;">Sin mensajes aún. 👋</div>';return;}
         let lastDate=null;
         area.innerHTML=msgs.map(m=>{
             const d=new Date(m.created_at);
@@ -686,14 +721,17 @@ async function loadMessages(){
     }catch(e){}
 }
 
-// ===== SEND =====
+// ===== SEND — fixed =====
 async function sendMessage(){
     const inp=document.getElementById('msg-input');
     const text=inp.value.trim();
     if(!text){showToast('Escribe un mensaje primero','var(--warning)');return;}
-    if(!currentLeadId){showToast('Selecciona un lead primero','var(--warning)');return;}
+    if(!currentLeadId){showToast('Selecciona una conversación primero','var(--warning)');return;}
     if(['mi número','personal','mi cuenta','pago directo','por fuera'].some(p=>text.toLowerCase().includes(p)))
-        showToast('⚠️ Palabras sospechosas detectadas','var(--danger)');
+        showToast('⚠️ Palabras sospechosas','var(--danger)');
+    const sendBtn=document.getElementById('send-btn');
+    sendBtn.disabled=true;
+    sendBtn.textContent='...';
     try{
         const res=await fetch('/api/leads/send-message',{
             method:'POST',
@@ -701,13 +739,22 @@ async function sendMessage(){
             body:JSON.stringify({lead_id:currentLeadId,message:text,sent_by:currentUser,business:currentBusiness})
         });
         if(res.ok){
-            inp.value='';inp.style.height='auto';
+            inp.value='';
+            inp.style.height='auto';
             await loadMessages();
+            showToast('✅ Enviado');
         } else {
             const err=await res.text();
-            showToast('❌ Error: '+err,'var(--danger)');
+            showToast('❌ '+err.substring(0,60),'var(--danger)');
         }
-    }catch(e){showToast('❌ Error de conexión','var(--danger)');}
+    }catch(e){
+        showToast('❌ Error de conexión','var(--danger)');
+    }finally{
+        sendBtn.disabled=false;
+        sendBtn.textContent='ENVIAR ▶';
+        if(document.getElementById('send-btn').classList.contains('hue'))
+            sendBtn.textContent='ENVIAR ▶';
+    }
 }
 
 function handleKeydown(e){
@@ -733,16 +780,19 @@ async function captureClient(){
     const s=document.getElementById('cap-source').value;
     if(!n||!p){showToast('Nombre y teléfono requeridos','var(--warning)');return;}
     try{
-        const res=await fetch('/api/leads/new',{method:'POST',headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({contact_name:n,phone:p,business:b,source:s,registered_by:currentUser,service_type:'Consulta General'})});
+        const res=await fetch('/api/leads/new',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({contact_name:n,phone:p,business:b,source:s,registered_by:currentUser,service_type:'Consulta General'})
+        });
         if(res.ok){
-            showToast('✅ Cliente registrado!');
+            showToast('✅ Perfil registrado en base de datos');
             document.getElementById('cap-nombre').value='';
             document.getElementById('cap-phone').value='';
             document.getElementById('capture-panel').style.display='none';
             loadConversations();
         } else {
-            showToast('❌ Error registrando','var(--danger)');
+            showToast('❌ Error al registrar','var(--danger)');
         }
     }catch(e){showToast('❌ Error de conexión','var(--danger)');}
 }
