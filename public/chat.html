@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -116,9 +115,7 @@
 .qr-messages-list { display:flex; flex-direction:row; gap:6px; overflow-x:auto; padding-bottom:4px; scroll-snap-type:x mandatory; }
 .qr-messages-list::-webkit-scrollbar { height:2px; }
 .qr-messages-list::-webkit-scrollbar-thumb { background:var(--cream-darker); }
-.qr-msg-item { min-width:200px; max-width:220px; flex-shrink:0; scroll-snap-align:start; flex-direction:column; align-items:flex-start; }
-.qr-msg-preview { white-space:normal; font-size:11px; line-height:1.3; max-height:40px; overflow:hidden; }
-        .qr-msg-item { display:flex; align-items:center; gap:6px; padding:6px 8px; border-radius:8px; background:var(--cream); cursor:pointer; border:1px solid transparent; }
+        .qr-msg-item { min-width:200px; max-width:220px; flex-shrink:0; scroll-snap-align:start; display:flex; align-items:center; gap:6px; padding:6px 8px; border-radius:8px; background:var(--cream); cursor:pointer; border:1px solid transparent; }
         .qr-msg-item:hover { border-color:var(--alba-green); background:var(--alba-light); }
         .qr-msg-preview { flex:1; font-size:11px; color:var(--text-dark); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         .qr-msg-send { font-size:11px; color:var(--alba-green); font-weight:700; flex-shrink:0; }
@@ -185,11 +182,6 @@
     <a href="/" class="nav-btn">⚔️</a>
     <button class="nav-btn" onclick="logout()">🚪</button>
 </div>
-            <span id="user-pill" style="font-size:10px;color:var(--text-mid);white-space:nowrap;"></span>
-            <button class="nav-btn highlight" onclick="openAddContactModal()">➕ Contacto</button>
-            <a href="/clients.html" class="nav-btn" style="background:#6600cc;color:white;border-color:#6600cc;">👥 Clientes</a>
-            <a href="/" class="nav-btn">⚔️ War Room</a>
-            <button class="nav-btn" onclick="logout()">Salir</button>
         </div>
     </div>
     <div class="main-layout">
@@ -446,7 +438,7 @@ async function loadUnreadCounts() {
             alertSounded = true;
             setTimeout(() => { alertSounded = false; }, 60000);
         }
-   } catch(e) { showNotification('❌ Error: ' + e.message, 'error'); }
+   } catch(e) { /* fail silently — unread count is non-critical */ }
 }
 }
 function playAlert() {
@@ -687,7 +679,8 @@ async function claimCurrentLead() {
     if (res.ok) {
         const btn = document.getElementById('claim-btn');
         btn.textContent = `✅ ${currentUser}`; btn.disabled = true;
-        document.getElementById('chat-info').textContent = `📞 ${currentLeadPhone} · 👤 ${currentUser}`;
+        const phoneDisplay = currentLeadPhone ? currentLeadPhone.slice(0,-4) + '****' : 'N/A';
+        document.getElementById('chat-info').textContent = `📞 ${phoneDisplay} · 👤 ${currentUser}`;
         showNotification(`✅ Reclamado por ${currentUser}`, 'success');
         loadConversations(); loadUnreadCounts();
     }
@@ -731,7 +724,7 @@ async function saveCallRecord() {
             method:'POST', headers: authHeaders(),
             body: JSON.stringify({ lead_id: currentLeadId, message: notes, sent_by: currentUser, business: currentBusiness, message_type: 'call', call_result: result, call_duration: duration })
         });
-        closeCallModal()addQuickReply;
+        closeCallModal();
         document.getElementById('call-duration-input').value = '';
         document.getElementById('call-notes-input').value = '';
         showNotification('📞 Llamada registrada', 'success');
