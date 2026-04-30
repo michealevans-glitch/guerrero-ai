@@ -20,16 +20,18 @@
             --warning: #b45309;
         }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--dark-bg); color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+        html, body { height:100%; overflow:hidden; }
+        body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--dark-bg); color:var(--text-main); height:100vh; display:flex; flex-direction:column; overflow:hidden; font-size:14px; }
 
         /* TOPBAR */
-        .topbar { background:var(--card-bg2); border-bottom:2px solid var(--alba-green); padding:6px 12px; display:flex; justify-content:space-between; align-items:center; z-index:100; flex-shrink:0; min-height:48px; }
+        .topbar { background:var(--card-bg2); border-bottom:2px solid var(--alba-green); padding:0 12px; display:flex; justify-content:space-between; align-items:center; z-index:100; flex-shrink:0; height:48px; }
         .logo-area h1 { color:var(--alba-green); font-size:15px; font-weight:900; white-space:nowrap; }
         .topbar-right { display:flex; gap:5px; align-items:center; flex-wrap:nowrap; flex-shrink:0; }
         .nav-btn { background:rgba(26,138,74,0.1); border:1px solid var(--alba-green); color:var(--alba-green); padding:5px 9px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer; text-decoration:none; white-space:nowrap; flex-shrink:0; display:inline-flex; align-items:center; gap:3px; }
         .nav-btn:hover { background:rgba(26,138,74,0.2); }
         .nav-btn.danger { background:rgba(220,38,38,0.1); border-color:var(--danger); color:var(--danger); }
-        .nav-btn.danger:hover { background:rgba(220,38,38,0.2); }
+        .nav-btn.purple { background:rgba(124,58,237,0.1); border-color:var(--neon-purple); color:var(--neon-purple); }
+        .nav-btn.blue { background:rgba(26,111,168,0.1); border-color:var(--neon-blue); color:var(--neon-blue); }
         .outreach-indicator { font-size:10px; padding:3px 6px; border-radius:4px; font-weight:bold; border:1px solid; white-space:nowrap; flex-shrink:0; }
         .oi-on { color:var(--alba-green); border-color:var(--alba-green); }
         .oi-off { color:var(--text-dim); border-color:var(--border); }
@@ -37,37 +39,32 @@
         .hamburger-btn { display:none; background:rgba(26,138,74,0.1); border:1px solid var(--alba-green); color:var(--alba-green); padding:5px 9px; border-radius:7px; font-size:15px; cursor:pointer; flex-shrink:0; }
 
         /* LAYOUT */
-        .main-layout { display:flex; flex:1; overflow:hidden; }
+        .main-layout { display:flex; flex:1; overflow:hidden; min-height:0; }
 
         /* SIDEBAR */
-        .sidebar { width:280px; background:var(--card-bg); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; }
-
-        /* Sidebar top nav tabs (Chat / Clientes) */
+        .sidebar { width:280px; background:var(--card-bg); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; min-height:0; }
         .sidebar-nav { display:flex; border-bottom:2px solid var(--border); flex-shrink:0; }
         .sidebar-nav-btn { flex:1; padding:10px 6px; text-align:center; font-size:11px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all 0.15s; }
         .sidebar-nav-btn.active { color:var(--alba-green); border-bottom-color:var(--alba-green); background:rgba(26,138,74,0.05); }
-
-        /* Business tabs (inside Chat section) */
         .sidebar-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; }
         .sidebar-tab { flex:1; padding:9px 4px; text-align:center; font-size:10px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:2px solid transparent; }
         .sidebar-tab.active.alba { color:var(--alba-green); border-bottom-color:var(--alba-green); }
         .sidebar-tab.active.hue { color:var(--huellitas-pink); border-bottom-color:var(--huellitas-pink); }
-
         .sidebar-search { padding:10px; border-bottom:1px solid var(--border); flex-shrink:0; }
         .search-box { width:100%; padding:8px 12px; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); border-radius:8px; font-size:12px; }
         .search-box:focus { outline:none; border-color:var(--alba-green); }
-
-        .conversations-list { flex:1; overflow-y:auto; }
+        .conversations-list { flex:1; overflow-y:auto; min-height:0; }
         .conversations-list::-webkit-scrollbar { width:3px; }
         .conversations-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
         /* Clientes panel */
-        .clients-panel { flex:1; overflow-y:auto; display:none; flex-direction:column; }
+        .clients-panel { flex:1; overflow-y:auto; display:none; flex-direction:column; min-height:0; }
         .clients-panel.visible { display:flex; }
         .clients-toolbar { padding:10px; border-bottom:1px solid var(--border); display:flex; gap:6px; flex-shrink:0; }
         .clients-search { flex:1; padding:7px 10px; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); border-radius:7px; font-size:12px; }
         .clients-search:focus { outline:none; border-color:var(--alba-green); }
         .btn-new-client { background:var(--alba-green); color:white; border:none; padding:7px 10px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+        .clients-list-inner { flex:1; overflow-y:auto; }
         .client-item { padding:11px 14px; border-bottom:1px solid #e8e0cc; cursor:pointer; transition:background 0.15s; }
         .client-item:hover { background:rgba(26,138,74,0.04); }
         .client-name-row { display:flex; justify-content:space-between; align-items:center; }
@@ -94,7 +91,7 @@
         .conv-unread { color:var(--neon-blue); font-weight:bold; }
 
         /* CHAT AREA */
-        .chat-area { flex:1; display:flex; flex-direction:column; overflow:hidden; background:var(--dark-bg); }
+        .chat-area { flex:1; display:flex; flex-direction:column; overflow:hidden; background:var(--dark-bg); min-height:0; min-width:0; }
         .chat-header { padding:10px 14px; background:var(--card-bg); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
         .chat-header-left .client-name { font-size:15px; font-weight:bold; color:var(--text-main); }
         .chat-header-left .client-info { font-size:11px; color:var(--text-dim); margin-top:2px; }
@@ -104,10 +101,10 @@
         .hdr-btn.claim { background:var(--alba-green); color:white; }
         .hdr-btn.lost { background:var(--danger); color:white; }
 
-        /* MESSAGES */
-        .chat-body { display:flex; flex:1; overflow:hidden; background:var(--dark-bg); }
-        .chat-main { display:flex; flex-direction:column; flex:1; overflow:hidden; background:var(--dark-bg); }
-        .messages-area { flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; background:var(--dark-bg); }
+        /* CHAT BODY */
+        .chat-body { display:flex; flex:1; overflow:hidden; background:var(--dark-bg); min-height:0; }
+        .chat-main { display:flex; flex-direction:column; flex:1; overflow:hidden; background:var(--dark-bg); min-height:0; min-width:0; }
+        .messages-area { flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; background:var(--dark-bg); min-height:0; }
         .messages-area::-webkit-scrollbar { width:3px; }
         .messages-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
         .msg-sender { font-size:10px; color:var(--text-dim); padding:0 4px; margin-bottom:2px; }
@@ -127,12 +124,12 @@
         .input-row { display:flex; gap:8px; align-items:flex-end; }
         .msg-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:10px 12px; border-radius:10px; font-size:13px; resize:none; line-height:1.4; max-height:100px; font-family:inherit; }
         .msg-input:focus { outline:none; border-color:var(--alba-green); }
-        .send-btn { background:var(--alba-green); color:white; border:none; padding:10px 18px; border-radius:10px; font-weight:900; font-size:13px; cursor:pointer; white-space:nowrap; }
+        .send-btn { background:var(--alba-green); color:white; border:none; padding:10px 18px; border-radius:10px; font-weight:900; font-size:13px; cursor:pointer; white-space:nowrap; flex-shrink:0; }
         .send-btn:hover { opacity:0.9; }
         .send-btn.hue { background:var(--huellitas-pink); }
 
         /* QUICK PANEL */
-        .quick-panel { width:200px; background:var(--card-bg); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow:hidden; }
+        .quick-panel { width:200px; background:var(--card-bg); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow:hidden; min-height:0; }
         .quick-panel-header { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-bottom:1px solid var(--border); flex-shrink:0; background:var(--card-bg2); }
         .quick-panel-title { font-size:10px; font-weight:bold; color:var(--text-dim); letter-spacing:0.5px; text-transform:uppercase; }
         .edit-msgs-btn { background:none; border:1px solid var(--border); color:var(--text-dim); font-size:10px; padding:3px 7px; border-radius:5px; cursor:pointer; font-weight:bold; }
@@ -140,7 +137,7 @@
         .quick-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; }
         .quick-tab { flex:1; padding:6px 4px; font-size:10px; font-weight:bold; text-align:center; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:2px solid transparent; }
         .quick-tab.active { color:var(--neon-blue); border-bottom-color:var(--neon-blue); }
-        .bubbles-list { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:5px; background:var(--card-bg); }
+        .bubbles-list { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:5px; background:var(--card-bg); min-height:0; }
         .bubbles-list::-webkit-scrollbar { width:2px; }
         .bubble-btn { background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:18px; font-size:11px; line-height:1.3; cursor:pointer; text-align:left; transition:all 0.15s; width:100%; word-break:break-word; }
         .bubble-btn:hover { background:rgba(26,106,168,0.08); border-color:var(--neon-blue); color:var(--neon-blue); }
@@ -150,35 +147,37 @@
         .capture-card { background:var(--card-bg2); border-bottom:1px solid var(--neon-purple); padding:10px 14px; flex-shrink:0; }
         .capture-label { font-size:9px; color:var(--neon-purple); font-weight:bold; margin-bottom:8px; letter-spacing:1px; }
         .capture-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-        .c-input { background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:6px; font-size:12px; font-family:inherit; }
+        .c-input { background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:6px; font-size:12px; font-family:inherit; width:100%; }
         .c-input:focus { outline:none; border-color:var(--neon-purple); }
-        .c-select { background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:6px; font-size:12px; }
-        .btn-capture { grid-column:span 2; background:var(--neon-purple); color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; font-size:12px; cursor:pointer; text-transform:uppercase; }
+        .c-select { background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:6px; font-size:12px; width:100%; }
+        .btn-capture { grid-column:span 2; background:var(--neon-purple); color:white; border:none; padding:9px; border-radius:6px; font-weight:bold; font-size:12px; cursor:pointer; text-transform:uppercase; width:100%; }
 
         /* EMPTY STATE */
         .empty-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-dim); background:var(--dark-bg); }
         .empty-state h2 { font-size:18px; margin-bottom:8px; color:var(--text-main); }
 
         /* MODAL */
-        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center; }
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2000; align-items:center; justify-content:center; padding:16px; }
         .modal-overlay.open { display:flex; }
-        .modal-box { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; width:480px; max-width:95vw; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.15); }
+        .modal-box { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; width:480px; max-width:100%; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.15); }
         .modal-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; background:var(--card-bg2); }
         .modal-header h3 { font-size:13px; font-weight:bold; color:var(--alba-green); }
-        .modal-close { background:none; border:none; color:var(--text-dim); font-size:18px; cursor:pointer; }
+        .modal-close { background:none; border:none; color:var(--text-dim); font-size:18px; cursor:pointer; padding:4px 8px; }
         .modal-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; }
         .modal-tab { flex:1; padding:8px; text-align:center; font-size:11px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:2px solid transparent; }
         .modal-tab.active { color:var(--neon-blue); border-bottom-color:var(--neon-blue); }
         .modal-body { flex:1; overflow-y:auto; padding:12px; }
         .edit-item { display:flex; gap:6px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--border); }
         .edit-item:last-child { border-bottom:none; }
-        .edit-item-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:8px; font-size:12px; font-family:inherit; resize:none; line-height:1.4; }
+        .edit-item-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:8px; font-size:12px; font-family:inherit; resize:none; line-height:1.4; min-height:40px; }
         .edit-item-input:focus { outline:none; border-color:var(--neon-blue); }
-        .del-btn { background:rgba(220,38,38,0.08); border:1px solid var(--danger); color:var(--danger); padding:6px 8px; border-radius:6px; font-size:11px; cursor:pointer; flex-shrink:0; }
-        .add-row { display:flex; gap:6px; margin-top:10px; }
-        .add-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:8px 10px; border-radius:8px; font-size:12px; font-family:inherit; }
+        .del-btn { background:rgba(220,38,38,0.08); border:1px solid var(--danger); color:var(--danger); padding:6px 10px; border-radius:6px; font-size:13px; cursor:pointer; flex-shrink:0; line-height:1; }
+        .del-btn:hover { background:rgba(220,38,38,0.2); }
+        .add-row { display:flex; gap:6px; margin-top:12px; }
+        .add-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:9px 10px; border-radius:8px; font-size:12px; font-family:inherit; }
         .add-input:focus { outline:none; border-color:var(--alba-green); }
-        .add-btn { background:var(--alba-green); color:white; border:none; padding:8px 14px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; }
+        .add-btn { background:var(--alba-green); color:white; border:none; padding:9px 16px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+        .add-btn:hover { opacity:0.9; }
 
         /* TOAST */
         .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--alba-green); color:white; padding:10px 20px; border-radius:10px; font-weight:bold; font-size:12px; z-index:10000; opacity:0; transition:opacity 0.3s; pointer-events:none; white-space:nowrap; }
@@ -186,15 +185,27 @@
 
         /* MOBILE */
         @media(max-width:768px) {
-            .sidebar { display:none; }
-            .sidebar.mobile-open { display:flex; position:fixed; inset:0; z-index:500; width:85%; max-width:320px; }
+            body { font-size:16px; }
+            .sidebar { display:none; width:100%; }
+            .sidebar.mobile-open { display:flex; position:fixed; top:48px; left:0; right:0; bottom:0; z-index:500; width:100%; }
             .hamburger-btn { display:inline-flex; align-items:center; }
             .outreach-indicator { display:none; }
             .user-pill { display:none; }
             .quick-panel { display:none; }
             .nav-btn .btn-txt { display:none; }
+            .topbar { padding:0 8px; gap:4px; }
+            .topbar-right { gap:4px; }
+            /* Make chat comfortable on mobile */
+            .chat-header { padding:8px 10px; }
+            .chat-header-left .client-name { font-size:14px; }
+            .hdr-btn { padding:5px 8px; font-size:10px; }
+            .messages-area { padding:10px; }
+            .msg { max-width:85%; font-size:13px; }
+            .input-container { padding:8px; }
+            .msg-input { font-size:16px; } /* prevents iOS zoom on input */
+            .send-btn { padding:10px 14px; font-size:12px; }
         }
-        @media(max-width:900px) {
+        @media(max-width:900px) and (min-width:769px) {
             .quick-panel { width:160px; }
         }
     </style>
@@ -205,10 +216,13 @@
 <div class="topbar">
     <div class="logo-area"><h1>⚔️ GUERRERO AI</h1></div>
     <div class="topbar-right">
-        <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+        <button class="hamburger-btn" id="hamburger" onclick="toggleSidebar()">☰</button>
         <span class="user-pill" id="user-pill">👤 ...</span>
         <div class="outreach-indicator oi-on" id="ind-wa">WA: ON</div>
         <div class="outreach-indicator oi-on" id="ind-sms">SMS: ON</div>
+        <!-- Clientes button visible always in topbar -->
+        <button class="nav-btn blue" onclick="openClientesPanel()">👥 <span class="btn-txt">Clientes</span></button>
+        <button class="nav-btn purple" onclick="openNuevoCliente()">➕ <span class="btn-txt">Nuevo</span></button>
         <a href="/" class="nav-btn">🛡️ <span class="btn-txt">War Room</span></a>
         <button class="nav-btn danger" onclick="doLogout()">🚪 <span class="btn-txt">Salir</span></button>
     </div>
@@ -218,18 +232,16 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar">
-
-        <!-- TOP NAV: Chat | Clientes -->
         <div class="sidebar-nav">
             <button class="sidebar-nav-btn active" id="snav-chat" onclick="switchSidebarNav('chat')">💬 Chat</button>
             <button class="sidebar-nav-btn" id="snav-clientes" onclick="switchSidebarNav('clientes')">👥 Clientes</button>
         </div>
 
         <!-- CHAT SECTION -->
-        <div id="section-chat" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+        <div id="section-chat" style="display:flex; flex-direction:column; flex:1; overflow:hidden; min-height:0;">
             <div class="sidebar-tabs">
-                <button class="sidebar-tab active alba" id="tab-alba" onclick="switchBusiness('albalumen', this)">🕊️ ALBALUMEN</button>
-                <button class="sidebar-tab hue" id="tab-hue" onclick="switchBusiness('huellitas', this)">🐾 HUELLITAS</button>
+                <button class="sidebar-tab active alba" id="tab-alba" onclick="switchBusiness('albalumen',this)">🕊️ ALBALUMEN</button>
+                <button class="sidebar-tab hue" id="tab-hue" onclick="switchBusiness('huellitas',this)">🐾 HUELLITAS</button>
             </div>
             <div class="sidebar-search">
                 <input type="text" class="search-box" placeholder="🔍 Buscar cliente..." oninput="filterConvs(this.value)">
@@ -242,14 +254,13 @@
         <!-- CLIENTES SECTION -->
         <div id="section-clientes" class="clients-panel">
             <div class="clients-toolbar">
-                <input type="text" class="clients-search" placeholder="🔍 Buscar cliente..." oninput="filterClients(this.value)">
-                <button class="btn-new-client" onclick="showNewClientModal()">+ Nuevo</button>
+                <input type="text" class="clients-search" placeholder="🔍 Buscar..." oninput="filterClients(this.value)">
+                <button class="btn-new-client" onclick="openNuevoCliente()">+ Nuevo</button>
             </div>
-            <div class="conversations-list" id="clients-list">
-                <div style="padding:20px;color:var(--text-dim);font-size:12px;">Cargando clientes...</div>
+            <div class="clients-list-inner" id="clients-list">
+                <div style="padding:20px;color:var(--text-dim);font-size:12px;">Cargando...</div>
             </div>
         </div>
-
     </div>
 
     <!-- CHAT AREA -->
@@ -259,7 +270,7 @@
             <p>Selecciona una conversación para comenzar</p>
         </div>
 
-        <div id="chat-view" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
+        <div id="chat-view" style="display:none; flex:1; flex-direction:column; overflow:hidden; min-height:0;">
             <div class="chat-header">
                 <div class="chat-header-left">
                     <div class="client-name" id="client-name">—</div>
@@ -272,6 +283,7 @@
                 </div>
             </div>
 
+            <!-- Capture panel -->
             <div class="capture-card" id="capture-panel" style="display:none;">
                 <div class="capture-label">[ REGISTRO_RÁPIDO — NUEVO CLIENTE ]</div>
                 <div class="capture-grid">
@@ -302,7 +314,7 @@
                     </div>
                 </div>
 
-                <!-- QUICK PANEL - burbujas verticales -->
+                <!-- QUICK PANEL -->
                 <div class="quick-panel">
                     <div class="quick-panel-header">
                         <span class="quick-panel-title">Mensajes</span>
@@ -394,12 +406,26 @@ const DEFAULT_TEMPLATES = {
 };
 
 function getKey(t,b){return`ga_msgs_${t}_${b}`;}
-function getMsgs(t,b){try{const s=localStorage.getItem(getKey(t,b));if(s)return JSON.parse(s);}catch(e){}return t==='quick'?[...DEFAULT_QUICK[b]]:[...DEFAULT_TEMPLATES[b]];}
+function getMsgs(t,b){
+    try{const s=localStorage.getItem(getKey(t,b));if(s)return JSON.parse(s);}catch(e){}
+    return t==='quick'?[...DEFAULT_QUICK[b]]:[...DEFAULT_TEMPLATES[b]];
+}
 function saveMsgs(t,b,a){localStorage.setItem(getKey(t,b),JSON.stringify(a));}
 function escStr(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function doLogout(){sessionStorage.clear();window.location.href='/';}
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('mobile-open');}
-document.getElementById('chat-area').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('mobile-open');});
+
+function toggleSidebar(){
+    const sb=document.getElementById('sidebar');
+    sb.classList.toggle('mobile-open');
+}
+
+// Close sidebar when tapping chat area on mobile
+document.getElementById('chat-area').addEventListener('click', function(e){
+    const sb=document.getElementById('sidebar');
+    if(sb.classList.contains('mobile-open') && !sb.contains(e.target)){
+        sb.classList.remove('mobile-open');
+    }
+});
 
 function showToast(msg,color){
     const t=document.getElementById('toast');
@@ -407,35 +433,60 @@ function showToast(msg,color){
     t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// ===== SIDEBAR NAV =====
-function switchSidebarNav(section) {
-    document.querySelectorAll('.sidebar-nav-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById(`snav-${section}`).classList.add('active');
-    document.getElementById('section-chat').style.display = section==='chat' ? 'flex' : 'none';
-    const cp = document.getElementById('section-clientes');
-    cp.classList.toggle('visible', section==='clientes');
-    if (section==='clientes') loadClients();
+// ===== TOPBAR CLIENTES + NUEVO =====
+function openClientesPanel(){
+    // On mobile, open sidebar to clientes
+    const sb=document.getElementById('sidebar');
+    sb.classList.add('mobile-open');
+    switchSidebarNav('clientes');
 }
 
-// ===== CLIENTS =====
-async function loadClients() {
-    try {
-        const res = await fetch('/api/leads/recent');
-        allClients = await res.json();
-        renderClients(allClients);
-    } catch(e) {
-        document.getElementById('clients-list').innerHTML='<div style="padding:20px;color:var(--danger);font-size:12px;">❌ Error cargando</div>';
+function openNuevoCliente(){
+    // Close sidebar on mobile, show capture panel
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('empty-state').style.display='none';
+    const cv=document.getElementById('chat-view');
+    cv.style.display='flex';cv.style.flexDirection='column';cv.style.overflow='hidden';cv.style.flex='1';
+    document.getElementById('capture-panel').style.display='block';
+    // Clear fields
+    document.getElementById('cap-nombre').value='';
+    document.getElementById('cap-phone').value='';
+}
+
+// ===== SIDEBAR NAV =====
+function switchSidebarNav(section){
+    document.querySelectorAll('.sidebar-nav-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById(`snav-${section}`).classList.add('active');
+    const chatSec=document.getElementById('section-chat');
+    const clientSec=document.getElementById('section-clientes');
+    if(section==='chat'){
+        chatSec.style.display='flex';
+        clientSec.classList.remove('visible');
+    } else {
+        chatSec.style.display='none';
+        clientSec.classList.add('visible');
+        loadClients();
     }
 }
 
-function renderClients(leads) {
-    const list = document.getElementById('clients-list');
+// ===== CLIENTS =====
+async function loadClients(){
+    try{
+        const res=await fetch('/api/leads/recent');
+        allClients=await res.json();
+        renderClients(allClients);
+    }catch(e){
+        document.getElementById('clients-list').innerHTML='<div style="padding:20px;color:var(--danger);font-size:12px;">❌ Error cargando</div>';
+    }
+}
+function renderClients(leads){
+    const list=document.getElementById('clients-list');
     if(!leads.length){list.innerHTML='<div style="padding:20px;color:var(--text-dim);font-size:12px;">Sin clientes.</div>';return;}
-    list.innerHTML = leads.map(l => {
-        const isHue = l.business==='huellitas';
-        const phone = currentRole==='admin'?(l.phone||'—'):maskPhone(l.phone);
-        const statusClass = l.status==='nuevo'?'status-nuevo':l.status==='In-Progress'?'status-progress':'status-lost';
-        return `<div class="client-item" onclick="openChat(${l.id},'${escStr(l.contact_name||l.name)}','${l.phone}','${l.service_type}','${l.status}');switchSidebarNav('chat');">
+    list.innerHTML=leads.map(l=>{
+        const isHue=l.business==='huellitas';
+        const phone=currentRole==='admin'?(l.phone||'—'):maskPhone(l.phone);
+        const statusClass=l.status==='nuevo'?'status-nuevo':l.status==='In-Progress'?'status-progress':'status-lost';
+        return `<div class="client-item" onclick="selectClient(${l.id},'${escStr(l.contact_name||l.name)}','${l.phone}','${l.service_type}','${l.status}')">
             <div class="client-name-row">
                 <span class="client-name-txt">${l.contact_name||l.name||'Sin nombre'}</span>
                 <span class="client-tag ${isHue?'tag-hue':'tag-alba'}">${isHue?'🐾':'🕊️'}</span>
@@ -445,8 +496,12 @@ function renderClients(leads) {
         </div>`;
     }).join('');
 }
-
-function filterClients(q) {
+function selectClient(id,name,phone,service,status){
+    switchSidebarNav('chat');
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    openChat(id,name,phone,service,status);
+}
+function filterClients(q){
     renderClients(!q?allClients:allClients.filter(l=>
         (l.contact_name||l.name||'').toLowerCase().includes(q.toLowerCase())||
         (l.phone||'').includes(q)||
@@ -454,63 +509,92 @@ function filterClients(q) {
     ));
 }
 
-function showNewClientModal() {
-    switchSidebarNav('chat');
-    document.getElementById('capture-panel').style.display='block';
-    const cv=document.getElementById('chat-view');
-    cv.style.display='flex';cv.style.flexDirection='column';cv.style.overflow='hidden';cv.style.flex='1';
-    document.getElementById('empty-state').style.display='none';
-}
-
 // ===== QUICK PANEL =====
 function switchQuickTab(tab,btn){
     currentQuickTab=tab;
     document.querySelectorAll('.quick-tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');renderBubbles();
+    btn.classList.add('active');
+    renderBubbles();
 }
+
 function renderBubbles(){
     const msgs=getMsgs(currentQuickTab,currentBusiness);
     const list=document.getElementById('bubbles-list');
     const isTpl=currentQuickTab==='template';
+    if(!msgs.length){
+        list.innerHTML=`<div style="padding:12px;color:var(--text-dim);font-size:11px;text-align:center;">Sin mensajes.<br>Usa ✏️ Editar.</div>`;
+        return;
+    }
     list.innerHTML=msgs.map((m,i)=>{
-        const label=m.substring(0,48)+(m.length>48?'…':'');
-        return `<button class="bubble-btn${isTpl?' template':''}" onclick="insertBubble(${i})">${label}</button>`;
+        const label=m.substring(0,50)+(m.length>50?'…':'');
+        return `<button class="bubble-btn${isTpl?' template':''}" onclick="insertBubble(${i})" type="button">${label}</button>`;
     }).join('');
-    if(!msgs.length)list.innerHTML=`<div style="padding:12px;color:var(--text-dim);font-size:11px;text-align:center;">Sin mensajes.<br>Usa ✏️ Editar.</div>`;
 }
+
 function insertBubble(i){
-    const text=getMsgs(currentQuickTab,currentBusiness)[i];if(!text)return;
+    const msgs=getMsgs(currentQuickTab,currentBusiness);
+    const text=msgs[i];
+    if(!text)return;
     const inp=document.getElementById('msg-input');
-    inp.value=text;inp.focus();inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,100)+'px';
+    inp.value=text;
+    inp.focus();
+    inp.style.height='auto';
+    inp.style.height=Math.min(inp.scrollHeight,100)+'px';
+    showToast('✅ Mensaje listo — presiona ENVIAR');
 }
 
 // ===== EDIT MODAL =====
 function openEditModal(){document.getElementById('edit-modal').classList.add('open');renderModalBody();}
 function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');renderBubbles();}
+
 function switchModalTab(tab,btn){
     currentModalTab=tab;
     document.querySelectorAll('.modal-tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');renderModalBody();
+    btn.classList.add('active');
+    renderModalBody();
 }
+
 function renderModalBody(){
     const msgs=getMsgs(currentModalTab,currentBusiness);
     document.getElementById('modal-body').innerHTML=`
-        <div>${msgs.map((m,i)=>`
+        <div id="edit-list">${msgs.map((m,i)=>`
         <div class="edit-item">
-            <textarea class="edit-item-input" rows="2" onchange="updateMsg(${i},this.value)">${m.replace(/</g,'&lt;')}</textarea>
-            <button class="del-btn" onclick="deleteMsg(${i})">✕</button>
+            <textarea class="edit-item-input" rows="2" id="ei_${i}">${m.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+            <button class="del-btn" onclick="deleteMsg(${i})" type="button">✕</button>
         </div>`).join('')}</div>
         <div class="add-row">
-            <input type="text" class="add-input" id="new-msg-input" placeholder="Nuevo mensaje..." onkeydown="if(event.key==='Enter'){addMsg();event.preventDefault();}">
-            <button class="add-btn" onclick="addMsg()">+ Agregar</button>
+            <input type="text" class="add-input" id="new-msg-input" placeholder="Escribe el nuevo mensaje...">
+            <button class="add-btn" onclick="addMsg()" type="button">+ Agregar</button>
         </div>`;
+    // Save on blur for each textarea
+    msgs.forEach((_,i)=>{
+        const ta=document.getElementById(`ei_${i}`);
+        if(ta) ta.addEventListener('blur',()=>updateMsg(i,ta.value));
+    });
 }
-function updateMsg(i,val){const m=getMsgs(currentModalTab,currentBusiness);m[i]=val;saveMsgs(currentModalTab,currentBusiness,m);}
-function deleteMsg(i){const m=getMsgs(currentModalTab,currentBusiness);m.splice(i,1);saveMsgs(currentModalTab,currentBusiness,m);renderModalBody();}
+
+function updateMsg(i,val){
+    const m=getMsgs(currentModalTab,currentBusiness);
+    m[i]=val;
+    saveMsgs(currentModalTab,currentBusiness,m);
+}
+function deleteMsg(i){
+    const m=getMsgs(currentModalTab,currentBusiness);
+    m.splice(i,1);
+    saveMsgs(currentModalTab,currentBusiness,m);
+    renderModalBody();
+    showToast('🗑️ Mensaje eliminado');
+}
 function addMsg(){
-    const inp=document.getElementById('new-msg-input');const val=inp.value.trim();if(!val)return;
-    const m=getMsgs(currentModalTab,currentBusiness);m.push(val);saveMsgs(currentModalTab,currentBusiness,m);
-    inp.value='';renderModalBody();showToast('✅ Mensaje agregado');
+    const inp=document.getElementById('new-msg-input');
+    const val=inp.value.trim();
+    if(!val){showToast('Escribe un mensaje primero','var(--warning)');return;}
+    const m=getMsgs(currentModalTab,currentBusiness);
+    m.push(val);
+    saveMsgs(currentModalTab,currentBusiness,m);
+    inp.value='';
+    renderModalBody();
+    showToast('✅ Mensaje agregado');
 }
 document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
 
@@ -518,7 +602,8 @@ document.getElementById('edit-modal').addEventListener('click',function(e){if(e.
 function switchBusiness(biz,btn){
     currentBusiness=biz;
     document.querySelectorAll('.sidebar-tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');currentLeadId=null;
+    btn.classList.add('active');
+    currentLeadId=null;
     document.getElementById('chat-view').style.display='none';
     document.getElementById('empty-state').style.display='flex';
     document.getElementById('send-btn').className='send-btn'+(biz==='huellitas'?' hue':'');
@@ -570,9 +655,10 @@ async function openChat(id,name,phone,service,status){
     document.getElementById('client-name').textContent=name||'Sin nombre';
     const dp=currentRole==='admin'?(phone||'—'):maskPhone(phone);
     document.getElementById('client-info').innerHTML=`<span style="color:var(--neon-blue);">${dp}</span> · ${service||'Consulta'} · <span style="color:${status==='In-Progress'?'var(--alba-green)':'var(--warning)'}">${status||'nuevo'}</span>`;
-    if(currentRole!=='admin')document.getElementById('capture-panel').style.display='block';
+    document.getElementById('capture-panel').style.display='none';
     document.querySelectorAll('.conv-item').forEach(e=>e.classList.remove('active'));
-    renderBubbles();await loadMessages();
+    renderBubbles();
+    await loadMessages();
     if(msgPolling)clearInterval(msgPolling);
     msgPolling=setInterval(loadMessages,5000);
     document.getElementById('sidebar').classList.remove('mobile-open');
@@ -602,15 +688,28 @@ async function loadMessages(){
 
 // ===== SEND =====
 async function sendMessage(){
-    const inp=document.getElementById('msg-input');const text=inp.value.trim();
-    if(!text||!currentLeadId){if(!currentLeadId)showToast('Selecciona un lead primero','var(--warning)');return;}
-    if(['mi número','personal','mi cuenta','pago directo','por fuera'].some(p=>text.toLowerCase().includes(p)))showToast('⚠️ Palabras sospechosas','var(--danger)');
+    const inp=document.getElementById('msg-input');
+    const text=inp.value.trim();
+    if(!text){showToast('Escribe un mensaje primero','var(--warning)');return;}
+    if(!currentLeadId){showToast('Selecciona un lead primero','var(--warning)');return;}
+    if(['mi número','personal','mi cuenta','pago directo','por fuera'].some(p=>text.toLowerCase().includes(p)))
+        showToast('⚠️ Palabras sospechosas detectadas','var(--danger)');
     try{
-        const res=await fetch('/api/leads/send-message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lead_id:currentLeadId,message:text,sent_by:currentUser,business:currentBusiness})});
-        if(res.ok){inp.value='';inp.style.height='auto';await loadMessages();}
-        else showToast('❌ Error enviando','var(--danger)');
+        const res=await fetch('/api/leads/send-message',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({lead_id:currentLeadId,message:text,sent_by:currentUser,business:currentBusiness})
+        });
+        if(res.ok){
+            inp.value='';inp.style.height='auto';
+            await loadMessages();
+        } else {
+            const err=await res.text();
+            showToast('❌ Error: '+err,'var(--danger)');
+        }
     }catch(e){showToast('❌ Error de conexión','var(--danger)');}
 }
+
 function handleKeydown(e){
     if(e.ctrlKey&&e.key==='Enter'){sendMessage();return;}
     setTimeout(()=>{const t=document.getElementById('msg-input');t.style.height='auto';t.style.height=Math.min(t.scrollHeight,100)+'px';},0);
@@ -628,13 +727,24 @@ async function markCurrentLost(){
     try{await fetch(`/api/leads/${currentLeadId}/lost`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason_lost:r})});showToast('📊 Marcado como perdido');loadConversations();}catch(e){}
 }
 async function captureClient(){
-    const n=document.getElementById('cap-nombre').value.trim(),p=document.getElementById('cap-phone').value.trim();
-    const b=document.getElementById('cap-business').value,s=document.getElementById('cap-source').value;
+    const n=document.getElementById('cap-nombre').value.trim();
+    const p=document.getElementById('cap-phone').value.trim();
+    const b=document.getElementById('cap-business').value;
+    const s=document.getElementById('cap-source').value;
     if(!n||!p){showToast('Nombre y teléfono requeridos','var(--warning)');return;}
     try{
-        const res=await fetch('/api/leads/new',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contact_name:n,phone:p,business:b,source:s,registered_by:currentUser,service_type:'Consulta General'})});
-        if(res.ok){showToast('✅ Cliente registrado!');document.getElementById('cap-nombre').value='';document.getElementById('cap-phone').value='';loadConversations();}
-    }catch(e){showToast('❌ Error','var(--danger)');}
+        const res=await fetch('/api/leads/new',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({contact_name:n,phone:p,business:b,source:s,registered_by:currentUser,service_type:'Consulta General'})});
+        if(res.ok){
+            showToast('✅ Cliente registrado!');
+            document.getElementById('cap-nombre').value='';
+            document.getElementById('cap-phone').value='';
+            document.getElementById('capture-panel').style.display='none';
+            loadConversations();
+        } else {
+            showToast('❌ Error registrando','var(--danger)');
+        }
+    }catch(e){showToast('❌ Error de conexión','var(--danger)');}
 }
 
 // ===== INIT =====
