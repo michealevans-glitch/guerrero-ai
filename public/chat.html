@@ -513,8 +513,7 @@ function useQR(text) {
     if (qrPanelOpen) toggleQRPanel();
 }
 async function addQuickReply() {
-    console.log('USER:', currentUser, 'BIZ:', currentBusiness, 'TOKEN:', sessionStorage.getItem('ga_token'));
-    const text = document.getElementById('new-qr-text').value.trim();
+
     if (!text) return;
     try {
         const res = await fetch('/api/leads/quick-replies', {
