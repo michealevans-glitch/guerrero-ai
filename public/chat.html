@@ -278,20 +278,48 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
   #hbtn{display:block;}
   #topuser,.sep,.tb:not(.mob){display:none;}
   .tb.mob{display:flex!important;}
-  #lsb{position:fixed;top:calc(var(--H) + var(--TH));left:0;bottom:0;z-index:500;transform:translateX(-100%);box-shadow:4px 0 20px rgba(0,0,0,.15);}
-  #lsb.open{transform:translateX(0);}
+
+  /* On mobile: sidebar IS the main view by default */
+  #lsb{
+    position:fixed;top:calc(var(--H) + var(--TH));left:0;right:0;bottom:0;
+    width:100vw;min-width:100vw;z-index:10;
+    transform:translateX(0);
+    box-shadow:none;
+  }
+  /* When chat is open: hide sidebar, show chat */
+  body.chatopen #lsb{transform:translateX(-100%);display:none;}
+  body.chatopen #carea{display:flex!important;}
+
+  /* Chat area hidden by default on mobile */
+  #carea{
+    position:fixed;top:calc(var(--H) + var(--TH));left:0;right:0;bottom:0;
+    display:none;z-index:10;
+  }
+
   #mobov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:499;}
   #mobov.show{display:block;}
   #rpanel{display:none;}
   #mobq{display:flex;}
-  .chacts{gap:4px;flex-wrap:nowrap;overflow-x:auto;}
-  .ca{padding:5px 7px;font-size:.67rem;}
+  .chacts{gap:4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;}
+  .ca{padding:6px 10px;font-size:.75rem;}
   .ca .lbl{display:none;}
   #msginp{font-size:16px;}
+  #sendbtn{padding:9px 14px;font-size:.8rem;}
   .chgrid,.visgrid{grid-template-columns:1fr;}
-  body.chatopen #lsb{transform:translateX(-100%)!important;}
+  #main{position:fixed;top:calc(var(--H) + var(--TH));left:0;right:0;bottom:0;}
+
+  /* Mobile quick bar bigger for fingers */
+  .mqc{padding:8px 14px;font-size:.78rem;}
+  #mobq{padding:8px 12px;gap:8px;}
+
+  /* Tabs scroll nicely */
+  #ctabs{padding:0 4px;}
+  .ctab{padding:4px 8px 3px;font-size:.68rem;}
 }
-@media(min-width:769px){#mobq{display:none!important;}}
+@media(min-width:769px){
+  #mobq{display:none!important;}
+  #carea{display:flex;}
+}
 </style>
 </head>
 <body>
@@ -713,6 +741,9 @@ async function openChat(id){
   const canSeeT=isAdmin||CAN_TR.includes((cUser||'').toLowerCase());
   document.getElementById('btntrnc').style.display=canSeeT?'':'none';
   closeMob();document.body.classList.add('chatopen');
+  // On mobile: hide sidebar, show chat
+  const lsb=document.getElementById('lsb');
+  if(lsb&&window.innerWidth<=768)lsb.style.display='none';
   await loadMsgs(id,true);
   renderQL();
 }
@@ -721,6 +752,9 @@ function closeChat(){
   document.getElementById('cempty').style.display='flex';
   document.getElementById('cmain').style.display='none';
   document.body.classList.remove('chatopen');
+  // On mobile: show sidebar (list) again
+  const lsb=document.getElementById('lsb');
+  if(lsb)lsb.style.display='';
   renderCvList();renderTabs();
 }
 function goCht(id){setSbM('chat');showPage('chat');setTimeout(()=>openChat(id),80);}
