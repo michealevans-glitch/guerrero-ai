@@ -718,15 +718,13 @@ function useQMob(text){
   setTimeout(()=>{
     if(!cLId){showToast('⚠️ Abre un chat primero');return;}
     const inp=document.getElementById('msginp');
-    if(!inp){showToast('Error interno');return;}
-    inp.value='';
-    inp.value=String(text);
-    inp.dispatchEvent(new Event('input',{bubbles:true}));
-    autoR(inp);
-    inp.focus();
-    // Extra delay for mobile DOM to settle
-    setTimeout(()=>sendMsg(),150);
-  },350);
+    if(inp){
+      inp.value=String(text);
+      autoR(inp);
+    }
+    // Pass text directly — bypasses any mobile textarea timing issues
+    sendMsg(String(text));
+  },300);
 }
 
 // ── GOOGLE MEET ───────────────────────────────────────────────
@@ -928,9 +926,9 @@ function renderMsgs(msgs,scroll=true){
   }).join('');
   if(scroll)wrap.scrollTop=wrap.scrollHeight;
 }
-async function sendMsg(){
+async function sendMsg(forceTxt){
   const inp=document.getElementById('msginp');
-  const txt=inp.value.trim();
+  const txt=forceTxt||inp.value.trim();
   if(!txt){showToast('Escribe un mensaje');return;}
   if(!cLId){showToast('Selecciona un chat');return;}
   if(!cUser){showToast('Selecciona tu perfil');return;}
@@ -963,13 +961,9 @@ async function sendMsg(){
 function useQ(text){
   if(!cLId){showToast('⚠️ Primero abre un chat');return;}
   const inp=document.getElementById('msginp');
-  if(!inp)return;
-  inp.value='';
-  inp.value=String(text);
-  inp.dispatchEvent(new Event('input',{bubbles:true}));
-  autoR(inp);
-  inp.focus();
-  setTimeout(()=>sendMsg(),50);
+  if(inp){inp.value=String(text);autoR(inp);}
+  // Pass text directly to sendMsg — guaranteed delivery
+  sendMsg(String(text));
 }
 
 // ── QUICK MESSAGES (desktop right panel) ──────────────────────
@@ -1035,7 +1029,7 @@ async function createLead(){
   try{await apiCall(`${API}/api/leads/new`,{contact_name:nm,phone:ph,business:document.getElementById('nl-biz').value,source:document.getElementById('nl-src').value,service_type:document.getElementById('nl-sv').value.trim(),registered_by:cUser});showToast('✅ Cliente creado');closeModal('modal-newlead');['nl-nm','nl-ph','nl-sv'].forEach(id=>document.getElementById(id).value='');await loadData();}catch(e){showToast('❌ '+e.message);}
 }
 function doWA(){if(!cLead?.phone){showToast('Sin teléfono');return;}window.open('https://wa.me/'+cLead.phone.replace(/\D/g,''),'_blank');}
-function openWarRoom(){window.open('/warroom.html','_blank');}
+function openWarRoom(){window.open('https://guerreroai.com','_blank');}
 
 // ── CHARTS ────────────────────────────────────────────────────
 function renderCharts(){
