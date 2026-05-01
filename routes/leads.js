@@ -144,5 +144,54 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+// TWILIO WEBHOOK — recibe mensajes de WhatsApp
+router.post('/twilio/webhook', async (req, res) => {
+  try {
+    const { From, Body, ProfileName } = req.body;
+    const phone = From.replace('whatsapp:+', '');
+    const name = ProfileName || 'Cliente WhatsApp';
 
+    // Buscar si ya existe un lead con ese teléfono
+    let lead = await pool.query(
+      'SELECT * FROM leads WHERE phone ILIKE $1 LIMIT 1',
+      [`%${phone}%`]
+    );
+
+    // Si no existe, crear nuevo lead
+    if (!lead.rows.length) {
+      const newLead = await pool.query(
+        `INSERT INTO leads (contact_name, phone, source, status, service_type)
+         VALUES ($1, $2, 'WhatsApp', 'New', 'Consulta WhatsApp') RETURNING *`,
+        [name, phone]
+      );
+      lead = { rows: [newLead.rows[0]] };
+    }
+
+    const leadId = lead.rows[0].id;
+
+    // Guardar mensaje en DB
+    await pool.query(
+      `INSERT INTO messages (lead_id, message_text, body, sent_by, direction, created_at)
+       VALUES ($1, $2, $2, $3, 'incoming', NOW())`,
+      [leadId, Body, name]
+    );
+
+    // Respuesta automática cálida
+    const TwilioClient = require('twilio')(
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN
+    );
+
+    await TwilioClient.messages.create({
+      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+      to: From,
+      body: `Hola 👋 Gracias por comunicarse con nosotros. Por motivos de calidad, esta conversación puede ser monitoreada.\n\nUn miembro de nuestro equipo le atenderá personalmente en breve — estamos aquí para acompañarle en este momento. 🕊️\n\nSi prefiere que le llamemos, responda con la palabra *LLAMAR*.`
+    });
+
+    res.status(200).send('<Response></Response>');
+  } catch (err) {
+    console.error('Twilio webhook error:', err.message);
+    res.status(200).send('<Response></Response>');
+  }
+});
 module.exports = router;
