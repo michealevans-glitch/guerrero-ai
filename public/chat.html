@@ -791,18 +791,14 @@ async function sendMsg(){
 
 // ── useQ — PEGA MENSAJE EN INPUT ──────────────────────────────
 function useQ(text){
-  if(!cLId){showToast('⚠️ Primero abre un chat de la lista');return;}
-  const inp=document.getElementById('msginp');
-  if(!inp){showToast('Error: abre un chat primero');return;}
-  // Force the value in — belt and suspenders approach
-  inp.value='';
-  inp.focus();
+  if(!cLId){showToast("⚠️ Primero abre un chat de la lista");return;}
+  const inp=document.getElementById("msginp");
+  if(!inp)return;
   inp.value=String(text);
-  inp.dispatchEvent(new Event('input',{bubbles:true}));
-  inp.dispatchEvent(new Event('change',{bubbles:true}));
+  inp.dispatchEvent(new Event("input",{bubbles:true}));
   autoR(inp);
-  inp.scrollIntoView({behavior:'smooth',block:'nearest'});
-  showToast('✅ Mensaje listo — toca ENVIAR');
+  inp.focus();
+  sendMsg();
 }
 
 // ── QUICK MESSAGES ────────────────────────────────────────────
