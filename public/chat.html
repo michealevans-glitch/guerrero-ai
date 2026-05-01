@@ -465,7 +465,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
       <button class="rptab on" id="rpt-r" onclick="setRpT('rapidos',this)">Rápidos</button>
       <button class="rptab" id="rpt-p" onclick="setRpT('plantillas',this)">Plantillas</button>
     </div>
- <div id="qlist" onclick="var q=event.target.closest('.qm');if(q)useQ(q.getAttribute('data-txt'));"></div>
+ <div id="qlist" onclick="var q=event.target.closest('.qm');if(q)useQ(q.getAttribute('data-txt'));" ontouchend="var q=event.target.closest('.qm');if(q){event.preventDefault();useQ(q.getAttribute('data-txt'));}"></div>
     <div id="editqpanel">
       <div class="eqhd"><span>Editar mensajes</span><button onclick="saveEditQ()">✅ Guardar</button></div>
       <div id="eqlist"></div>
