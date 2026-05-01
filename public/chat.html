@@ -972,7 +972,7 @@ function getItems(tab){const k=getBK();const src=customQR||DQR;return(src[k]||DQ
 function renderQL(){
   const items=getItems(rpT);
   const ql=document.getElementById('qlist');
-  if(ql)ql.innerHTML=items.map(m=>`<div class="qm" onclick="useQ(${JSON.stringify(m.t)})"><span class="qi">${m.i}</span>${escH(m.t)}</div>`).join('');
+  if(ql)ql.innerHTML=items.map(m=>`<div class="qm" onmousedown="useQ(${JSON.stringify(m.t)})"><span class="qi">${m.i}</span>${escH(m.t)}</div>`).join('');
 }
 function setRpT(m,el){rpT=m;document.querySelectorAll('.rptab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');if(editingQ)renderEditQ();else renderQL();}
 function togEditQ(){
