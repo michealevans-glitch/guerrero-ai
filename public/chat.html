@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Guerrero AI — Chat Central v4.4</title>
+    <title>Guerrero AI — Chat Central v4.5</title>
     <style>
         :root {
             --dark-bg: #f5f0e8;
@@ -18,6 +18,7 @@
             --text-dim: #6b6459;
             --danger: #dc2626;
             --warning: #b45309;
+            --transfer: #0891b2;
         }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         html, body { height:100%; overflow:hidden; }
@@ -28,17 +29,27 @@
         .logo-area h1 { color:var(--alba-green); font-size:15px; font-weight:900; white-space:nowrap; }
         .topbar-right { display:flex; gap:5px; align-items:center; flex-wrap:nowrap; flex-shrink:0; }
         .nav-btn { border:1px solid var(--alba-green); background:rgba(26,138,74,0.1); color:var(--alba-green); padding:5px 9px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer; text-decoration:none; white-space:nowrap; flex-shrink:0; display:inline-flex; align-items:center; gap:3px; }
-        .nav-btn:hover { background:rgba(26,138,74,0.2); }
+        .nav-btn:hover { opacity:0.85; }
         .nav-btn.danger { background:rgba(220,38,38,0.1); border-color:var(--danger); color:var(--danger); }
         .nav-btn.blue { background:rgba(26,111,168,0.1); border-color:var(--neon-blue); color:var(--neon-blue); }
         .nav-btn.purple { background:rgba(124,58,237,0.1); border-color:var(--neon-purple); color:var(--neon-purple); }
-        .nav-btn:hover.blue { background:rgba(26,111,168,0.2); }
-        .nav-btn:hover.purple { background:rgba(124,58,237,0.2); }
+        .nav-btn.teal { background:rgba(8,145,178,0.1); border-color:var(--transfer); color:var(--transfer); }
         .outreach-indicator { font-size:10px; padding:3px 6px; border-radius:4px; font-weight:bold; border:1px solid; white-space:nowrap; flex-shrink:0; }
         .oi-on { color:var(--alba-green); border-color:var(--alba-green); }
         .oi-off { color:var(--text-dim); border-color:var(--border); }
         .user-pill { font-size:11px; color:var(--alba-green); font-weight:bold; white-space:nowrap; flex-shrink:0; }
         .hamburger-btn { display:none; background:rgba(26,138,74,0.1); border:1px solid var(--alba-green); color:var(--alba-green); padding:5px 9px; border-radius:7px; font-size:15px; cursor:pointer; flex-shrink:0; }
+
+        /* ACTIVE CHAT TABS BAR */
+        .active-tabs-bar { background:var(--card-bg); border-bottom:1px solid var(--border); display:flex; gap:4px; padding:4px 12px; overflow-x:auto; flex-shrink:0; min-height:36px; align-items:center; }
+        .active-tabs-bar::-webkit-scrollbar { height:2px; }
+        .active-tabs-bar:empty::before { content:'Sin chats activos'; font-size:10px; color:var(--text-dim); }
+        .chat-tab { background:var(--card-bg2); border:1px solid var(--border); border-radius:6px; padding:4px 10px; font-size:11px; font-weight:bold; cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:5px; flex-shrink:0; transition:all 0.15s; color:var(--text-dim); }
+        .chat-tab.active { background:var(--alba-green); color:white; border-color:var(--alba-green); }
+        .chat-tab.hue-active { background:var(--huellitas-pink); color:white; border-color:var(--huellitas-pink); }
+        .chat-tab-close { font-size:12px; opacity:0.6; margin-left:2px; }
+        .chat-tab-close:hover { opacity:1; }
+        .chat-tab-owner { font-size:9px; background:rgba(0,0,0,0.12); border-radius:3px; padding:1px 4px; }
 
         /* LAYOUT */
         .main-layout { display:flex; flex:1; overflow:hidden; min-height:0; }
@@ -48,12 +59,22 @@
         .sidebar-nav { display:flex; border-bottom:2px solid var(--border); flex-shrink:0; }
         .sidebar-nav-btn { flex:1; padding:10px 4px; text-align:center; font-size:11px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:3px solid transparent; margin-bottom:-2px; }
         .sidebar-nav-btn.active { color:var(--alba-green); border-bottom-color:var(--alba-green); background:rgba(26,138,74,0.05); }
+
+        /* Filter bar */
+        .filter-bar { display:flex; gap:4px; padding:8px 10px; border-bottom:1px solid var(--border); flex-shrink:0; flex-wrap:wrap; }
+        .filter-btn { background:none; border:1px solid var(--border); color:var(--text-dim); padding:3px 8px; border-radius:12px; font-size:10px; font-weight:bold; cursor:pointer; }
+        .filter-btn.active { background:var(--neon-blue); border-color:var(--neon-blue); color:white; }
+        .filter-btn.f-nuevo { }
+        .filter-btn.f-nuevo.active { background:var(--neon-blue); border-color:var(--neon-blue); }
+        .filter-btn.f-progress.active { background:var(--alba-green); border-color:var(--alba-green); }
+        .filter-btn.f-lost.active { background:var(--danger); border-color:var(--danger); }
+
         .sidebar-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; }
         .sidebar-tab { flex:1; padding:9px 4px; text-align:center; font-size:10px; font-weight:bold; cursor:pointer; color:var(--text-dim); border:none; background:none; border-bottom:2px solid transparent; }
         .sidebar-tab.active.alba { color:var(--alba-green); border-bottom-color:var(--alba-green); }
         .sidebar-tab.active.hue { color:var(--huellitas-pink); border-bottom-color:var(--huellitas-pink); }
-        .sidebar-search { padding:10px; border-bottom:1px solid var(--border); flex-shrink:0; }
-        .search-box { width:100%; padding:8px 12px; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); border-radius:8px; font-size:12px; }
+        .sidebar-search { padding:8px 10px; border-bottom:1px solid var(--border); flex-shrink:0; }
+        .search-box { width:100%; padding:7px 12px; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); border-radius:8px; font-size:12px; }
         .search-box:focus { outline:none; border-color:var(--alba-green); }
         .conversations-list { flex:1; overflow-y:auto; min-height:0; }
         .conversations-list::-webkit-scrollbar { width:3px; }
@@ -73,13 +94,14 @@
         .perfil-name { font-weight:bold; font-size:13px; color:var(--text-main); }
         .perfil-biz-tag { font-size:9px; padding:1px 5px; border-radius:3px; font-weight:bold; }
         .perfil-phone { font-size:11px; color:var(--text-dim); }
-        .perfil-status { font-size:10px; margin-top:3px; }
+        .perfil-status-row { font-size:10px; margin-top:3px; display:flex; justify-content:space-between; align-items:center; }
         .s-nuevo { color:var(--neon-blue); font-weight:bold; }
         .s-progress { color:var(--alba-green); font-weight:bold; }
         .s-lost { color:var(--danger); }
+        .s-owner { font-size:9px; color:var(--text-dim); background:var(--card-bg2); padding:1px 5px; border-radius:3px; }
 
         /* Conv items */
-        .conv-item { padding:12px 14px; border-bottom:1px solid #e8e0cc; cursor:pointer; transition:background 0.15s; }
+        .conv-item { padding:11px 14px; border-bottom:1px solid #e8e0cc; cursor:pointer; transition:background 0.15s; position:relative; }
         .conv-item:hover { background:rgba(26,138,74,0.04); }
         .conv-item.active { background:rgba(26,138,74,0.1); border-left:3px solid var(--alba-green); }
         .conv-item.active.hue { background:rgba(192,57,110,0.08); border-left-color:var(--huellitas-pink); }
@@ -87,21 +109,31 @@
         .conv-preview { font-size:11px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .conv-meta { display:flex; justify-content:space-between; align-items:center; }
         .conv-time { font-size:10px; color:var(--text-dim); }
-        .conv-business-tag { font-size:9px; padding:1px 5px; border-radius:3px; font-weight:bold; margin-bottom:4px; display:inline-block; }
+        .conv-business-tag { font-size:9px; padding:1px 5px; border-radius:3px; font-weight:bold; margin-bottom:3px; display:inline-block; }
         .tag-alba { background:rgba(26,138,74,0.12); color:var(--alba-green); border:1px solid rgba(26,138,74,0.3); }
         .tag-hue { background:rgba(192,57,110,0.1); color:var(--huellitas-pink); border:1px solid rgba(192,57,110,0.3); }
         .conv-unread { color:var(--neon-blue); font-weight:bold; }
+        .conv-owner-badge { font-size:9px; color:white; background:var(--alba-green); padding:1px 5px; border-radius:3px; display:inline-block; margin-top:2px; }
+        .conv-owner-badge.other { background:var(--neon-blue); }
+        .conv-status-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:4px; }
+        .dot-nuevo { background:var(--neon-blue); }
+        .dot-progress { background:var(--alba-green); }
+        .dot-lost { background:var(--danger); }
+        .dot-new-msg { background:var(--warning); }
 
         /* CHAT AREA */
         .chat-area { flex:1; display:flex; flex-direction:column; overflow:hidden; background:var(--dark-bg); min-height:0; min-width:0; }
-        .chat-header { padding:10px 14px; background:var(--card-bg); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+        .chat-header { padding:10px 14px; background:var(--card-bg); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; flex-wrap:wrap; gap:6px; }
         .chat-header-left .client-name { font-size:15px; font-weight:bold; color:var(--text-main); }
         .chat-header-left .client-info { font-size:11px; color:var(--text-dim); margin-top:2px; }
-        .chat-header-actions { display:flex; gap:6px; flex-shrink:0; }
+        .chat-header-left .attending-badge { font-size:10px; margin-top:3px; display:flex; align-items:center; gap:4px; }
+        .attending-name { font-weight:bold; color:var(--alba-green); }
+        .chat-header-actions { display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; }
         .hdr-btn { padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer; border:none; white-space:nowrap; }
         .hdr-btn.wa { background:#25D366; color:white; }
         .hdr-btn.claim { background:var(--alba-green); color:white; }
         .hdr-btn.lost { background:var(--danger); color:white; }
+        .hdr-btn.transfer { background:var(--transfer); color:white; }
 
         /* CHAT BODY */
         .chat-body { display:flex; flex:1; overflow:hidden; min-height:0; }
@@ -128,6 +160,7 @@
         .msg-input:focus { outline:none; border-color:var(--alba-green); }
         .send-btn { background:var(--alba-green); color:white; border:none; padding:10px 18px; border-radius:10px; font-weight:900; font-size:13px; cursor:pointer; white-space:nowrap; flex-shrink:0; }
         .send-btn:hover { opacity:0.9; }
+        .send-btn:disabled { opacity:0.5; cursor:not-allowed; }
         .send-btn.hue { background:var(--huellitas-pink); }
 
         /* QUICK PANEL */
@@ -148,7 +181,8 @@
 
         /* CAPTURE */
         .capture-card { background:var(--card-bg2); border-bottom:1px solid var(--neon-purple); padding:10px 14px; flex-shrink:0; }
-        .capture-label { font-size:9px; color:var(--neon-purple); font-weight:bold; margin-bottom:8px; letter-spacing:1px; }
+        .capture-label { font-size:9px; color:var(--neon-purple); font-weight:bold; margin-bottom:8px; letter-spacing:1px; display:flex; justify-content:space-between; }
+        .capture-close { background:none; border:none; cursor:pointer; color:var(--text-dim); font-size:14px; }
         .capture-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
         .c-input { background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:7px 10px; border-radius:6px; font-size:12px; font-family:inherit; width:100%; }
         .c-input:focus { outline:none; border-color:var(--neon-purple); }
@@ -157,8 +191,8 @@
         .btn-capture:hover { opacity:0.9; }
 
         /* EMPTY STATE */
-        .empty-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-dim); background:var(--dark-bg); }
-        .empty-state h2 { font-size:18px; margin-bottom:8px; color:var(--text-main); }
+        .empty-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-dim); background:var(--dark-bg); gap:8px; }
+        .empty-state h2 { font-size:18px; color:var(--text-main); }
 
         /* MODAL */
         .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2000; align-items:center; justify-content:center; padding:16px; }
@@ -180,11 +214,25 @@
         .add-row { display:flex; gap:8px; margin-top:14px; }
         .add-input { flex:1; background:#f9f5ec; border:1px solid var(--border); color:var(--text-main); padding:9px 12px; border-radius:8px; font-size:12px; font-family:inherit; }
         .add-input:focus { outline:none; border-color:var(--alba-green); }
-        .add-btn { background:var(--alba-green); color:white; border:none; padding:9px 16px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; white-space:nowrap; }
-        .add-btn:hover { opacity:0.9; }
+        .add-btn { background:var(--alba-green); color:white; border:none; padding:9px 16px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; }
+
+        /* LOST MODAL */
+        .lost-modal-body { padding:20px; display:flex; flex-direction:column; gap:12px; }
+        .lost-modal-body label { font-size:12px; font-weight:bold; color:var(--text-dim); }
+        .lost-select { width:100%; padding:10px 12px; background:#f9f5ec; border:1px solid var(--border); border-radius:8px; font-size:13px; color:var(--text-main); }
+        .lost-other-input { width:100%; padding:10px 12px; background:#f9f5ec; border:1px solid var(--border); border-radius:8px; font-size:13px; color:var(--text-main); font-family:inherit; resize:vertical; min-height:80px; display:none; }
+        .lost-other-input.visible { display:block; }
+        .lost-confirm-btn { background:var(--danger); color:white; border:none; padding:11px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer; width:100%; }
+
+        /* TRANSFER MODAL */
+        .transfer-modal-body { padding:20px; display:flex; flex-direction:column; gap:12px; }
+        .transfer-modal-body label { font-size:12px; font-weight:bold; color:var(--text-dim); }
+        .transfer-select { width:100%; padding:10px 12px; background:#f9f5ec; border:1px solid var(--border); border-radius:8px; font-size:13px; color:var(--text-main); }
+        .transfer-note { width:100%; padding:10px 12px; background:#f9f5ec; border:1px solid var(--border); border-radius:8px; font-size:13px; color:var(--text-main); font-family:inherit; resize:vertical; min-height:60px; }
+        .transfer-confirm-btn { background:var(--transfer); color:white; border:none; padding:11px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer; width:100%; }
 
         /* TOAST */
-        .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--alba-green); color:white; padding:10px 20px; border-radius:10px; font-weight:bold; font-size:12px; z-index:10000; opacity:0; transition:opacity 0.3s; pointer-events:none; white-space:nowrap; }
+        .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--alba-green); color:white; padding:10px 20px; border-radius:10px; font-weight:bold; font-size:12px; z-index:10000; opacity:0; transition:opacity 0.3s; pointer-events:none; white-space:nowrap; max-width:90vw; text-align:center; }
         .toast.show { opacity:1; }
 
         /* MOBILE */
@@ -197,9 +245,12 @@
             .quick-panel { display:none; }
             .nav-btn .btn-txt { display:none; }
             .msg-input { font-size:16px; }
+            .active-tabs-bar { display:none; }
+            .topbar { padding:0 8px; gap:3px; }
+            .topbar-right { gap:3px; }
         }
         @media(max-width:960px) and (min-width:769px) {
-            .quick-panel { width:160px; }
+            .quick-panel { width:165px; }
         }
     </style>
 </head>
@@ -213,12 +264,16 @@
         <span class="user-pill" id="user-pill">👤 ...</span>
         <div class="outreach-indicator oi-on" id="ind-wa">WA: ON</div>
         <div class="outreach-indicator oi-on" id="ind-sms">SMS: ON</div>
+        <button class="nav-btn teal" onclick="openTransferModal()">🔀 <span class="btn-txt">Transferir</span></button>
         <button class="nav-btn blue" onclick="abrirPerfiles()">👥 <span class="btn-txt">Perfiles</span></button>
         <button class="nav-btn purple" onclick="abrirNuevoPerfil()">➕ <span class="btn-txt">Agregar</span></button>
         <a href="/" class="nav-btn">🛡️ <span class="btn-txt">War Room</span></a>
         <button class="nav-btn danger" onclick="doLogout()">🚪 <span class="btn-txt">Salir</span></button>
     </div>
 </div>
+
+<!-- ACTIVE CHAT TABS -->
+<div class="active-tabs-bar" id="active-tabs-bar"></div>
 
 <div class="main-layout">
 
@@ -234,6 +289,13 @@
             <div class="sidebar-tabs">
                 <button class="sidebar-tab active alba" id="tab-alba" onclick="switchBusiness('albalumen',this)">🕊️ ALBALUMEN</button>
                 <button class="sidebar-tab hue" id="tab-hue" onclick="switchBusiness('huellitas',this)">🐾 HUELLITAS</button>
+            </div>
+            <!-- Status filter -->
+            <div class="filter-bar" id="filter-bar">
+                <button class="filter-btn f-all active" onclick="setFilter('all',this)">Todos</button>
+                <button class="filter-btn f-nuevo" onclick="setFilter('nuevo',this)">🔵 Nuevos</button>
+                <button class="filter-btn f-progress" onclick="setFilter('In-Progress',this)">🟢 Activos</button>
+                <button class="filter-btn f-lost" onclick="setFilter('lost',this)">🔴 Cerrados</button>
             </div>
             <div class="sidebar-search">
                 <input type="text" class="search-box" placeholder="🔍 Buscar cliente..." oninput="filterConvs(this.value)">
@@ -258,7 +320,7 @@
     <!-- CHAT AREA -->
     <div class="chat-area" id="chat-area">
         <div class="empty-state" id="empty-state">
-            <h2>⚔️ Chat Central v4.4</h2>
+            <h2>⚔️ Chat Central v4.5</h2>
             <p>Selecciona una conversación para comenzar</p>
         </div>
 
@@ -267,17 +329,22 @@
                 <div class="chat-header-left">
                     <div class="client-name" id="client-name">—</div>
                     <div class="client-info" id="client-info">—</div>
+                    <div class="attending-badge" id="attending-badge"></div>
                 </div>
                 <div class="chat-header-actions">
                     <button class="hdr-btn wa" onclick="openWAChat()">💬 WA</button>
-                    <button class="hdr-btn claim" onclick="claimCurrentLead()">✋ Reclamar</button>
-                    <button class="hdr-btn lost" onclick="markCurrentLost()">💀 Perdido</button>
+                    <button class="hdr-btn claim" id="btn-claim" onclick="claimCurrentLead()">✋ Reclamar</button>
+                    <button class="hdr-btn transfer" onclick="openTransferModal()">🔀 Transferir</button>
+                    <button class="hdr-btn lost" onclick="openLostModal()">💀 Perdido</button>
                 </div>
             </div>
 
             <!-- Registro rápido -->
             <div class="capture-card" id="capture-panel" style="display:none;">
-                <div class="capture-label">[ PERFIL DE CLIENTELA — NUEVO REGISTRO ]</div>
+                <div class="capture-label">
+                    <span>[ PERFIL DE CLIENTELA — NUEVO REGISTRO ]</span>
+                    <button class="capture-close" onclick="document.getElementById('capture-panel').style.display='none'">✕</button>
+                </div>
                 <div class="capture-grid">
                     <input type="text" class="c-input" id="cap-nombre" placeholder="NOMBRE COMPLETO">
                     <input type="text" class="c-input" id="cap-phone" placeholder="WHATSAPP (+506...)">
@@ -307,7 +374,7 @@
                     </div>
                 </div>
 
-                <!-- QUICK PANEL — burbujas verticales -->
+                <!-- QUICK PANEL -->
                 <div class="quick-panel">
                     <div class="quick-panel-header">
                         <span class="quick-panel-title">Mensajes</span>
@@ -339,6 +406,52 @@
     </div>
 </div>
 
+<!-- LOST MODAL -->
+<div class="modal-overlay" id="lost-modal">
+    <div class="modal-box" style="max-width:420px;">
+        <div class="modal-header">
+            <h3>💀 Marcar como Perdido</h3>
+            <button class="modal-close" onclick="closeLostModal()">✕</button>
+        </div>
+        <div class="lost-modal-body">
+            <label>Motivo de pérdida:</label>
+            <select class="lost-select" id="lost-reason" onchange="toggleLostOther()">
+                <option value="precio">💸 Precio — muy caro</option>
+                <option value="competidor">🏁 Se fue con la competencia</option>
+                <option value="no_contesta">📵 No contesta / no responde</option>
+                <option value="no_procede">🚫 No procede / canceló</option>
+                <option value="ya_atendido">✅ Ya fue atendido por otro</option>
+                <option value="otro">✏️ Otro (especificar)</option>
+            </select>
+            <textarea class="lost-other-input" id="lost-other" placeholder="Describe el motivo en detalle — esta información alimenta el análisis de la competencia y optimización de ventas..."></textarea>
+            <button class="lost-confirm-btn" onclick="confirmLost()">CONFIRMAR PÉRDIDA</button>
+        </div>
+    </div>
+</div>
+
+<!-- TRANSFER MODAL -->
+<div class="modal-overlay" id="transfer-modal">
+    <div class="modal-box" style="max-width:420px;">
+        <div class="modal-header">
+            <h3>🔀 Transferir Conversación</h3>
+            <button class="modal-close" onclick="closeTransferModal()">✕</button>
+        </div>
+        <div class="transfer-modal-body">
+            <label>Transferir a:</label>
+            <select class="transfer-select" id="transfer-to">
+                <option value="Micheal">👑 Micheal (Admin)</option>
+                <option value="Papa">👑 Papá (Admin)</option>
+                <option value="Soledad">👤 Soledad</option>
+                <option value="Empleado1">👤 Empleado 1</option>
+                <option value="Empleado2">👤 Empleado 2</option>
+            </select>
+            <label>Nota de transferencia (opcional):</label>
+            <textarea class="transfer-note" id="transfer-note" placeholder="Ej: Cliente interesado en paquete completo, espera confirmación de precio..."></textarea>
+            <button class="transfer-confirm-btn" onclick="confirmTransfer()">TRANSFERIR AHORA</button>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -347,11 +460,15 @@ let currentRole = sessionStorage.getItem('ga_role') || 'admin';
 let currentBusiness = 'albalumen';
 let currentLeadId = null;
 let currentLeadPhone = null;
+let currentLeadData = null;
 let allLeads = [];
 let allPerfiles = [];
 let msgPolling = null;
 let currentQuickTab = 'quick';
 let currentModalTab = 'quick';
+let activeFilter = 'all';
+let openChats = {}; // {id: {name, phone, service, status, business, claimedBy}}
+const ADMINS = ['Micheal', 'Papa', 'micheal', 'papa'];
 
 document.getElementById('user-pill').textContent = `👤 ${currentUser}`;
 
@@ -380,20 +497,20 @@ const DEFAULT_TEMPLATES = {
     albalumen: [
         '📍 Estamos ubicados 150 metros oeste de la Clínica Bíblica, San José. Atendemos 24/7.',
         '💰 Para pagos: IBAN CR05015108010026012345 a nombre de ALBALUMEN S.A.',
-        '🕊️ Paquete Emergencias (₡350,000+IVA): Retiro del cuerpo, ataúd básico, preparación y cremación.',
-        '🕊️ Paquete Completo (₡650,000+IVA): Retiro, ataúd, preparación, velatorio, cremación y cenizas.',
+        '🕊️ Paquete Emergencias (₡350,000+IVA): Retiro, ataúd básico, preparación y cremación.',
+        '🕊️ Paquete Completo (₡650,000+IVA): Retiro, ataúd madera, preparación, velatorio, cremación y cenizas.',
         '⚰️ Sepultura (₡400,000+IVA): Retiro, preparación y entierro en cementerio.',
         '🏛️ Columbarios: Pago único ₡910,000. Espacio permanente y digno.',
-        '📋 Requisitos: Cédula del familiar a cargo y certificado de defunción del INEC o médico.',
+        '📋 Requisitos: Cédula del familiar a cargo y certificado de defunción.',
         '🔥 Cremación directa: ₡210,000. Sin velatorio, traslado y urna básica.',
         '☎️ Llámenos: +506 8528-1312. Disponibles 24 horas.',
     ],
     huellitas: [
         '🐱 Cremación Peluditos (0-15kg): ₡40,000. Traslado, cremación y entrega de cenizas.',
         '🐕 Cremación Huellita (16-30kg): ₡59,000. Servicio completo con urna especial.',
-        '📋 Plan Preventivo: 18 cuotas de ₡4,900. Asegura el servicio desde hoy.',
+        '📋 Plan Preventivo: 18 cuotas de ₡4,900.',
         '💉 Eutanasia asistida para mascotas en estado terminal, con acompañamiento.',
-        '📞 Atención inmediata: +506 7046-9290. Estamos para acompañarte.',
+        '📞 Atención inmediata: +506 7046-9290.',
         '❤️ Lamentamos la pérdida de tu compañero. Los tratamos como parte de tu familia.',
     ]
 };
@@ -406,6 +523,7 @@ function getMsgs(t,b){
 function saveMsgs(t,b,a){localStorage.setItem(getKey(t,b),JSON.stringify(a));}
 function escStr(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function doLogout(){sessionStorage.clear();window.location.href='/';}
+function isAdmin(){return ADMINS.includes(currentUser);}
 
 function toggleSidebar(){
     document.getElementById('sidebar').classList.toggle('mobile-open');
@@ -417,13 +535,43 @@ function showToast(msg,color){
     t.style.background=color||'var(--alba-green)';
     t.style.color='white';
     t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),3000);
+    setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ===== ACTIVE TABS =====
+function renderActiveTabs(){
+    const bar=document.getElementById('active-tabs-bar');
+    bar.innerHTML='';
+    Object.entries(openChats).forEach(([id,chat])=>{
+        const tab=document.createElement('div');
+        const isActive=parseInt(id)===currentLeadId;
+        const isHue=chat.business==='huellitas';
+        tab.className='chat-tab'+(isActive?(isHue?' hue-active':' active'):'');
+
+        const owner=chat.claimedBy||'—';
+        tab.innerHTML=`<span>${chat.name.split(' ')[0]}</span><span class="chat-tab-owner">${owner}</span><span class="chat-tab-close" data-id="${id}">×</span>`;
+
+        tab.addEventListener('click',function(e){
+            if(e.target.classList.contains('chat-tab-close')){
+                const cid=parseInt(e.target.dataset.id);
+                delete openChats[cid];
+                renderActiveTabs();
+                if(currentLeadId===cid){
+                    currentLeadId=null;
+                    document.getElementById('chat-view').style.display='none';
+                    document.getElementById('empty-state').style.display='flex';
+                }
+                return;
+            }
+            openChat(parseInt(id),chat.name,chat.phone,chat.service,chat.status,true);
+        });
+        bar.appendChild(tab);
+    });
 }
 
 // ===== TOPBAR ACTIONS =====
 function abrirPerfiles(){
-    const sb=document.getElementById('sidebar');
-    sb.classList.add('mobile-open');
+    document.getElementById('sidebar').classList.add('mobile-open');
     switchSidebarNav('perfiles');
 }
 function abrirNuevoPerfil(){
@@ -453,6 +601,14 @@ function switchSidebarNav(section){
     }
 }
 
+// ===== FILTER =====
+function setFilter(f,btn){
+    activeFilter=f;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderConversations(allLeads);
+}
+
 // ===== PERFILES =====
 async function loadPerfiles(){
     try{
@@ -460,23 +616,27 @@ async function loadPerfiles(){
         allPerfiles=await res.json();
         renderPerfiles(allPerfiles);
     }catch(e){
-        document.getElementById('perfiles-list').innerHTML='<div style="padding:20px;color:var(--danger);font-size:12px;">❌ Error cargando perfiles</div>';
+        document.getElementById('perfiles-list').innerHTML='<div style="padding:20px;color:var(--danger);font-size:12px;">❌ Error</div>';
     }
 }
 function renderPerfiles(leads){
     const list=document.getElementById('perfiles-list');
-    if(!leads.length){list.innerHTML='<div style="padding:20px;color:var(--text-dim);font-size:12px;">Sin perfiles registrados.</div>';return;}
+    if(!leads.length){list.innerHTML='<div style="padding:20px;color:var(--text-dim);font-size:12px;">Sin perfiles.</div>';return;}
     list.innerHTML=leads.map(l=>{
         const isHue=l.business==='huellitas';
         const phone=currentRole==='admin'?(l.phone||'—'):maskPhone(l.phone);
         const sc=l.status==='nuevo'?'s-nuevo':l.status==='In-Progress'?'s-progress':'s-lost';
+        const owner=l.claimed_by||l.staff_name||'';
         return `<div class="perfil-item" onclick="seleccionarPerfil(${l.id},'${escStr(l.contact_name||l.name)}','${l.phone}','${l.service_type}','${l.status}')">
             <div class="perfil-name-row">
                 <span class="perfil-name">${l.contact_name||l.name||'Sin nombre'}</span>
                 <span class="perfil-biz-tag ${isHue?'tag-hue':'tag-alba'}">${isHue?'🐾':'🕊️'}</span>
             </div>
             <div class="perfil-phone">📞 ${phone}</div>
-            <div class="perfil-status ${sc}">${l.status||'nuevo'} · ${l.service_type||'Consulta'}</div>
+            <div class="perfil-status-row">
+                <span class="${sc}">${l.status||'nuevo'} · ${l.service_type||'Consulta'}</span>
+                ${owner?`<span class="s-owner">👤 ${owner}</span>`:''}
+            </div>
         </div>`;
     }).join('');
 }
@@ -500,17 +660,15 @@ function switchQuickTab(tab,btn){
     btn.classList.add('active');
     renderBubbles();
 }
-
 function renderBubbles(){
     const msgs=getMsgs(currentQuickTab,currentBusiness);
     const list=document.getElementById('bubbles-list');
     const isTpl=currentQuickTab==='template';
+    list.innerHTML='';
     if(!msgs.length){
         list.innerHTML='<div style="padding:12px;color:var(--text-dim);font-size:11px;text-align:center;">Sin mensajes.<br>Usa ✏️ Editar.</div>';
         return;
     }
-    // Build HTML string — NO inline onclick with quotes that can break
-    list.innerHTML='';
     msgs.forEach(function(m,i){
         const btn=document.createElement('button');
         btn.type='button';
@@ -520,7 +678,6 @@ function renderBubbles(){
         list.appendChild(btn);
     });
 }
-
 function insertBubble(i){
     const msgs=getMsgs(currentQuickTab,currentBusiness);
     const text=msgs[i];
@@ -530,24 +687,17 @@ function insertBubble(i){
     inp.focus();
     inp.style.height='auto';
     inp.style.height=Math.min(inp.scrollHeight,100)+'px';
-    // Visual feedback
     showToast('✅ Listo — presiona ENVIAR ▶');
 }
 
 // ===== EDIT MODAL =====
 function openEditModal(){
-    currentModalTab=currentQuickTab; // sync tabs
+    currentModalTab=currentQuickTab;
     document.getElementById('edit-modal').classList.add('open');
-    // Reset modal tab UI
-    document.querySelectorAll('.modal-tab').forEach((b,i)=>{
-        b.classList.toggle('active', i===(currentModalTab==='quick'?0:1));
-    });
+    document.querySelectorAll('.modal-tab').forEach((b,i)=>{b.classList.toggle('active',i===(currentModalTab==='quick'?0:1));});
     renderModalBody();
 }
-function closeEditModal(){
-    document.getElementById('edit-modal').classList.remove('open');
-    renderBubbles();
-}
+function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');renderBubbles();}
 function switchModalTab(tab,btn){
     currentModalTab=tab;
     document.querySelectorAll('.modal-tab').forEach(b=>b.classList.remove('active'));
@@ -558,80 +708,109 @@ function renderModalBody(){
     const msgs=getMsgs(currentModalTab,currentBusiness);
     const body=document.getElementById('modal-body');
     body.innerHTML='';
-
-    // Edit list
     const editList=document.createElement('div');
     msgs.forEach(function(m,i){
-        const row=document.createElement('div');
-        row.className='edit-item';
-
-        const ta=document.createElement('textarea');
-        ta.className='edit-item-input';
-        ta.rows=2;
-        ta.value=m;
-        ta.addEventListener('change',function(){updateMsg(i,ta.value);});
+        const row=document.createElement('div');row.className='edit-item';
+        const ta=document.createElement('textarea');ta.className='edit-item-input';ta.rows=2;ta.value=m;
         ta.addEventListener('blur',function(){updateMsg(i,ta.value);});
-
-        const delBtn=document.createElement('button');
-        delBtn.className='del-btn';
-        delBtn.type='button';
-        delBtn.textContent='✕';
+        const delBtn=document.createElement('button');delBtn.className='del-btn';delBtn.type='button';delBtn.textContent='✕';
         delBtn.addEventListener('click',function(){deleteMsg(i);});
-
-        row.appendChild(ta);
-        row.appendChild(delBtn);
-        editList.appendChild(row);
+        row.appendChild(ta);row.appendChild(delBtn);editList.appendChild(row);
     });
     body.appendChild(editList);
-
-    // Add row
-    const addRow=document.createElement('div');
-    addRow.className='add-row';
-
-    const addInp=document.createElement('input');
-    addInp.type='text';
-    addInp.className='add-input';
-    addInp.id='new-msg-input';
-    addInp.placeholder='Escribe el nuevo mensaje...';
+    const addRow=document.createElement('div');addRow.className='add-row';
+    const addInp=document.createElement('input');addInp.type='text';addInp.className='add-input';addInp.id='new-msg-input';addInp.placeholder='Escribe el nuevo mensaje...';
     addInp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addMsg();}});
-
-    const addBtn=document.createElement('button');
-    addBtn.type='button';
-    addBtn.className='add-btn';
-    addBtn.textContent='+ Agregar';
+    const addBtn=document.createElement('button');addBtn.type='button';addBtn.className='add-btn';addBtn.textContent='+ Agregar';
     addBtn.addEventListener('click',addMsg);
-
-    addRow.appendChild(addInp);
-    addRow.appendChild(addBtn);
-    body.appendChild(addRow);
+    addRow.appendChild(addInp);addRow.appendChild(addBtn);body.appendChild(addRow);
 }
-
-function updateMsg(i,val){
-    const m=getMsgs(currentModalTab,currentBusiness);
-    m[i]=val.trim()||m[i];
-    saveMsgs(currentModalTab,currentBusiness,m);
-}
-function deleteMsg(i){
-    const m=getMsgs(currentModalTab,currentBusiness);
-    m.splice(i,1);
-    saveMsgs(currentModalTab,currentBusiness,m);
-    renderModalBody();
-    showToast('🗑️ Eliminado');
-}
+function updateMsg(i,val){const m=getMsgs(currentModalTab,currentBusiness);if(val.trim())m[i]=val.trim();saveMsgs(currentModalTab,currentBusiness,m);}
+function deleteMsg(i){const m=getMsgs(currentModalTab,currentBusiness);m.splice(i,1);saveMsgs(currentModalTab,currentBusiness,m);renderModalBody();showToast('🗑️ Eliminado');}
 function addMsg(){
-    const inp=document.getElementById('new-msg-input');
-    const val=inp.value.trim();
+    const inp=document.getElementById('new-msg-input');const val=inp.value.trim();
     if(!val){showToast('Escribe un mensaje primero','var(--warning)');return;}
-    const m=getMsgs(currentModalTab,currentBusiness);
-    m.push(val);
-    saveMsgs(currentModalTab,currentBusiness,m);
-    inp.value='';
-    renderModalBody();
-    showToast('✅ Mensaje agregado');
+    const m=getMsgs(currentModalTab,currentBusiness);m.push(val);saveMsgs(currentModalTab,currentBusiness,m);
+    inp.value='';renderModalBody();showToast('✅ Mensaje agregado');
 }
-document.getElementById('edit-modal').addEventListener('click',function(e){
-    if(e.target===this)closeEditModal();
-});
+document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
+
+// ===== LOST MODAL =====
+function openLostModal(){
+    if(!currentLeadId){showToast('Selecciona un chat primero','var(--warning)');return;}
+    document.getElementById('lost-modal').classList.add('open');
+    document.getElementById('lost-other').classList.remove('visible');
+}
+function closeLostModal(){document.getElementById('lost-modal').classList.remove('open');}
+function toggleLostOther(){
+    const sel=document.getElementById('lost-reason').value;
+    document.getElementById('lost-other').classList.toggle('visible',sel==='otro');
+}
+async function confirmLost(){
+    const reason=document.getElementById('lost-reason').value;
+    const other=document.getElementById('lost-other').value.trim();
+    const finalReason=reason==='otro'?(other||'otro'):reason;
+    const payload={
+        reason_lost: finalReason,
+        lost_detail: other||null,
+        closed_by: currentUser,
+        closed_at: new Date().toISOString()
+    };
+    try{
+        const res=await fetch(`/api/leads/${currentLeadId}/lost`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        if(res.ok){
+            showToast('📊 Lead cerrado — datos guardados');
+            closeLostModal();
+            if(openChats[currentLeadId])openChats[currentLeadId].status='lost';
+            renderActiveTabs();
+            loadConversations();
+        } else { showToast('❌ Error al cerrar','var(--danger)'); }
+    }catch(e){showToast('❌ Error de conexión','var(--danger)');}
+}
+document.getElementById('lost-modal').addEventListener('click',function(e){if(e.target===this)closeLostModal();});
+
+// ===== TRANSFER MODAL =====
+function openTransferModal(){
+    if(!currentLeadId){showToast('Selecciona un chat primero','var(--warning)');return;}
+    const chat=openChats[currentLeadId];
+    // Permission check: non-admin can't transfer admin's chats
+    if(!isAdmin()&&chat&&ADMINS.includes(chat.claimedBy)){
+        showToast('⛔ No puedes transferir un chat que atiende el jefe','var(--danger)');return;
+    }
+    document.getElementById('transfer-modal').classList.add('open');
+    document.getElementById('transfer-note').value='';
+}
+function closeTransferModal(){document.getElementById('transfer-modal').classList.remove('open');}
+async function confirmTransfer(){
+    const to=document.getElementById('transfer-to').value;
+    const note=document.getElementById('transfer-note').value.trim();
+    const payload={
+        staff_name: to,
+        transferred_from: currentUser,
+        transfer_note: note,
+        transferred_at: new Date().toISOString()
+    };
+    try{
+        const res=await fetch(`/api/leads/${currentLeadId}/claim`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        if(res.ok){
+            showToast(`✅ Transferido a ${to}`);
+            closeTransferModal();
+            if(openChats[currentLeadId])openChats[currentLeadId].claimedBy=to;
+            renderActiveTabs();
+            loadConversations();
+            // Update attending badge
+            updateAttendingBadge(to);
+        } else { showToast('❌ Error al transferir','var(--danger)'); }
+    }catch(e){showToast('❌ Error de conexión','var(--danger)');}
+}
+document.getElementById('transfer-modal').addEventListener('click',function(e){if(e.target===this)closeTransferModal();});
+
+function updateAttendingBadge(owner){
+    const badge=document.getElementById('attending-badge');
+    if(!owner){badge.innerHTML='';return;}
+    const isMe=owner===currentUser;
+    badge.innerHTML=`<span>Atendiendo:</span><span class="attending-name">${isMe?'👤 Tú':('👤 '+owner)}</span>`;
+}
 
 // ===== BUSINESS SWITCH =====
 function switchBusiness(biz,btn){
@@ -663,7 +842,8 @@ async function loadConversations(){
 }
 function renderConversations(leads){
     const list=document.getElementById('conversations-list');
-    const filtered=leads.filter(l=>l.business===currentBusiness||!l.business);
+    let filtered=leads.filter(l=>l.business===currentBusiness||!l.business);
+    if(activeFilter!=='all') filtered=filtered.filter(l=>l.status===activeFilter);
     if(!filtered.length){list.innerHTML='<div style="padding:20px;color:var(--text-dim);font-size:12px;">Sin conversaciones.</div>';return;}
     const isHue=currentBusiness==='huellitas';
     list.innerHTML=filtered.map(l=>{
@@ -671,10 +851,19 @@ function renderConversations(leads){
         const tl=minAgo<60?`${minAgo}m`:minAgo<1440?`${Math.floor(minAgo/60)}h`:`${Math.floor(minAgo/1440)}d`;
         const urgent=l.status==='nuevo'&&minAgo>=3;
         const phone=currentRole==='admin'?(l.phone||'—'):maskPhone(l.phone);
+        const owner=l.claimed_by||l.staff_name||'';
+        const dotClass=l.status==='nuevo'?'dot-nuevo':l.status==='In-Progress'?'dot-progress':l.status==='lost'?'dot-lost':'dot-nuevo';
+        const ownerIsMe=owner===currentUser;
         return `<div class="conv-item ${l.id===currentLeadId?'active'+(isHue?' hue':''):''}" onclick="openChat(${l.id},'${escStr(l.contact_name||l.name)}','${l.phone}','${l.service_type}','${l.status}')">
             <div class="conv-business-tag ${isHue?'tag-hue':'tag-alba'}">${isHue?'🐾 HUELLITAS':'🕊️ ALBALUMEN'}</div>
-            <div class="conv-meta"><span class="conv-name ${urgent?'conv-unread':''}">${l.contact_name||l.name||'Sin nombre'} ${urgent?'🚨':''}</span><span class="conv-time">${tl}</span></div>
+            <div class="conv-meta">
+                <span class="conv-name ${urgent?'conv-unread':''}">
+                    <span class="conv-status-dot ${dotClass}"></span>${l.contact_name||l.name||'Sin nombre'} ${urgent?'🚨':''}
+                </span>
+                <span class="conv-time">${tl}</span>
+            </div>
             <div class="conv-preview">${l.service_type||'Consulta'} · ${phone}</div>
+            ${owner?`<div class="conv-owner-badge ${ownerIsMe?'':'other'}">👤 ${ownerIsMe?'Tú':owner}</div>`:''}
         </div>`;
     }).join('');
 }
@@ -682,8 +871,14 @@ function filterConvs(q){renderConversations(!q?allLeads:allLeads.filter(l=>(l.co
 function maskPhone(p){if(!p)return'—';const c=p.replace(/\D/g,'');return c.length>4?'****'+c.slice(-4):'****';}
 
 // ===== OPEN CHAT =====
-async function openChat(id,name,phone,service,status){
+async function openChat(id,name,phone,service,status,fromTab){
     currentLeadId=id;currentLeadPhone=phone;
+    // Add to open chats
+    if(!openChats[id]){
+        const lead=allLeads.find(l=>l.id===id);
+        openChats[id]={name,phone,service,status,business:currentBusiness,claimedBy:lead?.claimed_by||lead?.staff_name||''};
+    }
+    renderActiveTabs();
     document.getElementById('empty-state').style.display='none';
     document.getElementById('capture-panel').style.display='none';
     const cv=document.getElementById('chat-view');
@@ -691,12 +886,16 @@ async function openChat(id,name,phone,service,status){
     document.getElementById('client-name').textContent=name||'Sin nombre';
     const dp=currentRole==='admin'?(phone||'—'):maskPhone(phone);
     document.getElementById('client-info').innerHTML=`<span style="color:var(--neon-blue);">${dp}</span> · ${service||'Consulta'} · <span style="color:${status==='In-Progress'?'var(--alba-green)':'var(--warning)'}">${status||'nuevo'}</span>`;
+    // Show who is attending
+    const lead=allLeads.find(l=>l.id===id);
+    const owner=lead?.claimed_by||lead?.staff_name||'';
+    updateAttendingBadge(owner);
     document.querySelectorAll('.conv-item').forEach(e=>e.classList.remove('active'));
     renderBubbles();
     await loadMessages();
     if(msgPolling)clearInterval(msgPolling);
     msgPolling=setInterval(loadMessages,5000);
-    document.getElementById('sidebar').classList.remove('mobile-open');
+    if(!fromTab)document.getElementById('sidebar').classList.remove('mobile-open');
 }
 
 // ===== MESSAGES =====
@@ -721,7 +920,7 @@ async function loadMessages(){
     }catch(e){}
 }
 
-// ===== SEND — fixed =====
+// ===== SEND — NO business field (fixes DB error) =====
 async function sendMessage(){
     const inp=document.getElementById('msg-input');
     const text=inp.value.trim();
@@ -729,32 +928,28 @@ async function sendMessage(){
     if(!currentLeadId){showToast('Selecciona una conversación primero','var(--warning)');return;}
     if(['mi número','personal','mi cuenta','pago directo','por fuera'].some(p=>text.toLowerCase().includes(p)))
         showToast('⚠️ Palabras sospechosas','var(--danger)');
-    const sendBtn=document.getElementById('send-btn');
-    sendBtn.disabled=true;
-    sendBtn.textContent='...';
+    const btn=document.getElementById('send-btn');
+    btn.disabled=true;btn.textContent='...';
     try{
+        // FIX: removed "business" from payload — column doesn't exist in messages table
         const res=await fetch('/api/leads/send-message',{
             method:'POST',
             headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({lead_id:currentLeadId,message:text,sent_by:currentUser,business:currentBusiness})
+            body:JSON.stringify({
+                lead_id: currentLeadId,
+                message: text,
+                sent_by: currentUser
+            })
         });
         if(res.ok){
-            inp.value='';
-            inp.style.height='auto';
+            inp.value='';inp.style.height='auto';
             await loadMessages();
-            showToast('✅ Enviado');
         } else {
             const err=await res.text();
-            showToast('❌ '+err.substring(0,60),'var(--danger)');
+            showToast('❌ '+err.substring(0,80),'var(--danger)');
         }
-    }catch(e){
-        showToast('❌ Error de conexión','var(--danger)');
-    }finally{
-        sendBtn.disabled=false;
-        sendBtn.textContent='ENVIAR ▶';
-        if(document.getElementById('send-btn').classList.contains('hue'))
-            sendBtn.textContent='ENVIAR ▶';
-    }
+    }catch(e){showToast('❌ Error de conexión','var(--danger)');}
+    finally{btn.disabled=false;btn.textContent='ENVIAR ▶';}
 }
 
 function handleKeydown(e){
@@ -762,17 +957,35 @@ function handleKeydown(e){
     setTimeout(()=>{const t=document.getElementById('msg-input');t.style.height='auto';t.style.height=Math.min(t.scrollHeight,100)+'px';},0);
 }
 
-// ===== ACTIONS =====
-function openWAChat(){if(currentLeadPhone)window.open(`https://wa.me/${currentLeadPhone.replace(/\D/g,'')}`);}
+// ===== CLAIM =====
 async function claimCurrentLead(){
-    if(!currentLeadId)return;
-    try{await fetch(`/api/leads/${currentLeadId}/claim`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({staff_name:currentUser})});showToast('✅ Lead reclamado!');loadConversations();}catch(e){}
+    if(!currentLeadId){showToast('Selecciona un chat primero','var(--warning)');return;}
+    const chat=openChats[currentLeadId];
+    if(!isAdmin()&&chat&&ADMINS.includes(chat.claimedBy)){
+        showToast('⛔ Este chat lo atiende el jefe','var(--danger)');return;
+    }
+    try{
+        const res=await fetch(`/api/leads/${currentLeadId}/claim`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({staff_name:currentUser,claimed_at:new Date().toISOString()})
+        });
+        if(res.ok){
+            showToast('✅ Chat reclamado — ahora lo atiendes tú');
+            if(openChats[currentLeadId])openChats[currentLeadId].claimedBy=currentUser;
+            updateAttendingBadge(currentUser);
+            renderActiveTabs();
+            loadConversations();
+        } else {
+            const err=await res.text();
+            showToast('❌ '+err.substring(0,60),'var(--danger)');
+        }
+    }catch(e){showToast('❌ Error de conexión','var(--danger)');}
 }
-async function markCurrentLost(){
-    if(!currentLeadId)return;
-    const r=prompt('Motivo: precio / competidor / no_contesta / no_procede / otro');if(!r)return;
-    try{await fetch(`/api/leads/${currentLeadId}/lost`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason_lost:r})});showToast('📊 Marcado como perdido');loadConversations();}catch(e){}
-}
+
+// ===== OTHER ACTIONS =====
+function openWAChat(){if(currentLeadPhone)window.open(`https://wa.me/${currentLeadPhone.replace(/\D/g,'')}`);}
+
 async function captureClient(){
     const n=document.getElementById('cap-nombre').value.trim();
     const p=document.getElementById('cap-phone').value.trim();
@@ -780,20 +993,15 @@ async function captureClient(){
     const s=document.getElementById('cap-source').value;
     if(!n||!p){showToast('Nombre y teléfono requeridos','var(--warning)');return;}
     try{
-        const res=await fetch('/api/leads/new',{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({contact_name:n,phone:p,business:b,source:s,registered_by:currentUser,service_type:'Consulta General'})
-        });
+        const res=await fetch('/api/leads/new',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({contact_name:n,phone:p,business:b,source:s,registered_by:currentUser,service_type:'Consulta General'})});
         if(res.ok){
-            showToast('✅ Perfil registrado en base de datos');
+            showToast('✅ Perfil guardado en base de datos');
             document.getElementById('cap-nombre').value='';
             document.getElementById('cap-phone').value='';
             document.getElementById('capture-panel').style.display='none';
             loadConversations();
-        } else {
-            showToast('❌ Error al registrar','var(--danger)');
-        }
+        } else { showToast('❌ Error al registrar','var(--danger)'); }
     }catch(e){showToast('❌ Error de conexión','var(--danger)');}
 }
 
