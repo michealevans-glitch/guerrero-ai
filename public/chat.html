@@ -19,13 +19,15 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);color:var(--tx);font-size:14px;}
 
-/* TOPBAR */
-#top{position:fixed;top:0;left:0;right:0;height:var(--H);background:#fff;border-bottom:1.5px solid var(--bd);display:flex;align-items:center;padding:0 12px;gap:7px;z-index:300;}
+/* ── TOPBAR ── */
+#top{position:fixed;top:0;left:0;right:0;height:var(--H);background:#fff;border-bottom:1.5px solid var(--bd);display:flex;align-items:center;padding:0 12px;gap:7px;z-index:300;flex-wrap:nowrap;}
 .logo{font-weight:800;font-size:.98rem;white-space:nowrap;flex-shrink:0;}
 .sep{width:1px;height:20px;background:var(--bd);flex-shrink:0;}
 #topuser{font-size:.73rem;color:var(--tx2);white-space:nowrap;flex-shrink:0;}
 .pill{font-size:.67rem;padding:2px 8px;border-radius:20px;border:1px solid var(--bd);background:var(--bg3);color:var(--tx2);white-space:nowrap;flex-shrink:0;}
 .sp{flex:1;}
+/* Desktop nav buttons */
+#topbtns{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
 .tb{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:7px;border:1.5px solid var(--bd);background:#fff;color:var(--tx);font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .13s;flex-shrink:0;}
 .tb:hover{background:var(--bg3);}
 .tb.bl{background:var(--blue);color:#fff;border-color:var(--blue);}
@@ -34,9 +36,35 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .tb.pu{background:var(--pur);color:#fff;border-color:var(--pur);}
 .tb.go{background:linear-gradient(135deg,#d4a017,#f59e0b);color:#fff;border-color:#d4a017;}
 .tb.fb{background:#1877f2;color:#fff;border-color:#1877f2;}
-#hbtn{display:none;background:none;border:none;cursor:pointer;font-size:1.2rem;padding:4px 6px;flex-shrink:0;}
 
-/* TABS */
+/* Mobile hamburger */
+#hbtn{display:none;background:none;border:none;cursor:pointer;font-size:1.3rem;padding:4px 6px;flex-shrink:0;}
+
+/* Mobile accordion menu */
+#mob-menu{
+  display:none;
+  position:fixed;top:var(--H);left:0;right:0;
+  background:#fff;border-bottom:2px solid var(--bd);
+  z-index:298;
+  flex-direction:column;
+  gap:0;
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .3s ease;
+}
+#mob-menu.open{max-height:500px;}
+#mob-menu .mm-btn{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 18px;border:none;background:#fff;
+  font-size:.9rem;font-weight:700;cursor:pointer;
+  border-bottom:1px solid var(--bd);color:var(--tx);
+  text-align:left;width:100%;transition:background .12s;
+}
+#mob-menu .mm-btn:hover{background:var(--bg3);}
+#mob-menu .mm-btn:last-child{border:none;}
+#mob-menu .mm-btn .mm-icon{font-size:1.1rem;width:28px;}
+
+/* ── TABS ── */
 #ctabs{position:fixed;top:var(--H);left:0;right:0;height:var(--TH);background:var(--bg3);border-bottom:1.5px solid var(--bd);display:flex;align-items:flex-end;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;z-index:299;padding:0 6px;gap:3px;}
 #ctabs::-webkit-scrollbar{display:none;}
 .ctab{display:flex;align-items:center;gap:5px;padding:5px 10px 4px;border-radius:7px 7px 0 0;background:var(--bg3);border:1.5px solid transparent;border-bottom:none;cursor:pointer;font-size:.71rem;font-weight:700;white-space:nowrap;color:var(--tx2);transition:all .12s;flex-shrink:0;}
@@ -47,11 +75,11 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .ctab .cx{background:none;border:none;cursor:pointer;color:var(--tx2);font-size:.7rem;padding:0 2px;}
 .ctab .cx:hover{color:var(--red);}
 
-/* MAIN */
+/* ── MAIN ── */
 #main{position:fixed;top:calc(var(--H) + var(--TH));left:0;right:0;bottom:0;display:flex;overflow:hidden;}
 
-/* LEFT SIDEBAR */
-#lsb{width:var(--SW);min-width:var(--SW);background:#fff;border-right:1.5px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;transition:transform .25s;}
+/* ── LEFT SIDEBAR ── */
+#lsb{width:var(--SW);min-width:var(--SW);background:#fff;border-right:1.5px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;}
 .sbnav{display:flex;border-bottom:1.5px solid var(--bd);flex-shrink:0;}
 .sbnav-b{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 4px;border:none;background:none;cursor:pointer;font-size:.74rem;font-weight:700;color:var(--tx2);border-bottom:2.5px solid transparent;transition:all .13s;}
 .sbnav-b.on{color:var(--pink);border-bottom-color:var(--pink);}
@@ -84,9 +112,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .cist.cerrado,.cist.perdido,.cist.Lost{background:#fee2e2;color:#991b1b;}
 .citime{font-size:.61rem;color:var(--tx2);}
 .ciag{font-size:.63rem;color:var(--gd);margin-top:2px;}
-.citr{font-size:.63rem;color:var(--gold);font-style:italic;margin-top:1px;}
 
-/* PERFILES */
+/* ── PERFILES ── */
 #pfpanel{display:none;flex-direction:column;flex:1;overflow:hidden;}
 #pfpanel.show{display:flex;}
 #pftop{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--bd);flex-shrink:0;}
@@ -96,18 +123,19 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .pfi:hover{background:var(--bg3);}
 .pfnm{font-weight:700;font-size:.81rem;}.pfph{font-size:.7rem;color:var(--tx2);}
 .pfbtns{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
-.pb{padding:3px 10px;border-radius:20px;border:none;font-size:.67rem;font-weight:700;cursor:pointer;transition:opacity .13s;}
+.pb{padding:4px 12px;border-radius:20px;border:none;font-size:.7rem;font-weight:700;cursor:pointer;transition:opacity .13s;}
 .pb:hover{opacity:.82;}
 .pb.rec{background:var(--green);color:#fff;}.pb.asg{background:var(--yel);color:#fff;}
 .pb.trn{background:var(--blue);color:#fff;}.pb.cht{background:var(--tx);color:#fff;}
 .pb.nw{background:var(--pink);color:#fff;}
 .pfag{font-size:.64rem;color:var(--gd);margin-top:2px;}
-.pftr{font-size:.64rem;color:var(--gold);font-style:italic;margin-top:1px;}
 
-/* CHAT AREA */
+/* ── CHAT AREA ── */
 #carea{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0;}
 #cempty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--tx2);opacity:.4;}
 #cmain{display:none;flex-direction:column;flex:1;overflow:hidden;}
+
+/* Chat header */
 #chead{background:#fff;border-bottom:1.5px solid var(--bd);padding:10px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .chi{flex:1;min-width:0;}
 .chnm{font-weight:800;font-size:.96rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -122,6 +150,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .ca.lst{background:var(--red);color:#fff;}
 .ca.cls{background:var(--bg3);color:var(--tx2);border:1.5px solid var(--bd);padding:4px 8px;font-size:.77rem;}
 
+/* Messages */
 #msgs{flex:1;overflow-y:auto;padding:14px 16px 8px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;}
 .msg{max-width:70%;display:flex;flex-direction:column;}
 .msg.out{align-self:flex-end;align-items:flex-end;}
@@ -134,13 +163,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .mmeta{font-size:.6rem;color:var(--tx2);margin-top:2px;}
 .mempty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;opacity:.45;font-size:.79rem;text-align:center;padding:20px;}
 
-/* MOBILE QUICK BAR */
-#mobq{display:none;overflow-x:auto;gap:6px;padding:6px 10px;background:#fff;border-top:1px solid var(--bd);scrollbar-width:none;flex-shrink:0;}
-#mobq::-webkit-scrollbar{display:none;}
-.mqc{background:var(--bg3);border:1px solid var(--bd);border-radius:20px;padding:5px 12px;font-size:.7rem;white-space:nowrap;cursor:pointer;flex-shrink:0;color:var(--tx);}
-.mqc:hover{background:#f0fdf4;border-color:var(--green);}
-
-/* INPUT */
+/* Input area */
 #inparea{background:#fff;border-top:1.5px solid var(--bd);padding:9px 11px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0;}
 #msginp{flex:1;border:1.5px solid var(--bd);border-radius:22px;padding:8px 14px;font-size:.84rem;resize:none;max-height:100px;font-family:var(--f);background:var(--bg3);outline:none;line-height:1.4;color:var(--tx);}
 #msginp:focus{border-color:var(--pink);background:#fff;}
@@ -149,7 +172,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 #sendbtn:active{transform:scale(.96);}
 #sendbtn:disabled{background:var(--bg3);color:var(--tx2);cursor:not-allowed;transform:none;}
 
-/* RIGHT PANEL */
+/* ── RIGHT PANEL (desktop) ── */
 #rpanel{width:230px;min-width:230px;background:#fff;border-left:1.5px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;}
 .rphd{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1.5px solid var(--bd);flex-shrink:0;}
 .rptitle{font-size:.74rem;font-weight:800;color:var(--tx2);letter-spacing:.5px;}
@@ -163,7 +186,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .qm:active{transform:scale(.98);}
 .qi{flex-shrink:0;font-size:.87rem;}
 
-/* EDIT PANEL */
+/* Edit panel */
 #editqpanel{display:none;flex-direction:column;overflow:hidden;}
 #editqpanel.show{display:flex;flex:1;}
 .eqhd{padding:10px 12px;border-bottom:1px solid var(--bd);font-size:.74rem;font-weight:700;color:var(--tx2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
@@ -175,7 +198,60 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .eqadd{margin:7px;background:var(--bg3);border:1.5px dashed var(--bd);border-radius:8px;padding:8px;font-size:.73rem;color:var(--tx2);cursor:pointer;text-align:center;transition:all .12s;}
 .eqadd:hover{border-color:var(--green);color:var(--gd);}
 
-/* PAGES */
+/* ── MOBILE VERTICAL QUICK MESSAGES ── */
+/* Floating button on left side of chat */
+#mob-q-toggle{
+  display:none;
+  position:fixed;
+  bottom:80px;left:0;
+  background:var(--pink);color:#fff;
+  border:none;border-radius:0 20px 20px 0;
+  padding:10px 8px;font-size:1rem;
+  cursor:pointer;z-index:200;
+  box-shadow:2px 2px 8px rgba(0,0,0,.2);
+  writing-mode:vertical-rl;
+  letter-spacing:2px;
+  font-size:.65rem;font-weight:800;
+}
+/* Quick messages panel - slides from left */
+#mob-q-panel{
+  display:none;
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:2px solid var(--bd);
+  z-index:201;
+  max-height:55vh;
+  overflow-y:auto;
+  border-radius:16px 16px 0 0;
+  box-shadow:0 -4px 20px rgba(0,0,0,.15);
+  transform:translateY(100%);
+  transition:transform .25s ease;
+}
+#mob-q-panel.open{transform:translateY(0);}
+#mob-q-panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:1px solid var(--bd);
+  font-size:.82rem;font-weight:800;color:var(--tx2);
+  position:sticky;top:0;background:#fff;z-index:1;
+}
+#mob-q-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--tx2);padding:2px 8px;}
+.mob-rptabs{display:flex;border-bottom:1px solid var(--bd);}
+.mob-rptab{flex:1;padding:9px;text-align:center;font-size:.78rem;font-weight:700;border:none;background:none;cursor:pointer;color:var(--tx2);border-bottom:2.5px solid transparent;}
+.mob-rptab.on{color:var(--blue);border-bottom-color:var(--blue);}
+#mob-q-list{padding:10px;display:flex;flex-direction:column;gap:8px;padding-bottom:20px;}
+.mob-qm{
+  padding:12px 14px;border-radius:10px;
+  background:var(--bg3);border:1.5px solid var(--bd);
+  font-size:.84rem;color:var(--tx);cursor:pointer;
+  transition:all .12s;line-height:1.5;
+  display:flex;align-items:flex-start;gap:10px;
+  -webkit-tap-highlight-color:transparent;
+}
+.mob-qm:active{background:#f0fdf4;border-color:var(--green);transform:scale(.98);}
+.mob-qi{flex-shrink:0;font-size:1.1rem;}
+
+/* ── PAGES ── */
 .page{display:none;flex:1;flex-direction:column;overflow:hidden;background:var(--bg);}
 .page.show{display:flex;}
 .pgtop{background:#fff;border-bottom:1.5px solid var(--bd);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
@@ -183,7 +259,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .vbdg{background:linear-gradient(135deg,#d4a017,#f59e0b);color:#fff;font-size:.56rem;font-weight:800;padding:2px 7px;border-radius:10px;letter-spacing:1px;}
 .backbtn{margin-left:auto;padding:4px 12px;border-radius:7px;border:1.5px solid var(--bd);background:#fff;color:var(--tx2);font-size:.7rem;font-weight:700;cursor:pointer;}
 
-/* CHARTS */
+/* Charts */
 .chgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:13px;padding:13px;overflow-y:auto;flex:1;}
 .cc{background:#fff;border-radius:var(--r);padding:13px 15px;border:1.5px solid var(--bd);box-shadow:var(--sh);}
 .cc h3{font-size:.79rem;font-weight:700;color:var(--tx2);margin-bottom:11px;display:flex;align-items:center;gap:5px;}
@@ -206,7 +282,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .aibox h3{color:var(--gold);margin-bottom:6px;font-size:.79rem;}
 #aiaskbtn{margin:0 13px 13px;background:linear-gradient(135deg,var(--pink),#c2177a);color:#fff;border:none;border-radius:22px;padding:10px;font-size:.79rem;font-weight:700;cursor:pointer;width:calc(100% - 26px);flex-shrink:0;}
 
-/* VISION */
+/* Vision */
 .visgrid{padding:13px;overflow-y:auto;flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:13px;}
 .vac{background:#fff;border-radius:var(--r);padding:14px;border:1.5px solid var(--bd);box-shadow:var(--sh);border-left:4px solid var(--green);}
 .vac.off{border-left-color:var(--bd);opacity:.65;}
@@ -216,7 +292,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .vcnt{margin-left:auto;background:var(--green);color:#fff;border-radius:20px;padding:2px 9px;font-size:.72rem;font-weight:700;}
 .vcl{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border-radius:7px;padding:5px 8px;margin-bottom:4px;font-size:.74rem;}
 
-/* EMPLOYEES */
+/* Employees */
 .emplay{display:flex;flex:1;overflow:hidden;}
 .empsb{width:210px;background:#fff;border-right:1.5px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;}
 .empsbhd{padding:11px;font-size:.73rem;font-weight:700;color:var(--tx2);border-bottom:1px solid var(--bd);}
@@ -232,15 +308,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .empin input:focus{border-color:var(--pink);background:#fff;}
 .empsnd{background:var(--pink);color:#fff;border:none;border-radius:22px;padding:7px 14px;font-size:.74rem;font-weight:700;cursor:pointer;}
 
-/* FACEBOOK */
+/* Facebook */
 .fbarea{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;}
 .fbcard{background:#fff;border-radius:var(--r);padding:14px 16px;border:1.5px solid var(--bd);box-shadow:var(--sh);}
 .fbcard h3{font-size:.81rem;font-weight:800;margin-bottom:10px;}
 .fbsetup{background:linear-gradient(135deg,#1877f2,#0d47a1);color:#fff;border-radius:var(--r);padding:16px;font-size:.77rem;line-height:1.6;}
-.fbsetup h3{color:#fff;margin-bottom:8px;font-size:.83rem;}
+.fbsetup h3{color:#fff;margin-bottom:8px;}
 .fbsetup code{background:rgba(255,255,255,.15);padding:2px 6px;border-radius:4px;font-size:.71rem;font-family:monospace;}
 
-/* USER SELECTOR */
+/* User selector */
 #usersel{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
 #usercard{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:340px;box-shadow:0 8px 40px rgba(0,0,0,.2);}
 #usercard h2{font-size:1rem;font-weight:800;margin-bottom:4px;}
@@ -250,7 +326,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .uav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;}
 .unm{font-weight:700;font-size:.86rem;}.url{font-size:.68rem;color:var(--tx2);}
 
-/* MODALS */
+/* Modals */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;padding:16px;}
 .ov.show{display:flex;}
 .modal{background:#fff;border-radius:14px;padding:20px;width:100%;max-width:375px;box-shadow:0 8px 40px rgba(0,0,0,.18);max-height:90dvh;overflow-y:auto;}
@@ -264,61 +340,66 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .mb.bl{background:var(--blue);color:#fff;}.mb.cn{background:var(--bg3);color:var(--tx2);}
 .mb.rd{background:var(--red);color:#fff;}
 
-/* TOAST */
-#toast{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:8px 18px;border-radius:22px;font-size:.75rem;z-index:2000;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);}
+/* Toast */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:8px 18px;border-radius:22px;font-size:.75rem;z-index:2000;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);}
 #toast.show{display:block;animation:fu .2s ease;}
 @keyframes fu{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
 .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:rot .6s linear infinite;vertical-align:middle;}
 @keyframes rot{to{transform:rotate(360deg);}}
 ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:10px;}
 
-/* MOBILE */
+/* ── MOBILE ── */
 @media(max-width:768px){
-  :root{--SW:100vw;--H:48px;--TH:34px;}
-  #hbtn{display:block;}
-  #topuser,.sep,.tb:not(.mob){display:none;}
-  .tb.mob{display:flex!important;}
+  :root{--H:52px;--TH:0px;} /* No tabs bar on mobile — too crowded */
 
-  /* On mobile: sidebar IS the main view by default */
+  /* Hide desktop elements */
+  #topuser,.sep,#topbtns{display:none!important;}
+  #hbtn{display:flex;align-items:center;justify-content:center;}
+  #ctabs{display:none;} /* Hide tabs on mobile */
+
+  /* Accordion menu shows */
+  #mob-menu{display:flex;}
+
+  /* Main adjusts for no tabs */
+  #main{top:var(--H);}
+
+  /* Sidebar = full screen list */
   #lsb{
-    position:fixed;top:calc(var(--H) + var(--TH));left:0;right:0;bottom:0;
-    width:100vw;min-width:100vw;z-index:10;
-    transform:translateX(0);
-    box-shadow:none;
+    position:absolute;top:0;left:0;right:0;bottom:0;
+    width:100%;min-width:100%;z-index:5;
   }
-  /* When chat is open: hide sidebar, show chat */
-  body.chatopen #lsb{transform:translateX(-100%);display:none;}
+
+  /* Chat = full screen, hidden by default */
+  #carea{
+    position:absolute;top:0;left:0;right:0;bottom:0;
+    display:none!important;z-index:6;
+  }
+
+  /* When chat is open */
+  body.chatopen #lsb{display:none!important;}
   body.chatopen #carea{display:flex!important;}
 
-  /* Chat area hidden by default on mobile */
-  #carea{
-    position:fixed;top:calc(var(--H) + var(--TH));left:0;right:0;bottom:0;
-    display:none;z-index:10;
-  }
+  /* Mobile quick toggle button */
+  #mob-q-toggle{display:flex;align-items:center;justify-content:center;}
 
-  #mobov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:499;}
-  #mobov.show{display:block;}
-  #rpanel{display:none;}
-  #mobq{display:flex;}
-  .chacts{gap:4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;}
-  .ca{padding:6px 10px;font-size:.75rem;}
+  /* Right panel hidden */
+  #rpanel{display:none!important;}
+
+  /* Chat header buttons - compact */
+  .chacts{gap:5px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;}
+  .ca{padding:7px 10px;font-size:.75rem;border-radius:8px;}
   .ca .lbl{display:none;}
-  #msginp{font-size:16px;}
-  #sendbtn{padding:9px 14px;font-size:.8rem;}
+
+  /* Input bigger for mobile */
+  #msginp{font-size:16px;padding:10px 14px;}
+  #sendbtn{padding:10px 16px;font-size:.82rem;}
+  #inparea{padding:10px 12px;}
+
+  /* Charts/vision single column */
   .chgrid,.visgrid{grid-template-columns:1fr;}
-  #main{position:fixed;top:calc(var(--H) + var(--TH));left:0;right:0;bottom:0;}
 
-  /* Mobile quick bar bigger for fingers */
-  .mqc{padding:8px 14px;font-size:.78rem;}
-  #mobq{padding:8px 12px;gap:8px;}
-
-  /* Tabs scroll nicely */
-  #ctabs{padding:0 4px;}
-  .ctab{padding:4px 8px 3px;font-size:.68rem;}
-}
-@media(min-width:769px){
-  #mobq{display:none!important;}
-  #carea{display:flex;}
+  /* Employees full width */
+  .empsb{width:160px;}
 }
 </style>
 </head>
@@ -350,28 +431,47 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 
 <!-- TOPBAR -->
 <div id="top">
-  <button id="hbtn" onclick="togMob()">☰</button>
+  <!-- Mobile hamburger -->
+  <button id="hbtn" onclick="togMobMenu()">☰</button>
   <div class="logo">⚔️ GUERRERO AI</div>
   <div class="sep"></div>
   <div id="topuser">—</div>
   <span class="pill">WA: OFF</span>
   <span class="pill">SMS: OFF</span>
   <div class="sp"></div>
-  <button class="tb bl mob" onclick="openTrG()">⇄ Transferir</button>
-  <button class="tb" onclick="goPerfiles()">👥 Perfiles</button>
-  <button class="tb gr" onclick="openNewLead()">+ Agregar</button>
-  <button class="tb pu" onclick="showPage('employees')">💬 Empleados</button>
-  <button class="tb" id="btnwr" onclick="openWarRoom()">🎮 War Room</button>
-  <button class="tb fb" onclick="showPage('facebook')">📘 Facebook</button>
-  <button class="tb go" id="tbcharts" style="display:none" onclick="showPage('charts')">📊 Charts</button>
-  <button class="tb go" id="tbvision" style="display:none" onclick="showPage('vision')">👁️ Visión</button>
-  <button class="tb rd" onclick="doLogout()">🚪 Salir</button>
+  <!-- Desktop buttons -->
+  <div id="topbtns">
+    <button class="tb bl" onclick="openTrG()">⇄ Transferir</button>
+    <button class="tb" onclick="goPerfiles()">👥 Perfiles</button>
+    <button class="tb gr" onclick="openNewLead()">+ Agregar</button>
+    <button class="tb pu" onclick="showPage('employees')">💬 Empleados</button>
+    <button class="tb" id="btnwr" onclick="openWarRoom()">🎮 War Room</button>
+    <button class="tb fb" onclick="showPage('facebook')">📘 Facebook</button>
+    <button class="tb go" id="tbcharts" style="display:none" onclick="showPage('charts')">📊 Charts</button>
+    <button class="tb go" id="tbvision" style="display:none" onclick="showPage('vision')">👁️ Visión</button>
+    <button class="tb rd" onclick="doLogout()">🚪 Salir</button>
+  </div>
 </div>
 
-<div id="ctabs"></div>
-<div id="mobov" onclick="closeMob()"></div>
+<!-- MOBILE ACCORDION MENU -->
+<div id="mob-menu">
+  <button class="mm-btn" onclick="openTrG();closeMobMenu()"><span class="mm-icon">⇄</span> Transferir Cliente</button>
+  <button class="mm-btn" onclick="goPerfiles();closeMobMenu()"><span class="mm-icon">👥</span> Perfiles / Base de datos</button>
+  <button class="mm-btn" onclick="openNewLead();closeMobMenu()"><span class="mm-icon">➕</span> Agregar Cliente</button>
+  <button class="mm-btn" onclick="showPage('employees');closeMobMenu()"><span class="mm-icon">💬</span> Chat Empleados</button>
+  <button class="mm-btn" id="mm-btnwr" onclick="openWarRoom();closeMobMenu()"><span class="mm-icon">🎮</span> War Room</button>
+  <button class="mm-btn" onclick="showPage('facebook');closeMobMenu()"><span class="mm-icon">📘</span> Facebook</button>
+  <button class="mm-btn" id="mm-charts" style="display:none" onclick="showPage('charts');closeMobMenu()"><span class="mm-icon">📊</span> Charts VIP</button>
+  <button class="mm-btn" id="mm-vision" style="display:none" onclick="showPage('vision');closeMobMenu()"><span class="mm-icon">👁️</span> Visión en Vivo VIP</button>
+  <button class="mm-btn" onclick="doLogout()"><span class="mm-icon">🚪</span> Salir</button>
+</div>
 
+<!-- CLIENT TABS (desktop only) -->
+<div id="ctabs"></div>
+
+<!-- MAIN -->
 <div id="main">
+
   <!-- LEFT SIDEBAR -->
   <div id="lsb">
     <div class="sbnav">
@@ -414,6 +514,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
           <div class="chtr" id="chtr"></div>
         </div>
         <div class="chacts">
+          <!-- Mobile back button -->
+          <button class="ca cls" id="mob-back" onclick="closeChat()" style="display:none">← Lista</button>
           <button class="ca wa" onclick="doWA()">📲 <span class="lbl">WA</span></button>
           <button class="ca rec" onclick="claimCur()">✋ <span class="lbl">Reclamar</span></button>
           <button class="ca trn" id="btntrnc" onclick="openTrC()">⇄ <span class="lbl">Transferir</span></button>
@@ -422,8 +524,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
         </div>
       </div>
       <div id="msgs"></div>
-      <div id="mobq"></div>
       <div id="inparea">
+        <button id="mob-q-toggle" onclick="togMobQ()">💬 Mensajes</button>
         <textarea id="msginp" placeholder="Escribe un mensaje..." rows="1"
           oninput="autoR(this)"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
@@ -433,7 +535,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
     </div>
   </div>
 
-  <!-- RIGHT PANEL -->
+  <!-- RIGHT PANEL (desktop) -->
   <div id="rpanel">
     <div class="rphd">
       <span class="rptitle">MENSAJES</span>
@@ -467,7 +569,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 
   <!-- EMPLOYEES -->
   <div class="page" id="page-employees">
-    <div class="pgtop"><h2>💬 Chat Empleados</h2><span style="font-size:.69rem;color:var(--tx2)">Comunicación interna</span><button class="backbtn" onclick="showPage('chat')">← Volver</button></div>
+    <div class="pgtop"><h2>💬 Chat Empleados</h2><button class="backbtn" onclick="showPage('chat')">← Volver</button></div>
     <div class="emplay">
       <div class="empsb"><div class="empsbhd">Tu equipo</div><div class="empls" id="empls"></div></div>
       <div class="empca">
@@ -485,8 +587,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
   <div class="page" id="page-facebook">
     <div class="pgtop"><h2>📘 Facebook / Meta</h2><button class="backbtn" onclick="showPage('chat')">← Volver</button></div>
     <div class="fbarea">
-      <div class="fbcard"><h3>📬 HUELLITAS AL CIELO</h3><div id="fb-hue" style="font-size:.75rem;color:var(--tx3)">Conectando...</div></div>
-      <div class="fbcard"><h3>📬 ALBALUMEN</h3><div id="fb-alb" style="font-size:.75rem;color:var(--tx3)">Conectando...</div></div>
+      <div class="fbcard"><h3>📬 HUELLITAS AL CIELO</h3><div id="fb-hue" style="font-size:.75rem;color:var(--tx3)">Webhook pendiente de configurar.</div></div>
+      <div class="fbcard"><h3>📬 ALBALUMEN</h3><div id="fb-alb" style="font-size:.75rem;color:var(--tx3)">Webhook pendiente de configurar.</div></div>
       <div class="fbsetup">
         <h3>📘 Conectar Facebook Pages</h3>
         <p>Callback URL: <code>https://guerreroai.com/api/facebook/webhook</code></p>
@@ -494,6 +596,20 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
       </div>
     </div>
   </div>
+
+</div><!-- /main -->
+
+<!-- MOBILE QUICK MESSAGES PANEL (bottom sheet) -->
+<div id="mob-q-panel">
+  <div id="mob-q-panel-head">
+    <span>💬 Mensajes Rápidos</span>
+    <button id="mob-q-close" onclick="closeMobQ()">✕</button>
+  </div>
+  <div class="mob-rptabs">
+    <button class="mob-rptab on" onclick="setMobRpT('rapidos',this)">Rápidos</button>
+    <button class="mob-rptab" onclick="setMobRpT('plantillas',this)">Plantillas</button>
+  </div>
+  <div id="mob-q-list"></div>
 </div>
 
 <div id="toast"></div>
@@ -546,8 +662,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 
 <script>
 // ============================================================
-// GUERRERO AI v5.3 — DISEÑO CONGELADO
-// useQ() VERIFIED — pastes into #msginp textarea
+// GUERRERO AI v5.5 — MOBILE ACCORDION + BOTTOM SHEET QUICK MSG
 // ============================================================
 const API='';
 const ADMINS=['micheal evans','micheal','papa','papá'];
@@ -579,7 +694,7 @@ const DQR={
       {i:'🚗',t:'Ya enviamos a recoger a su mascota.'}
     ],
     plantillas:[
-      {i:'🐾',t:'Estimado cliente, lamentamos la pérdida de su mascota. Les acompañamos en este momento.'},
+      {i:'🐾',t:'Estimado cliente, lamentamos la pérdida de su mascota. Les acompañamos.'},
       {i:'📦',t:'Contamos con urnas y servicios de cremación individual o colectiva.'}
     ]
   }
@@ -587,10 +702,11 @@ const DQR={
 
 let cUser=null,isAdmin=false,cLId=null,cLead=null;
 let allLeads=[],openTabs=[],asgT=null,trLId=null;
-let filt='todos',bizF='all',sbMode='chat',rpT='rapidos';
+let filt='todos',bizF='all',sbMode='chat',rpT='rapidos',mobRpT='rapidos';
 let pollTmr=null,empT=null,empMsgs={},editingQ=false;
-let customQR=null;
+let customQR=null,mobMenuOpen=false,mobQOpen=false;
 
+function isMobile(){return window.innerWidth<=768;}
 function loadCQR(){try{const s=localStorage.getItem('gu_qr');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DQR));}
 function saveCQR(){localStorage.setItem('gu_qr',JSON.stringify(customQR));}
 
@@ -601,9 +717,13 @@ function setUser(name,color,initial){
   localStorage.setItem('gu_user',name);
   document.getElementById('topuser').innerHTML=`<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:20px;height:20px;border-radius:50%;background:${color};color:#fff;font-size:.65rem;font-weight:800;display:inline-flex;align-items:center;justify-content:center">${initial}</span>${name}</span>`;
   document.getElementById('usersel').style.display='none';
+  // VIP buttons desktop
   ['tbcharts','tbvision'].forEach(id=>document.getElementById(id).style.display=isAdmin?'':'none');
   document.getElementById('btnwr').style.display=isAdmin?'':'none';
-  loadData();startPoll();renderEmpLs();renderQL();
+  // VIP buttons mobile menu
+  ['mm-charts','mm-vision'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isAdmin?'':'none';});
+  const mmwr=document.getElementById('mm-btnwr');if(mmwr)mmwr.style.display=isAdmin?'':'none';
+  loadData();startPoll();renderEmpLs();renderQL();renderMobQ();
   showToast('✅ Bienvenido, '+name);
 }
 function doLogout(){
@@ -616,8 +736,68 @@ window.addEventListener('DOMContentLoaded',()=>{
   customQR=loadCQR();
   const s=localStorage.getItem('gu_user');
   if(s){const C={'Micheal Evans':'#1a1a1a','Papá':'#2563eb','Soledad':'#e91e8c'};const I={'Micheal Evans':'M','Papá':'P','Soledad':'S'};setUser(s,C[s]||'#f59e0b',I[s]||'E');}
-  else renderQL();
+  else{renderQL();renderMobQ();}
+  // Mobile: show mob-q-toggle when in chat
+  updateMobUI();
 });
+
+// ── MOBILE ACCORDION MENU ─────────────────────────────────────
+function togMobMenu(){
+  mobMenuOpen=!mobMenuOpen;
+  const m=document.getElementById('mob-menu');
+  m.classList.toggle('open',mobMenuOpen);
+}
+function closeMobMenu(){
+  mobMenuOpen=false;
+  document.getElementById('mob-menu').classList.remove('open');
+}
+
+// ── MOBILE QUICK MESSAGES BOTTOM SHEET ───────────────────────
+function togMobQ(){
+  mobQOpen=!mobQOpen;
+  document.getElementById('mob-q-panel').classList.toggle('open',mobQOpen);
+  if(mobQOpen)renderMobQ();
+}
+function closeMobQ(){
+  mobQOpen=false;
+  document.getElementById('mob-q-panel').classList.remove('open');
+}
+function setMobRpT(m,el){
+  mobRpT=m;
+  document.querySelectorAll('.mob-rptab').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+  renderMobQ();
+}
+function renderMobQ(){
+  const k=getBK();
+  const src=customQR||DQR;
+  const items=(src[k]||DQR[k])[mobRpT]||(src[k]||DQR[k]).rapidos||[];
+  const el=document.getElementById('mob-q-list');
+  if(!el)return;
+  el.innerHTML=items.map(m=>`<div class="mob-qm" onclick="useQMob(${JSON.stringify(m.t)})"><span class="mob-qi">${m.i}</span>${escH(m.t)}</div>`).join('');
+}
+function useQMob(text){
+  closeMobQ();
+  // Small delay to let panel close
+  setTimeout(()=>{
+    if(!cLId){showToast('⚠️ Primero abre un chat');return;}
+    const inp=document.getElementById('msginp');
+    if(!inp)return;
+    inp.value=String(text);
+    inp.dispatchEvent(new Event('input',{bubbles:true}));
+    autoR(inp);
+    inp.focus();
+    // Auto send
+    sendMsg();
+  },150);
+}
+function updateMobUI(){
+  const inChat=document.body.classList.contains('chatopen');
+  const toggle=document.getElementById('mob-q-toggle');
+  if(toggle)toggle.style.display=isMobile()&&inChat?'flex':'none';
+  const back=document.getElementById('mob-back');
+  if(back)back.style.display=isMobile()?'flex':'none';
+}
 
 // ── DATA ──────────────────────────────────────────────────────
 async function loadData(){
@@ -638,7 +818,7 @@ function startPoll(){
 }
 
 // ── BIZ / FILTER / SIDEBAR ────────────────────────────────────
-function setBiz(b){bizF=b;document.getElementById('bt-alb').classList.toggle('on',b==='albalumen');document.getElementById('bt-hue').classList.toggle('on',b==='huellitas');renderCvList();renderPfList();renderQL();}
+function setBiz(b){bizF=b;document.getElementById('bt-alb').classList.toggle('on',b==='albalumen');document.getElementById('bt-hue').classList.toggle('on',b==='huellitas');renderCvList();renderPfList();renderQL();renderMobQ();}
 function setF(f,el){filt=f;document.querySelectorAll('.fp').forEach(p=>p.classList.remove('on'));if(el)el.classList.add('on');renderCvList();}
 function setSbM(m){
   sbMode=m;
@@ -705,8 +885,9 @@ function renderPfList(q=''){
   }).join('');
 }
 
-// ── TABS ──────────────────────────────────────────────────────
+// ── TABS (desktop) ────────────────────────────────────────────
 function renderTabs(){
+  if(isMobile())return; // No tabs on mobile
   openTabs=openTabs.filter(id=>allLeads.some(l=>l.id===id));
   if(cLId&&!openTabs.includes(cLId))openTabs.push(cLId);
   const bar=document.getElementById('ctabs');
@@ -724,6 +905,7 @@ function closeTab(id){openTabs=openTabs.filter(x=>x!==id);if(cLId===id)closeChat
 // ── OPEN / CLOSE CHAT ─────────────────────────────────────────
 async function openChat(id){
   if(!cUser){showToast('Selecciona tu perfil');return;}
+  closeMobMenu();
   cLId=id;cLead=allLeads.find(l=>l.id===id)||null;
   if(!openTabs.includes(id))openTabs.push(id);
   renderTabs();renderCvList();showPage('chat');
@@ -736,25 +918,22 @@ async function openChat(id){
   const ag=cLead?.claimed_by||'';
   document.getElementById('chnm').textContent=nm;
   document.getElementById('chsb').textContent=`${ph}${src?' · '+src:''} · ${st}${ag?' · 👤 '+ag:''}`;
-  const tel=document.getElementById('chtr');
-  tel.style.display='none';
+  document.getElementById('chtr').style.display='none';
   const canSeeT=isAdmin||CAN_TR.includes((cUser||'').toLowerCase());
   document.getElementById('btntrnc').style.display=canSeeT?'':'none';
-  closeMob();document.body.classList.add('chatopen');
-  // On mobile: hide sidebar, show chat
-  const lsb=document.getElementById('lsb');
-  if(lsb&&window.innerWidth<=768)lsb.style.display='none';
+  // Mobile: switch to chat view
+  document.body.classList.add('chatopen');
+  updateMobUI();
+  renderQL();renderMobQ();
   await loadMsgs(id,true);
-  renderQL();
 }
 function closeChat(){
   cLId=null;cLead=null;
   document.getElementById('cempty').style.display='flex';
   document.getElementById('cmain').style.display='none';
   document.body.classList.remove('chatopen');
-  // On mobile: show sidebar (list) again
-  const lsb=document.getElementById('lsb');
-  if(lsb)lsb.style.display='';
+  closeMobQ();
+  updateMobUI();
   renderCvList();renderTabs();
 }
 function goCht(id){setSbM('chat');showPage('chat');setTimeout(()=>openChat(id),80);}
@@ -823,28 +1002,26 @@ async function sendMsg(){
   }finally{btn.disabled=false;btn.innerHTML='ENVIAR ▶';}
 }
 
-// ── useQ — PEGA MENSAJE EN INPUT ──────────────────────────────
+// ── useQ (DESKTOP) ────────────────────────────────────────────
 function useQ(text){
-  if(!cLId){showToast("⚠️ Primero abre un chat de la lista");return;}
-  const inp=document.getElementById("msginp");
+  if(!cLId){showToast('⚠️ Primero abre un chat');return;}
+  const inp=document.getElementById('msginp');
   if(!inp)return;
   inp.value=String(text);
-  inp.dispatchEvent(new Event("input",{bubbles:true}));
+  inp.dispatchEvent(new Event('input',{bubbles:true}));
   autoR(inp);
   inp.focus();
   sendMsg();
 }
 
-// ── QUICK MESSAGES ────────────────────────────────────────────
+// ── QUICK MESSAGES PANEL (desktop) ───────────────────────────
 function getBK(){const biz=(cLead?.business||'albalumen').toLowerCase();return(biz.includes('hue')||biz.includes('mascot'))?'HUELLITAS':'ALBALUMEN';}
-function getItems(){const k=getBK();const src=customQR||DQR;return(src[k]||DQR[k])[rpT]||(src[k]||DQR[k]).rapidos||[];}
+function getItems(tab){const k=getBK();const src=customQR||DQR;return(src[k]||DQR[k])[tab]||(src[k]||DQR[k]).rapidos||[];}
 
 function renderQL(){
-  const items=getItems();
+  const items=getItems(rpT);
   const ql=document.getElementById('qlist');
   if(ql)ql.innerHTML=items.map(m=>`<div class="qm" onclick="useQ(${JSON.stringify(m.t)})"><span class="qi">${m.i}</span>${escH(m.t)}</div>`).join('');
-  const mb=document.getElementById('mobq');
-  if(mb)mb.innerHTML=items.map(m=>`<div class="mqc" onclick="useQ(${JSON.stringify(m.t)})">${m.i} ${escH(m.t.substring(0,26))}...</div>`).join('');
 }
 function setRpT(m,el){rpT=m;document.querySelectorAll('.rptab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');if(editingQ)renderEditQ();else renderQL();}
 function togEditQ(){
@@ -976,7 +1153,7 @@ function renderCharts(){
   const top=Object.entries(src).sort((a,b)=>b[1]-a[1])[0];
   document.getElementById('aitxt').textContent=`Con ${tot} leads, ${top?`la fuente "${top[0]}" lidera con ${top[1]} leads.`:''} ${nw} sin atender — responder en <5 min aumenta conversión 3x.`;
 }
-function submitCQ(){const q=document.getElementById('chq').value.trim();if(!q)return;closeModal('modal-chartsask');document.getElementById('aitxt').textContent='🤖 Analizando...';setTimeout(()=>{document.getElementById('aitxt').textContent=`Análisis: "${q}" — ${allLeads.length} leads en sistema. Prioriza seguimiento a nuevos en primeras 24h.`;},1200);}
+function submitCQ(){const q=document.getElementById('chq').value.trim();if(!q)return;closeModal('modal-chartsask');document.getElementById('aitxt').textContent='🤖 Analizando...';setTimeout(()=>{document.getElementById('aitxt').textContent=`Análisis: "${q}" — ${allLeads.length} leads. Prioriza seguimiento a nuevos en primeras 24h.`;},1200);}
 
 // ── VISION ────────────────────────────────────────────────────
 function renderVision(){
@@ -992,7 +1169,7 @@ function renderVision(){
   }).join('');
 }
 
-// ── EMPLOYEES CHAT ────────────────────────────────────────────
+// ── EMPLOYEES ─────────────────────────────────────────────────
 function renderEmpLs(){if(!cUser)return;document.getElementById('empls').innerHTML=EMPLOYEES.filter(e=>e.toLowerCase()!==(cUser||'').toLowerCase()).map(e=>`<div class="empit${empT===e?' on':''}" onclick="openEmpCht('${e}')"><div class="en">${e}</div><div class="es">🟢 Disponible</div></div>`).join('');}
 function openEmpCht(name){empT=name;renderEmpLs();document.getElementById('empchd').textContent='💬 '+name;if(!empMsgs[name])empMsgs[name]=[];renderEmpMsgs(name);}
 function renderEmpMsgs(name){
@@ -1006,24 +1183,28 @@ function sendEmp(){const inp=document.getElementById('empinp');const txt=inp.val
 // ── PAGE SWITCHING ────────────────────────────────────────────
 const PAGES=['charts','vision','employees','facebook'];
 function showPage(p){
-  document.getElementById('carea').style.display='none';
+  closeMobMenu();
+  document.getElementById('carea').style.display='';
+  document.getElementById('carea').style.removeProperty('display');
   PAGES.forEach(pg=>{const el=document.getElementById('page-'+pg);if(el){el.style.display='none';el.classList.remove('show');}});
-  if(p==='chat'){document.getElementById('carea').style.display='flex';}
-  else{
-    if((p==='charts'||p==='vision')&&!isAdmin){showToast('Acceso VIP — solo Micheal y Papá');document.getElementById('carea').style.display='flex';return;}
+  if(p==='chat'){
+    // On mobile: show sidebar (list)
+    if(isMobile()&&!cLId){
+      document.body.classList.remove('chatopen');
+      updateMobUI();
+    }
+    document.getElementById('carea').style.display='flex';
+  } else {
+    if((p==='charts'||p==='vision')&&!isAdmin){showToast('Acceso VIP — solo Micheal y Papá');return;}
     const el=document.getElementById('page-'+p);
     if(el){el.style.display='flex';el.classList.add('show');}
     if(p==='charts')renderCharts();
     if(p==='vision')renderVision();
     if(p==='employees')renderEmpLs();
   }
-  closeMob();
 }
+// Init
 document.getElementById('carea').style.display='flex';
-
-// ── MOBILE ────────────────────────────────────────────────────
-function togMob(){document.getElementById('lsb').classList.toggle('open');document.getElementById('mobov').classList.toggle('show');}
-function closeMob(){document.getElementById('lsb').classList.remove('open');document.getElementById('mobov').classList.remove('show');}
 
 // ── MODALS ────────────────────────────────────────────────────
 function openModal(id){document.getElementById(id).classList.add('show');}
