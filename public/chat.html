@@ -716,14 +716,17 @@ function renderMobQ(){
 function useQMob(text){
   closeMobQ();
   setTimeout(()=>{
-    if(!cLId){showToast('⚠️ Primero abre un chat');return;}
+    if(!cLId){showToast('⚠️ Abre un chat primero');return;}
     const inp=document.getElementById('msginp');
-    if(!inp)return;
+    if(!inp){showToast('Error interno');return;}
+    inp.value='';
     inp.value=String(text);
     inp.dispatchEvent(new Event('input',{bubbles:true}));
-    autoR(inp);inp.focus();
-    sendMsg();
-  },200);
+    autoR(inp);
+    inp.focus();
+    // Extra delay for mobile DOM to settle
+    setTimeout(()=>sendMsg(),150);
+  },350);
 }
 
 // ── GOOGLE MEET ───────────────────────────────────────────────
@@ -961,10 +964,12 @@ function useQ(text){
   if(!cLId){showToast('⚠️ Primero abre un chat');return;}
   const inp=document.getElementById('msginp');
   if(!inp)return;
+  inp.value='';
   inp.value=String(text);
   inp.dispatchEvent(new Event('input',{bubbles:true}));
-  autoR(inp);inp.focus();
-  sendMsg();
+  autoR(inp);
+  inp.focus();
+  setTimeout(()=>sendMsg(),50);
 }
 
 // ── QUICK MESSAGES (desktop right panel) ──────────────────────
