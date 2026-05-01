@@ -459,13 +459,13 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
   <div id="rpanel">
     <div class="rphd">
       <span class="rptitle">MENSAJES</span>
-      <button 
+      <button class="rpedit" onclick="togEditQ()">✏️ Editar</button>
     </div>
     <div class="rptabs">
       <button class="rptab on" id="rpt-r" onclick="setRpT('rapidos',this)">Rápidos</button>
       <button class="rptab" id="rpt-p" onclick="setRpT('plantillas',this)">Plantillas</button>
     </div>
-    <div id="qlist"></div>
+    <div id="qlist"></div><button onclick="useQ('Sentimos mucho su pérdida. Estamos aquí para ayudarle.')" style="background:#e91e8c;color:#fff;border:none;padding:10px;width:100%;font-weight:700;cursor:pointer;margin-top:5px;">TEST MENSAJE</button><button onclick="useQ('Sentimos mucho su pérdida. Estamos aquí para ayudarle.')" style="background:#e91e8c;color:#fff;border:none;padding:10px;width:100%;font-weight:700;cursor:pointer;margin-top:5px;">TEST MENSAJE</button>
     <div id="editqpanel">
       <div class="eqhd"><span>Editar mensajes</span><button onclick="saveEditQ()">✅ Guardar</button></div>
       <div id="eqlist"></div>
@@ -972,7 +972,7 @@ function getItems(tab){const k=getBK();const src=customQR||DQR;return(src[k]||DQ
 function renderQL(){
   const items=getItems(rpT);
   const ql=document.getElementById('qlist');
-  if(ql)ql.innerHTML=items.map(m=>`<div class="qm" onclick="useQ(${JSON.stringify(m.t)})"><span class="qi">${m.i}</span>${escH(m.t)}</div>`).join('');
+  if(ql)ql.innerHTML=items.map(m=>`<div class="qm" onmousedown="useQ(${JSON.stringify(m.t)})"><span class="qi">${m.i}</span>${escH(m.t)}</div>`).join('');
 }
 function setRpT(m,el){rpT=m;document.querySelectorAll('.rptab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');if(editingQ)renderEditQ();else renderQL();}
 function togEditQ(){
