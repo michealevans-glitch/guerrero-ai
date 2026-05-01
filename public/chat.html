@@ -958,7 +958,7 @@ async function sendMsg(forceTxt){
 }
 
 // ── useQ (DESKTOP) ────────────────────────────────────────────
-function useQ(text){
+function useQ(text){alert("useQ ok: "+text);
   if(!cLId){showToast('⚠️ Primero abre un chat');return;}
   const inp=document.getElementById('msginp');
   if(inp){inp.value=String(text);autoR(inp);}
