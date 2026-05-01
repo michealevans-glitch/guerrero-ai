@@ -642,7 +642,7 @@ const DQR={
   }
 };
 
-let cUser=null,isAdmin=false,editingQ=false,cLId=null,cLead=null;
+let cUser=null,isAdmin=false,cLId=null,cLead=null;
 let allLeads=[],openTabs=[],asgT=null,trLId=null;
 let filt='todos',bizF='all',sbMode='chat',rpT='rapidos',mobRpT='rapidos';
 let pollTmr=null,empT=null,empMsgs={},editingQ=false;
@@ -661,7 +661,7 @@ function setUser(name,color,initial){
   document.getElementById('usersel').style.display='none';
   ['tbcharts','tbvision','btnwr'].forEach(id=>document.getElementById(id).style.display=isAdmin?'':'none');
   ['mm-charts','mm-vision','mm-btnwr'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isAdmin?'':'none';});
-  loadData();startPoll();renderEmpLs();editingQ=false;document.getElementById("qlist").style.display="flex";document.getElementById("editqpanel").classList.remove("show");renderQL();renderMobQ();
+  loadData();startPoll();renderEmpLs();renderQL();renderMobQ();
   showToast('✅ Bienvenido, '+name);
 }
 function doLogout(){
@@ -674,7 +674,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   customQR=loadCQR();
   const s=localStorage.getItem('gu_user');
   if(s){const C={'Micheal Evans':'#1a1a1a','Papá':'#2563eb','Soledad':'#e91e8c'};const I={'Micheal Evans':'M','Papá':'P','Soledad':'S'};setUser(s,C[s]||'#f59e0b',I[s]||'E');}
-  else{editingQ=false;document.getElementById("qlist").style.display="flex";document.getElementById("editqpanel").classList.remove("show");renderQL();renderMobQ();}
+  else{renderQL();renderMobQ();}
   // Show mobile quick btn in input
   const mqb=document.getElementById('mob-q-btn');
   if(mqb)mqb.style.display=isMob()?'flex':'none';
@@ -772,7 +772,7 @@ function startPoll(){
 }
 
 // ── BIZ / FILTER / SIDEBAR ────────────────────────────────────
-function setBiz(b){bizF=b;document.getElementById('bt-alb').classList.toggle('on',b==='albalumen');document.getElementById('bt-hue').classList.toggle('on',b==='huellitas');renderCvList();renderPfList();editingQ=false;document.getElementById("qlist").style.display="flex";document.getElementById("editqpanel").classList.remove("show");renderQL();renderMobQ();}
+function setBiz(b){bizF=b;document.getElementById('bt-alb').classList.toggle('on',b==='albalumen');document.getElementById('bt-hue').classList.toggle('on',b==='huellitas');renderCvList();renderPfList();renderQL();renderMobQ();}
 function setF(f,el){filt=f;document.querySelectorAll('.fp').forEach(p=>p.classList.remove('on'));if(el)el.classList.add('on');renderCvList();}
 function setSbM(m){
   sbMode=m;
@@ -882,7 +882,7 @@ async function openChat(id){
   document.body.classList.add('chatopen');
   const mqb=document.getElementById('mob-q-btn');if(mqb)mqb.style.display=isMob()?'flex':'none';
   const mb=document.getElementById('mob-back');if(mb)mb.style.display=isMob()?'flex':'none';
-  editingQ=false;document.getElementById("qlist").style.display="flex";document.getElementById("editqpanel").classList.remove("show");renderQL();renderMobQ();
+  renderQL();renderMobQ();
   await loadMsgs(id,true);
 }
 function closeChat(){
@@ -958,7 +958,7 @@ async function sendMsg(forceTxt){
 }
 
 // ── useQ (DESKTOP) ────────────────────────────────────────────
-function useQ(text){alert("useQ ok: "+text);
+function useQ(text){
   if(!cLId){showToast('⚠️ Primero abre un chat');return;}
   const inp=document.getElementById('msginp');
   if(inp){inp.value=String(text);autoR(inp);}
