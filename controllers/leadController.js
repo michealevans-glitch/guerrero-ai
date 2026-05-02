@@ -172,13 +172,12 @@ const sendMessage = async (req, res) => {
             console.log(`🚨 ALERTA ROJA: Posible desvío por ${sent_by}`);
         }
 
-        // Enviar via Meta WhatsApp API
         try {
             const leadRes = await pool.query('SELECT phone FROM leads WHERE id = $1', [lead_id]);
             if (leadRes.rows[0]?.phone) {
                 let clientPhone = leadRes.rows[0].phone.replace(/\D/g, '');
                 const finalPhone = clientPhone.length === 8 ? `506${clientPhone}` : clientPhone;
-                await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+                const metaRes = await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -191,10 +190,11 @@ const sendMessage = async (req, res) => {
                         text: { body: message }
                     })
                 });
-                console.log(`✅ WhatsApp sent via Meta to ${finalPhone}`);
+                const metaJson = await metaRes.json();
+                console.log(`📤 Meta response:`, JSON.stringify(metaJson));
             }
         } catch (metaErr) {
-            console.error(`Meta error (non-fatal): ${metaErr.message}`);
+            console.error(`Meta error: ${metaErr.message}`);
         }
 
         const result = await pool.query(
