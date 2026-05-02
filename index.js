@@ -2,38 +2,29 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
-
 const app = express();
 const PORT = process.env.PORT || 8080;
-
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/leads', require('./routes/leads'));
 app.use('/api/scraper', require('./routes/scraper'));
 app.use('/api/outreach', require('./routes/outreach'));
 app.use('/api/webhook', require('./routes/webhook'));
 app.use('/api/contacts', require('./routes/contacts'));
-app.use('/api/contacts', require('./routes/outreach'));
-app.use('/api/contacts', require('./routes/contacts'));
-
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/chat', (req, res) => res.sendFile(path.join(__dirname, 'public', 'chat.html')));
+app.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
 app.get('/api/health', (req, res) => res.json({ system: 'Guerrero AI', status: 'ONLINE', domain: 'guerreroai.com' }));
-
 app.listen(PORT, '0.0.0.0', async () => {
   console.log(`⚔️  GUERRERO AI — ONLINE — port ${PORT}`);
   console.log(`🌐 https://guerreroai.com`);
-
   const pool = require('./config/database');
   const bcrypt = require('bcryptjs');
-
   try {
     await pool.query('SELECT 1');
     console.log('✅ Database connected');
-
     const passwords = {
       oscar:   'Albalumen2024#',
       micheal: 'Guerrero2024#',
@@ -54,10 +45,8 @@ app.listen(PORT, '0.0.0.0', async () => {
   } catch(e) {
     console.error('❌ DB error:', e.message);
   }
-
   const { send3MinuteAlert } = require('./controllers/emailController');
   const pool2 = require('./config/database');
-
   setInterval(async () => {
     try {
       const now = new Date();
