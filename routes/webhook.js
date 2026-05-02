@@ -56,8 +56,8 @@ router.post('/whatsapp', async (req, res) => {
     await sendLeadAlert(lead);
 
     await pool.query(
-      `INSERT INTO messages (lead_id, message_text, direction, sent_by, message_type)
-       VALUES ($1,$2,'incoming',$3,'text')`,
+INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type)
+       VALUES ($1,$2,$2,'incoming',$3,'text')`,
       [lead.id, text, name]
     );
 
