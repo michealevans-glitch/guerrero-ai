@@ -1,11 +1,5 @@
 const pool = require('../config/database');
 const { sendLeadAlert } = require('./emailController');
-const twilio = require('twilio');
-
-const twilioClient = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-);
 
 // ─── CREATE LEAD ──────────────────────────────────────────────────────────────
 const createLead = async (req, res) => {
@@ -67,7 +61,7 @@ const claimLead = async (req, res) => {
     }
 };
 
-// ─── MARK LOST → cerrado ──────────────────────────────────────────────────────
+// ─── MARK LOST ────────────────────────────────────────────────────────────────
 const markLost = async (req, res) => {
     try {
         const id = req.params.id || req.params.leadId;
@@ -78,7 +72,6 @@ const markLost = async (req, res) => {
             WHERE id = $2 RETURNING *
         `, [reason_lost || 'Sin razón', id]);
         if (!rows.length) return res.status(404).json({ error: 'Lead no encontrado' });
-        // Log message — uses message_text column
         await pool.query(
             `INSERT INTO messages (lead_id, message_text, body, sent_by, direction, created_at)
              VALUES ($1, $2, $2, 'sistema', 'system', NOW())`,
@@ -112,8 +105,7 @@ const transferLead = async (req, res) => {
         const { transferred_to, transferred_by, note } = req.body;
         if (!transferred_to) return res.status(400).json({ error: 'transferred_to requerido' });
         const { rows } = await pool.query(`
-            UPDATE leads
-            SET claimed_by = $1, status = 'activo', updated_at = NOW()
+            UPDATE leads SET claimed_by = $1, status = 'activo', updated_at = NOW()
             WHERE id = $2 RETURNING *
         `, [transferred_to, id]);
         if (!rows.length) return res.status(404).json({ error: 'Lead no encontrado' });
@@ -137,8 +129,7 @@ const assignLead = async (req, res) => {
         const { assigned_to, assigned_by } = req.body;
         if (!assigned_to) return res.status(400).json({ error: 'assigned_to requerido' });
         const { rows } = await pool.query(`
-            UPDATE leads
-            SET claimed_by = $1, status = 'activo', updated_at = NOW()
+            UPDATE leads SET claimed_by = $1, status = 'activo', updated_at = NOW()
             WHERE id = $2 RETURNING *
         `, [assigned_to, id]);
         if (!rows.length) return res.status(404).json({ error: 'Lead no encontrado' });
@@ -159,8 +150,7 @@ const getVisionVivo = async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT id, contact_name, phone, status, claimed_by, source, service_type, updated_at
-            FROM leads
-            WHERE status NOT IN ('cerrado', 'Lost')
+            FROM leads WHERE status NOT IN ('cerrado', 'Lost')
             ORDER BY updated_at DESC NULLS LAST
         `);
         res.json(result.rows);
@@ -170,7 +160,6 @@ const getVisionVivo = async (req, res) => {
 };
 
 // ─── SEND MESSAGE ─────────────────────────────────────────────────────────────
-// DB columns confirmed: id, lead_id, message_text, direction, sent_by, created_at, body
 const sendMessage = async (req, res) => {
     try {
         const { lead_id, message, sent_by } = req.body;
@@ -178,41 +167,43 @@ const sendMessage = async (req, res) => {
             return res.status(400).json({ error: 'lead_id y message son requeridos' });
         }
 
-        // 🚨 Anti-desvío check
         const prohibidas = ['mi número', 'personal', 'mi cuenta', 'pago directo', 'por fuera'];
         if (prohibidas.some(p => message.toLowerCase().includes(p))) {
             console.log(`🚨 ALERTA ROJA: Posible desvío por ${sent_by}`);
         }
 
-        // Try Twilio WhatsApp (non-fatal if fails)
+        // Enviar via Meta WhatsApp API
         try {
             const leadRes = await pool.query('SELECT phone FROM leads WHERE id = $1', [lead_id]);
             if (leadRes.rows[0]?.phone) {
                 let clientPhone = leadRes.rows[0].phone.replace(/\D/g, '');
                 const finalPhone = clientPhone.length === 8 ? `506${clientPhone}` : clientPhone;
-                await twilioClient.messages.create({
-                    from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
-                    body: message,
-                    to: `whatsapp:+${finalPhone}`
+                await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messaging_product: 'whatsapp',
+                        to: finalPhone,
+                        type: 'text',
+                        text: { body: message }
+                    })
                 });
-                console.log(`✅ WhatsApp sent to +${finalPhone}`);
+                console.log(`✅ WhatsApp sent via Meta to ${finalPhone}`);
             }
-        } catch (twilioErr) {
-            console.error(`Twilio error (non-fatal): ${twilioErr.message}`);
+        } catch (metaErr) {
+            console.error(`Meta error (non-fatal): ${metaErr.message}`);
         }
 
-        // INSERT — uses both message_text AND body (both confirmed in DB)
         const result = await pool.query(
             `INSERT INTO messages (lead_id, message_text, body, sent_by, direction, created_at)
              VALUES ($1, $2, $2, $3, 'outgoing', NOW()) RETURNING *`,
             [lead_id, message, sent_by || 'sistema']
         );
 
-        // Update lead timestamp
-        await pool.query(
-            `UPDATE leads SET updated_at = NOW() WHERE id = $1`,
-            [lead_id]
-        ).catch(() => {});
+        await pool.query(`UPDATE leads SET updated_at = NOW() WHERE id = $1`, [lead_id]).catch(() => {});
 
         res.json({ success: true, message: result.rows[0] });
     } catch (err) {
