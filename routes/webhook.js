@@ -38,11 +38,21 @@ router.post('/whatsapp', async (req, res) => {
     }
     console.log(`📱 WhatsApp message from ${name} (${phone}): ${text}`);
     const existing = await pool.query(`SELECT id FROM leads WHERE phone LIKE $1 AND status = 'New' LIMIT 1`, [`%${phone.slice(-8)}%`]);
-    if (existing.rows.length > 0) return res.sendStatus(200);
+    if (existing.rows.length > 0) {
+      await pool.query(
+        `INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,'incoming',$3,'text')`,
+        [existing.rows[0].id, text, name]
+      );
+      await pool.query(`UPDATE leads SET updated_at = NOW() WHERE id = $1`, [existing.rows[0].id]);
+      return res.sendStatus(200);
+    }
     const result = await pool.query(`INSERT INTO leads (contact_name, phone, service_type, source, notes, status) VALUES ($1,$2,'Consulta WhatsApp','whatsapp-api',$3,'New') RETURNING *`, [name, phone, text]);
     const lead = result.rows[0];
     await sendLeadAlert(lead);
-    await pool.query(`INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,'incoming',$3,'text')`, [lead.id, text, name]);
+    await pool.query(
+      `INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,'incoming',$3,'text')`,
+      [lead.id, text, name]
+    );
     await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`, 'Content-Type': 'application/json' },
