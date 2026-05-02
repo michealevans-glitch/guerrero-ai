@@ -714,17 +714,11 @@ function renderMobQ(){
   el.innerHTML=items.map(m=>`<div class="mob-qm" onclick="useQMob(${JSON.stringify(m.t)})"><span class="mob-qi">${m.i}</span>${escH(m.t)}</div>`).join('');
 }
 function useQMob(text){
+  if(!cLId){showToast('⚠️ Abre un chat primero');return;}
   closeMobQ();
   setTimeout(()=>{
-    if(!cLId){showToast('⚠️ Abre un chat primero');return;}
-    const inp=document.getElementById('msginp');
-    if(inp){
-      inp.value=String(text);
-      autoR(inp);
-    }
-    // Pass text directly — bypasses any mobile textarea timing issues
     sendMsg(String(text));
-  },300);
+  },350);
 }
 
 // ── GOOGLE MEET ───────────────────────────────────────────────
