@@ -3,57 +3,6 @@ const router = express.Router();
 const pool = require('../config/database');
 const { sendLeadAlert } = require('../controllers/emailController');
 
-async function transcribirAudio(mediaId) {
-  try {
-    if (!mediaId) return '[Mensaje de voz]';
-    const mediaRes = await fetch(`https://graph.facebook.com/v18.0/${mediaId}`, {
-      headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}` }
-    });
-    const mediaData = await mediaRes.json();
-    const audioUrl = mediaData.url;
-    const audioRes = await fetch(audioUrl, {
-      headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}` }
-    });
-    const audioBuffer = await audioRes.arrayBuffer();
-    const audioBlob = Buffer.from(audioBuffer);
-    const https = require('https');
-    const FormData = require('form-data');
-    const form = new FormData();
-    form.append('file', audioBlob, {
-      filename: 'audio.ogg',
-      contentType: 'audio/ogg',
-      knownLength: audioBlob.length
-    });
-    form.append('model', 'whisper-1');
-    const transcription = await new Promise((resolve, reject) => {
-      const options = {
-        hostname: 'api.openai.com',
-        path: '/v1/audio/transcriptions',
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          ...form.getHeaders()
-        }
-      };
-      const req = https.request(options, (res) => {
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => {
-          try { resolve(JSON.parse(data)); }
-          catch(e) { reject(e); }
-        });
-      });
-      req.on('error', reject);
-      form.pipe(req);
-    });
-    console.log(`🎤 Transcripción: ${transcription.text}`);
-    return transcription.text || '[Mensaje de voz]';
-  } catch (e) {
-    console.error('transcribirAudio error:', e.message);
-    return '[Mensaje de voz]';
-  }
-}
-
 async function llamarEquipo(clienteName) {
   try {
     const twilio = require('twilio');
@@ -138,7 +87,7 @@ router.post('/whatsapp', async (req, res) => {
     if (!message) return res.sendStatus(200);
     const phone = message.from;
     const name = contact?.profile?.name || 'Cliente WhatsApp';
-let text = message.text?.body || '';
+    let text = message.text?.body || '';
     if (!text) text = message.type === 'audio' ? '🎤 [Mensaje de voz — escuchar en WhatsApp]' : message.type || 'Mensaje de WhatsApp';
     if (text.toUpperCase().includes('STOP')) {
       await pool.query(`UPDATE external_leads_pool SET excluded = true, excluded_reason = 'STOP request', status = 'excluded' WHERE phone LIKE $1`, [`%${phone.slice(-8)}%`]);
