@@ -711,7 +711,17 @@ function renderMobQ(){
   const items=(src[k]||DQR[k])[mobRpT]||(src[k]||DQR[k]).rapidos||[];
   const el=document.getElementById('mob-q-list');
   if(!el)return;
-  el.innerHTML=items.map(m=>`<div class="mob-qm" ontouchend="event.preventDefault();useQMob(${JSON.stringify(m.t)})" onclick="useQMob(${JSON.stringify(m.t)})">
+el.innerHTML=items.map((m,i)=>`<div class="mob-qm" data-idx="${i}" ontouchend="event.preventDefault();event.stopPropagation();handleMobQ(${i})" onclick="handleMobQ(${i})"><span class="mob-qi">${m.i}</span>${escH(m.t)}</div>`).join('');
+}
+  function handleMobQ(idx){
+  const k=getBK();
+  const src=customQR||DQR;
+  const items=(src[k]||DQR[k])[mobRpT]||(src[k]||DQR[k]).rapidos||[];
+  const item=items[idx];
+  if(!item)return;
+  if(!cLId){showToast('⚠️ Abre un chat primero');return;}
+  closeMobQ();
+  setTimeout(()=>sendMsg(String(item.t)),350);
 }
 function useQMob(text){
   if(!cLId){showToast('⚠️ Abre un chat primero');return;}
