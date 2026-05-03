@@ -77,6 +77,7 @@ await llamarEquipo(name);
     await sendLeadAlert(lead);
     try { const { sendPushToAll } = require('./push'); await sendPushToAll({ title: '⚔️ NUEVO — ' + name, body: text, leadId: lead.id, tag: 'lead-' + lead.id }); } catch(e) {}
     await llamarEquipo(name);
+    await detectarPeticionLlamada(phone, text);
     await pool.query(
       `INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,'incoming',$3,'text')`,
       [lead.id, text, name]
