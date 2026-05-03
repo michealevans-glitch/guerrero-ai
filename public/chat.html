@@ -582,6 +582,19 @@ function getACtx(){
   if(audioCtx.state==='suspended')audioCtx.resume();
   return audioCtx;
 }
+function playBeep(){
+  try{
+    const a=new(window.AudioContext||window.webkitAudioContext)();
+    const o=a.createOscillator();
+    const g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.frequency.value=isNight()?660:1200;
+    g.gain.setValueAtTime(isNight()?0.6:0.3,a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.8);
+    o.start(a.currentTime);
+    o.stop(a.currentTime+0.85);
+  }catch(e){console.warn('beep error:',e);}
+}
 function isNight(){const h=new Date().getHours();return h>=22||h<6;}
 function playBing(){
   const ctx=getACtx();if(!ctx)return;
