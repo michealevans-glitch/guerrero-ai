@@ -34,9 +34,13 @@ router.post('/webhook', async (req, res) => {
           );
           await pool.query(`UPDATE leads SET updated_at = NOW() WHERE id = $1`, [existing.rows[0].id]);
         } else {
-          await pool.query(
-            `INSERT INTO leads (contact_name, phone, service_type, source, notes, status) VALUES ($1,$2,'Consulta Facebook','facebook',$3,'New')`,
+          const newLead = await pool.query(
+            `INSERT INTO leads (contact_name, phone, service_type, source, notes, status) VALUES ($1,$2,'Consulta Facebook','facebook',$3,'New') RETURNING *`,
             ['Cliente Facebook', senderId, text]
+          );
+          await pool.query(
+            `INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,'incoming','Facebook','text')`,
+            [newLead.rows[0].id, text]
           );
         }
       }
