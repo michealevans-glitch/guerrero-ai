@@ -94,5 +94,21 @@ await llamarEquipo(name);
     res.sendStatus(500);
   }
 });
+async function detectarPeticionLlamada(phone, text) {
+  try {
+    const palabras = ['llamar', 'llamada', 'hablar', 'teléfono', 'telefono', 'call', 'comunicarme', 'contactar'];
+    const quiereLlamar = palabras.some(p => text.toLowerCase().includes(p));
+    if (!quiereLlamar) return;
+    const respuesta = 'Entendemos que prefiere hablar con alguien. Un agente le llamará en los próximos minutos. ¿Es conveniente que le llamemos ahora?';
+    await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messaging_product: 'whatsapp', to: phone, type: 'text', text: { body: respuesta } })
+    });
+    console.log(`📞 Cliente ${phone} pidió llamada — respuesta automática enviada`);
+  } catch (e) {
+    console.error('detectarPeticionLlamada error:', e.message);
+  }
+}
 
 module.exports = router;
