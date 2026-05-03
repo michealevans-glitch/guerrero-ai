@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/database');
 const { sendLeadAlert } = require('../controllers/emailController');
+const twilio = require('twilio');
 
 router.get('/whatsapp', (req, res) => {
   const mode = req.query['hub.mode'];
