@@ -68,7 +68,8 @@ router.post('/whatsapp', async (req, res) => {
       );
       await pool.query(`UPDATE leads SET updated_at = NOW() WHERE id = $1`, [existing.rows[0].id]);
       try { const { sendPushToAll } = require('./push'); await sendPushToAll({ title: '⚔️ ' + name, body: text, leadId: existing.rows[0].id, tag: 'lead-' + existing.rows[0].id }); } catch(e) {}
-      await llamarEquipo(name);
+await llamarEquipo(name);
+      await detectarPeticionLlamada(phone, text);
       return res.sendStatus(200);
     }
     const result = await pool.query(`INSERT INTO leads (contact_name, phone, service_type, source, notes, status) VALUES ($1,$2,'Consulta WhatsApp','whatsapp-api',$3,'New') RETURNING *`, [name, phone, text]);
