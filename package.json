@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Guerrero AI — CRM para Albalumen y Huellitas al Cielo",
   "main": "index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node index.js"
   },
@@ -13,7 +16,9 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
+    "nodemailer": "^8.0.6",
     "pg": "^8.11.0",
-    "twilio": "^4.19.0"
+    "twilio": "^4.19.0",
+    "web-push": "^3.6.7"
   }
 }
