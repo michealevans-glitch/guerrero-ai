@@ -13,6 +13,7 @@ app.use('/api/scraper', require('./routes/scraper'));
 app.use('/api/outreach', require('./routes/outreach'));
 app.use('/api/webhook', require('./routes/webhook'));
 app.use('/api/contacts', require('./routes/contacts'));
+app.use('/api/push', require('./routes/push'));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/chat', (req, res) => res.sendFile(path.join(__dirname, 'public', 'chat.html')));
 app.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
