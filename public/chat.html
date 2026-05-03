@@ -1023,21 +1023,21 @@ function autoR(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeig
 function timeAgo(d){const m=Math.floor((Date.now()-new Date(d).getTime())/60000);if(m<1)return'ahora';if(m<60)return m+'m';const h=Math.floor(m/60);if(h<24)return h+'h';return Math.floor(h/24)+'d';}
 function registerPush(userName){
   if(!('serviceWorker' in navigator)||!('PushManager' in window))return;
-const VAPID_PUBLIC='BDlJSFjneDf_h92fhwOlB15Lo2mO2SEWZeNeON2d2dOKgPiBpnCvHouhyf4lPZH9LbDxg14AcGYa3WCUvvz10yk';
-  navigator.serviceWorker.register('/sw.js').then(reg=>{
-    return Notification.requestPermission().then(perm=>{
-      if(perm!=='granted')return;
-      return reg.pushManager.subscribe({
-        userVisibleOnly:true,
-        applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC)
-      });
-    }).then(sub=>{
-      if(!sub)return;
-      return fetch('/api/push/subscribe',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({subscription:sub,userName})
-      });
+  const VAPID_PUBLIC='BDlJSFjneDf_h92fhwOlB15Lo2mO2SEWZeNeON2d2dOKgPiBpnCvHouhyf4lPZH9LbDxg14AcGYa3WCUvvz10yk';
+  navigator.serviceWorker.register('/sw.js').then(async reg=>{
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted')return;
+    // Borrar suscripción vieja antes de crear nueva
+    const existing=await reg.pushManager.getSubscription();
+    if(existing)await existing.unsubscribe();
+    const sub=await reg.pushManager.subscribe({
+      userVisibleOnly:true,
+      applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC)
+    });
+    await fetch('/api/push/subscribe',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({subscription:sub,userName})
     });
   }).catch(e=>console.warn('Push:',e));
 }
