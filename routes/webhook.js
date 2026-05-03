@@ -138,11 +138,8 @@ router.post('/whatsapp', async (req, res) => {
     if (!message) return res.sendStatus(200);
     const phone = message.from;
     const name = contact?.profile?.name || 'Cliente WhatsApp';
-    let text = message.text?.body || '';
-    if (!text && message.type === 'audio') {
-      text = await transcribirAudio(message.audio?.id);
-    }
-    if (!text) text = message.type || 'Mensaje de WhatsApp';
+let text = message.text?.body || '';
+    if (!text) text = message.type === 'audio' ? '🎤 [Mensaje de voz — escuchar en WhatsApp]' : message.type || 'Mensaje de WhatsApp';
     if (text.toUpperCase().includes('STOP')) {
       await pool.query(`UPDATE external_leads_pool SET excluded = true, excluded_reason = 'STOP request', status = 'excluded' WHERE phone LIKE $1`, [`%${phone.slice(-8)}%`]);
       await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
