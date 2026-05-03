@@ -1012,7 +1012,7 @@ function checkNewMsgs(msgs,leadId){
   const isIncoming=dir==='in'||dir==='inbound';
   if(isIncoming){
     // Only alert if this lead isn't the currently focused chat, or if page is hidden
-    if(leadId!==cLId||document.hidden){
+if(true){
       playAlert();
       // Also show browser notification if permitted
       showBrowserNotif(last,leadId);
