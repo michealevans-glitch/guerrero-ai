@@ -164,11 +164,9 @@ async function transcribirAudio(mediaId) {
     // Transcribir con Whisper
 const { OpenAI } = require('openai');
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const { Readable } = require('stream');
-    const stream = Readable.from(audioBlob);
-    stream.path = 'audio.ogg';
+    const file = new File([audioBlob], 'audio.ogg', { type: 'audio/ogg' });
     const transcription = await openai.audio.transcriptions.create({
-      file: stream,
+      file: file,
       model: 'whisper-1',
     });
     console.log(`🎤 Transcripción: ${transcription.text}`);
