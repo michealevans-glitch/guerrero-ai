@@ -18,8 +18,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);color:var(--tx);font-size:14px;}
-
-/* TOPBAR */
 #top{position:fixed;top:0;left:0;right:0;height:var(--H);background:#fff;border-bottom:1.5px solid var(--bd);display:flex;align-items:center;padding:0 12px;gap:7px;z-index:300;}
 .logo{font-weight:800;font-size:.98rem;white-space:nowrap;flex-shrink:0;}
 .sep{width:1px;height:20px;background:var(--bd);flex-shrink:0;}
@@ -37,8 +35,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .tb.fb{background:#1877f2;color:#fff;border-color:#1877f2;}
 .tb.meet{background:#34a853;color:#fff;border-color:#34a853;}
 #hbtn{display:none;background:none;border:none;cursor:pointer;font-size:1.3rem;padding:4px 8px;flex-shrink:0;}
-
-/* Mobile accordion menu */
 #mob-menu{display:none;position:fixed;top:var(--H);left:0;right:0;background:#fff;border-bottom:2px solid var(--bd);z-index:298;flex-direction:column;max-height:0;overflow:hidden;transition:max-height .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.15);}
 #mob-menu.open{max-height:600px;}
 .mm-btn{display:flex;align-items:center;gap:12px;padding:14px 20px;border:none;background:#fff;font-size:.92rem;font-weight:700;cursor:pointer;border-bottom:1px solid var(--bd);color:var(--tx);text-align:left;width:100%;transition:background .12s;-webkit-tap-highlight-color:transparent;}
@@ -48,8 +44,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .mm-btn.rd{color:var(--red);}
 .mm-btn.go{color:var(--gold);}
 .mm-btn.meet-btn{color:#34a853;}
-
-/* TABS */
 #ctabs{position:fixed;top:var(--H);left:0;right:0;height:var(--TH);background:var(--bg3);border-bottom:1.5px solid var(--bd);display:flex;align-items:flex-end;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;z-index:299;padding:0 6px;gap:3px;}
 #ctabs::-webkit-scrollbar{display:none;}
 .ctab{display:flex;align-items:center;gap:5px;padding:5px 10px 4px;border-radius:7px 7px 0 0;background:var(--bg3);border:1.5px solid transparent;border-bottom:none;cursor:pointer;font-size:.71rem;font-weight:700;white-space:nowrap;color:var(--tx2);transition:all .12s;flex-shrink:0;}
@@ -59,11 +53,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .ctab.on .ow{background:var(--bd);}
 .ctab .cx{background:none;border:none;cursor:pointer;color:var(--tx2);font-size:.7rem;padding:0 2px;}
 .ctab .cx:hover{color:var(--red);}
-
-/* MAIN */
 #main{position:fixed;top:calc(var(--H) + var(--TH));left:0;right:0;bottom:0;display:flex;overflow:hidden;}
-
-/* LEFT SIDEBAR */
 #lsb{width:var(--SW);min-width:var(--SW);background:#fff;border-right:1.5px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;}
 .sbnav{display:flex;border-bottom:1.5px solid var(--bd);flex-shrink:0;}
 .sbnav-b{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 4px;border:none;background:none;cursor:pointer;font-size:.74rem;font-weight:700;color:var(--tx2);border-bottom:2.5px solid transparent;transition:all .13s;}
@@ -97,8 +87,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .cist.cerrado,.cist.perdido,.cist.Lost{background:#fee2e2;color:#991b1b;}
 .citime{font-size:.61rem;color:var(--tx2);}
 .ciag{font-size:.63rem;color:var(--gd);margin-top:2px;}
-
-/* PERFILES */
 #pfpanel{display:none;flex-direction:column;flex:1;overflow:hidden;}
 #pfpanel.show{display:flex;}
 #pftop{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--bd);flex-shrink:0;}
@@ -114,8 +102,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .pb.trn{background:var(--blue);color:#fff;}.pb.cht{background:var(--tx);color:#fff;}
 .pb.nw{background:var(--pink);color:#fff;}
 .pfag{font-size:.64rem;color:var(--gd);margin-top:2px;}
-
-/* CHAT AREA */
 #carea{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0;}
 #cempty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--tx2);opacity:.4;}
 #cmain{display:none;flex-direction:column;flex:1;overflow:hidden;}
@@ -124,8 +110,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .chnm{font-weight:800;font-size:.96rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .chsb{font-size:.7rem;color:var(--pink);margin-top:1px;}
 .chtr{font-size:.67rem;color:var(--gold);font-style:italic;display:none;}
-.chacts{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.ca{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:7px;border:none;font-size:.72rem;font-weight:700;cursor:pointer;transition:opacity .13s;white-space:nowrap;}
+.chacts{display:flex;align-items:center;gap:6px;}
+.ca{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:7px;border:none;font-size:.72rem;font-weight:700;cursor:pointer;transition:opacity .13s;white-space:nowrap;flex-shrink:0;}
 .ca:hover{opacity:.82;}
 .ca.wa{background:var(--green);color:#fff;}
 .ca.rec{background:var(--yel);color:#fff;}
@@ -150,8 +136,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 #sendbtn:hover{background:var(--pd);}
 #sendbtn:active{transform:scale(.96);}
 #sendbtn:disabled{background:var(--bg3);color:var(--tx2);cursor:not-allowed;transform:none;}
-
-/* RIGHT PANEL — quick messages (chat only) */
 #rpanel{width:230px;min-width:230px;background:#fff;border-left:1.5px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;}
 .rphd{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1.5px solid var(--bd);flex-shrink:0;}
 .rptitle{font-size:.74rem;font-weight:800;color:var(--tx2);letter-spacing:.5px;}
@@ -160,7 +144,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .rptab{flex:1;padding:7px;text-align:center;font-size:.69rem;font-weight:700;border:none;background:none;cursor:pointer;color:var(--tx2);border-bottom:2.5px solid transparent;transition:all .12s;}
 .rptab.on{color:var(--blue);border-bottom-color:var(--blue);}
 #qlist{flex:1;overflow-y:auto;padding:7px;display:flex;flex-direction:column;gap:5px;}
-.qm{cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0.1);padding:8px 10px;border-radius:8px;background:var(--bg3);border:1.5px solid var(--bd);font-size:.74rem;color:var(--tx);cursor:pointer;transition:all .12s;line-height:1.4;display:flex;align-items:flex-start;gap:6px;user-select:none;}
+.qm{cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0.1);padding:8px 10px;border-radius:8px;background:var(--bg3);border:1.5px solid var(--bd);font-size:.74rem;color:var(--tx);transition:all .12s;line-height:1.4;display:flex;align-items:flex-start;gap:6px;user-select:none;}
 .qm:hover{background:#f0fdf4;border-color:var(--green);}
 .qm:active{transform:scale(.98);}
 .qi{flex-shrink:0;font-size:.87rem;}
@@ -174,8 +158,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .eqi .del{background:none;border:none;color:var(--red);cursor:pointer;font-size:.9rem;flex-shrink:0;}
 .eqadd{margin:7px;background:var(--bg3);border:1.5px dashed var(--bd);border-radius:8px;padding:8px;font-size:.73rem;color:var(--tx2);cursor:pointer;text-align:center;transition:all .12s;}
 .eqadd:hover{border-color:var(--green);color:var(--gd);}
-
-/* Mobile quick messages bottom sheet */
 #mob-q-panel{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--bd);z-index:201;max-height:60vh;overflow-y:auto;border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.15);transform:translateY(100%);transition:transform .25s ease;}
 #mob-q-panel.open{transform:translateY(0);}
 #mob-q-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd);font-size:.82rem;font-weight:800;color:var(--tx2);position:sticky;top:0;background:#fff;}
@@ -187,16 +169,18 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .mob-qm{padding:13px 16px;border-radius:12px;background:var(--bg3);border:1.5px solid var(--bd);font-size:.86rem;color:var(--tx);cursor:pointer;transition:all .12s;line-height:1.5;display:flex;align-items:flex-start;gap:12px;-webkit-tap-highlight-color:transparent;}
 .mob-qm:active{background:#f0fdf4;border-color:var(--green);transform:scale(.98);}
 .mob-qi{flex-shrink:0;font-size:1.2rem;}
-
-/* PAGES */
+/* BUBBLE SIDEBAR */
+#bubble-bar{display:none;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:150;flex-direction:column;gap:8px;padding:8px 4px;}
+.bubble-item{width:44px;height:44px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.3);border:2.5px solid #fff;transition:transform .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
+.bubble-item:active{transform:scale(.88);}
+.bubble-new{background:var(--blue);animation:bpulse 1.5s infinite;}
+.bubble-active{background:var(--green);}
 .page{display:none;flex:1;flex-direction:column;overflow:hidden;background:var(--bg);}
 .page.show{display:flex;}
 .pgtop{background:#fff;border-bottom:1.5px solid var(--bd);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .pgtop h2{font-size:.9rem;font-weight:800;display:flex;align-items:center;gap:6px;}
 .vbdg{background:linear-gradient(135deg,#d4a017,#f59e0b);color:#fff;font-size:.56rem;font-weight:800;padding:2px 7px;border-radius:10px;letter-spacing:1px;}
 .backbtn{margin-left:auto;padding:4px 12px;border-radius:7px;border:1.5px solid var(--bd);background:#fff;color:var(--tx2);font-size:.7rem;font-weight:700;cursor:pointer;}
-
-/* CHARTS — full width, no right panel, info notes small */
 .chgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;padding:14px;overflow-y:auto;flex:1;}
 .cc{background:#fff;border-radius:var(--r);padding:14px 16px;border:1.5px solid var(--bd);box-shadow:var(--sh);}
 .cc h3{font-size:.8rem;font-weight:700;color:var(--tx2);margin-bottom:12px;display:flex;align-items:center;gap:5px;}
@@ -219,8 +203,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .aibox{margin:0 14px 14px;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#e2e8f0;border-radius:var(--r);padding:14px 16px;font-size:.77rem;line-height:1.6;flex-shrink:0;}
 .aibox h3{color:var(--gold);margin-bottom:7px;font-size:.8rem;}
 #aiaskbtn{margin:0 14px 14px;background:linear-gradient(135deg,var(--pink),#c2177a);color:#fff;border:none;border-radius:22px;padding:11px;font-size:.8rem;font-weight:700;cursor:pointer;width:calc(100% - 28px);flex-shrink:0;}
-
-/* VISION */
 .visgrid{padding:13px;overflow-y:auto;flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:13px;}
 .vac{background:#fff;border-radius:var(--r);padding:14px;border:1.5px solid var(--bd);box-shadow:var(--sh);border-left:4px solid var(--green);}
 .vac.off{border-left-color:var(--bd);opacity:.65;}
@@ -229,8 +211,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .vnm{font-weight:800;font-size:.85rem;}.vrl{font-size:.66rem;color:var(--tx2);}
 .vcnt{margin-left:auto;background:var(--green);color:#fff;border-radius:20px;padding:2px 9px;font-size:.72rem;font-weight:700;}
 .vcl{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border-radius:7px;padding:5px 8px;margin-bottom:4px;font-size:.74rem;}
-
-/* EMPLOYEES — full width, no right panel */
 .emplay{display:flex;flex:1;overflow:hidden;}
 .empsb{width:220px;background:#fff;border-right:1.5px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;}
 .empsbhd{padding:12px;font-size:.75rem;font-weight:700;color:var(--tx2);border-bottom:1px solid var(--bd);}
@@ -241,7 +221,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .empca{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .empcahd{background:#fff;border-bottom:1.5px solid var(--bd);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .empchd-nm{font-weight:700;font-size:.88rem;}
-/* Meet button inside employees */
 .meet-in-chat{background:#34a853;color:#fff;border:none;border-radius:20px;padding:5px 12px;font-size:.72rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;}
 .meet-in-chat:hover{opacity:.85;}
 .empms{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;}
@@ -249,21 +228,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .empin input{flex:1;padding:8px 14px;border-radius:22px;border:1.5px solid var(--bd);background:var(--bg3);font-size:.84rem;outline:none;}
 .empin input:focus{border-color:var(--pink);background:#fff;}
 .empsnd{background:var(--pink);color:#fff;border:none;border-radius:22px;padding:8px 16px;font-size:.77rem;font-weight:700;cursor:pointer;}
-
-/* Meet notification message */
 .meet-msg{background:linear-gradient(135deg,#34a853,#1a7a3a);color:#fff;border-radius:12px;padding:12px 16px;font-size:.8rem;line-height:1.5;}
 .meet-msg a{color:#90ee90;font-weight:700;}
 .meet-msg .meet-ttl{font-weight:800;font-size:.85rem;margin-bottom:4px;}
-
-/* Facebook */
 .fbarea{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;}
 .fbcard{background:#fff;border-radius:var(--r);padding:14px 16px;border:1.5px solid var(--bd);box-shadow:var(--sh);}
 .fbcard h3{font-size:.81rem;font-weight:800;margin-bottom:10px;}
 .fbsetup{background:linear-gradient(135deg,#1877f2,#0d47a1);color:#fff;border-radius:var(--r);padding:16px;font-size:.77rem;line-height:1.6;}
 .fbsetup h3{color:#fff;margin-bottom:8px;}
 .fbsetup code{background:rgba(255,255,255,.15);padding:2px 6px;border-radius:4px;font-size:.71rem;font-family:monospace;}
-
-/* User selector */
 #usersel{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
 #usercard{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:340px;box-shadow:0 8px 40px rgba(0,0,0,.2);}
 #usercard h2{font-size:1rem;font-weight:800;margin-bottom:4px;}
@@ -272,8 +245,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .useropt:hover{border-color:var(--pink);background:#fdf2f8;}
 .uav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;}
 .unm{font-weight:700;font-size:.86rem;}.url{font-size:.68rem;color:var(--tx2);}
-
-/* Modals */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;padding:16px;}
 .ov.show{display:flex;}
 .modal{background:#fff;border-radius:14px;padding:20px;width:100%;max-width:375px;box-shadow:0 8px 40px rgba(0,0,0,.18);max-height:90dvh;overflow-y:auto;}
@@ -286,16 +257,13 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .mb.pk{background:var(--pink);color:#fff;}.mb.gr{background:var(--green);color:#fff;}
 .mb.bl{background:var(--blue);color:#fff;}.mb.cn{background:var(--bg3);color:var(--tx2);}
 .mb.rd{background:var(--red);color:#fff;}
-
-/* Toast */
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:8px 18px;border-radius:22px;font-size:.75rem;z-index:2000;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);}
 #toast.show{display:block;animation:fu .2s ease;}
 @keyframes fu{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
 .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:rot .6s linear infinite;vertical-align:middle;}
 @keyframes rot{to{transform:rotate(360deg);}}
+@keyframes bpulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.7);}50%{box-shadow:0 0 0 9px rgba(59,130,246,0);}}
 ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:10px;}
-
-/* MOBILE */
 @media(max-width:768px){
   :root{--H:52px;--TH:0px;}
   #topuser,.sep,#topbtns{display:none!important;}
@@ -307,17 +275,18 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
   #carea{position:absolute;top:0;left:0;right:0;bottom:0;display:none!important;z-index:6;}
   body.chatopen #lsb{display:none!important;}
   body.chatopen #carea{display:flex!important;}
+  body.chatopen #bubble-bar{display:flex;}
   #rpanel{display:none!important;}
   #mob-q-panel{display:block;}
-  .chacts{gap:5px;flex-wrap:nowrap;overflow-x:auto;}
-  .ca{padding:7px 10px;font-size:.75rem;}
+  .chacts{gap:5px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .chacts::-webkit-scrollbar{display:none;}
+  .ca{padding:7px 10px;font-size:.75rem;flex-shrink:0;}
   .ca .lbl{display:none;}
   #msginp{font-size:16px;padding:10px 14px;}
   #sendbtn{padding:10px 16px;}
   #inparea{padding:10px 12px;gap:8px;}
   .chgrid,.visgrid{grid-template-columns:1fr;}
   .empsb{width:150px;}
-  /* Pages full width on mobile */
   .page.show{position:absolute;top:0;left:0;right:0;bottom:0;z-index:10;}
   .pgtop .backbtn{display:flex;}
 }
@@ -325,7 +294,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 </head>
 <body>
 
-<!-- USER SELECTOR -->
 <div id="usersel">
   <div id="usercard">
     <h2>⚔️ Guerrero AI</h2>
@@ -349,7 +317,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
   </div>
 </div>
 
-<!-- TOPBAR -->
 <div id="top">
   <button id="hbtn" onclick="togMobMenu()">☰</button>
   <div class="logo">⚔️ GUERRERO AI</div>
@@ -372,7 +339,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
   </div>
 </div>
 
-<!-- MOBILE ACCORDION MENU -->
 <div id="mob-menu">
   <button class="mm-btn" onclick="closeMobMenu();showPage('chat')"><span class="mm-icon">💬</span> Mis Chats</button>
   <button class="mm-btn" onclick="closeMobMenu();goPerfiles()"><span class="mm-icon">👥</span> Perfiles / Base de datos</button>
@@ -386,13 +352,10 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
   <button class="mm-btn rd" onclick="doLogout()"><span class="mm-icon">🚪</span> Salir</button>
 </div>
 
-<!-- TABS (desktop) -->
 <div id="ctabs"></div>
+<div id="bubble-bar"></div>
 
-<!-- MAIN -->
 <div id="main">
-
-  <!-- LEFT SIDEBAR -->
   <div id="lsb">
     <div class="sbnav">
       <button class="sbnav-b on" id="sn-chat" onclick="setSbM('chat')">💬 Chat</button>
@@ -419,7 +382,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
     </div>
   </div>
 
-  <!-- CHAT AREA -->
   <div id="carea">
     <div id="cempty">
       <div style="font-size:2rem">💬</div>
@@ -444,7 +406,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
       </div>
       <div id="msgs"></div>
       <div id="inparea">
-        <!-- Mobile: quick messages button -->
         <button id="mob-q-btn" onclick="togMobQ()" style="display:none;background:var(--blue);color:#fff;border:none;border-radius:22px;padding:9px 12px;font-size:.78rem;font-weight:700;cursor:pointer;flex-shrink:0;">💬</button>
         <textarea id="msginp" placeholder="Escribe un mensaje..." rows="1"
           oninput="autoR(this)"
@@ -455,7 +416,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
     </div>
   </div>
 
-  <!-- RIGHT PANEL — only shows in chat, hidden in other pages -->
   <div id="rpanel">
     <div class="rphd">
       <span class="rptitle">MENSAJES</span>
@@ -465,7 +425,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
       <button class="rptab on" id="rpt-r" onclick="setRpT('rapidos',this)">Rápidos</button>
       <button class="rptab" id="rpt-p" onclick="setRpT('plantillas',this)">Plantillas</button>
     </div>
- <div id="qlist" onclick="var q=event.target.closest('.qm');if(q)useQ(q.getAttribute('data-txt'));" ontouchend="var q=event.target.closest('.qm');if(q){event.preventDefault();useQ(q.getAttribute('data-txt'));}"></div>
+    <div id="qlist" onclick="var q=event.target.closest('.qm');if(q)useQ(q.getAttribute('data-txt'));" ontouchend="var q=event.target.closest('.qm');if(q){event.preventDefault();useQ(q.getAttribute('data-txt'));}"></div>
     <div id="editqpanel">
       <div class="eqhd"><span>Editar mensajes</span><button onclick="saveEditQ()">✅ Guardar</button></div>
       <div id="eqlist"></div>
@@ -473,7 +433,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
     </div>
   </div>
 
-  <!-- CHARTS — no right panel, full width -->
   <div class="page" id="page-charts">
     <div class="pgtop">
       <h2>📊 Charts <span class="vbdg">VIP</span></h2>
@@ -481,17 +440,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
       <button class="backbtn" onclick="showPage('chat')">← Volver</button>
     </div>
     <div class="chgrid" id="chgrid"></div>
-    <div class="aibox"><h3>🤖 Análisis AI — Recomendación del día</h3><div id="aitxt">Cargando análisis...</div></div>
+    <div class="aibox"><h3>🤖 Análisis AI</h3><div id="aitxt">Cargando análisis...</div></div>
     <button id="aiaskbtn" onclick="openModal('modal-chartsask')">🤖 Pedirle análisis al AI ahora</button>
   </div>
 
-  <!-- VISION — full width -->
   <div class="page" id="page-vision">
     <div class="pgtop"><h2>👁️ Visión en Vivo <span class="vbdg">VIP</span></h2><span style="font-size:.69rem;color:var(--tx2)">Actualiza cada 15s</span><button class="backbtn" onclick="showPage('chat')">← Volver</button></div>
     <div class="visgrid" id="visgrid"></div>
   </div>
 
-  <!-- EMPLOYEES — no quick messages, full space, Meet button -->
   <div class="page" id="page-employees">
     <div class="pgtop">
       <h2>💬 Chat Empleados</h2>
@@ -522,7 +479,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
     </div>
   </div>
 
-  <!-- FACEBOOK -->
   <div class="page" id="page-facebook">
     <div class="pgtop"><h2>📘 Facebook / Meta</h2><button class="backbtn" onclick="showPage('chat')">← Volver</button></div>
     <div class="fbarea">
@@ -535,10 +491,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
       </div>
     </div>
   </div>
+</div>
 
-</div><!-- /main -->
-
-<!-- MOBILE QUICK MESSAGES BOTTOM SHEET -->
 <div id="mob-q-panel">
   <div id="mob-q-head">
     <span>💬 Mensajes Rápidos</span>
@@ -553,7 +507,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 
 <div id="toast"></div>
 
-<!-- MODALS -->
 <div class="ov" id="modal-newlead">
   <div class="modal">
     <h3>➕ Nuevo Cliente</h3>
@@ -600,48 +553,21 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 </div>
 
 <script>
-// ============================================================
-// GUERRERO AI v5.6
-// Charts full space · Employees no quick msgs · Google Meet
-// Mobile accordion menu fixed · All buttons work
-// ============================================================
+// GUERRERO AI v5.7 — Bubbles + Scroll buttons + Soledad no War Room
 const API='';
 const ADMINS=['micheal evans','micheal','papa','papá'];
 const CAN_TR=['micheal evans','micheal','papa','papá','soledad'];
 const EMPLOYEES=['Micheal Evans','Papá','Soledad'];
-const ALBALUMEN_EMAIL='albalumen@gmail.com'; // Change to real Gmail
-
 const DQR={
   ALBALUMEN:{
-    rapidos:[
-      {i:'🕊️',t:'Sentimos mucho su pérdida. Estamos aquí para ayudarle.'},
-      {i:'✅',t:'Con gusto le atiendo.'},
-      {i:'📞',t:'¿Puede llamarnos? +506 7046-9290'},
-      {i:'⏳',t:'Un momento, le confirmo.'},
-      {i:'🚗',t:'Ya enviamos a recoger a su familiar.'},
-      {i:'💐',t:'¿Necesita capilla ardiente o cremación?'}
-    ],
-    plantillas:[
-      {i:'📋',t:'Estimado cliente, lamentamos la pérdida de su ser querido. Nuestro equipo está disponible 24/7.'},
-      {i:'💼',t:'Le compartimos nuestros servicios y paquetes disponibles.'}
-    ]
+    rapidos:[{i:'🕊️',t:'Sentimos mucho su pérdida. Estamos aquí para ayudarle.'},{i:'✅',t:'Con gusto le atiendo.'},{i:'📞',t:'¿Puede llamarnos? +506 7046-9290'},{i:'⏳',t:'Un momento, le confirmo.'},{i:'🚗',t:'Ya enviamos a recoger a su familiar.'},{i:'💐',t:'¿Necesita capilla ardiente o cremación?'}],
+    plantillas:[{i:'📋',t:'Estimado cliente, lamentamos la pérdida de su ser querido. Nuestro equipo está disponible 24/7.'},{i:'💼',t:'Le compartimos nuestros servicios y paquetes disponibles.'}]
   },
   HUELLITAS:{
-    rapidos:[
-      {i:'🐾',t:'Sentimos mucho la pérdida de su mascota.'},
-      {i:'✅',t:'Con gusto le ayudo.'},
-      {i:'📞',t:'¿Puede llamarnos? +506 7046-9290'},
-      {i:'⏳',t:'Un momento, le confirmo.'},
-      {i:'🐶',t:'¿Cuál es el peso aproximado de su mascota?'},
-      {i:'🚗',t:'Ya enviamos a recoger a su mascota.'}
-    ],
-    plantillas:[
-      {i:'🐾',t:'Estimado cliente, lamentamos la pérdida de su mascota. Les acompañamos.'},
-      {i:'📦',t:'Contamos con urnas y servicios de cremación individual o colectiva.'}
-    ]
+    rapidos:[{i:'🐾',t:'Sentimos mucho la pérdida de su mascota.'},{i:'✅',t:'Con gusto le ayudo.'},{i:'📞',t:'¿Puede llamarnos? +506 7046-9290'},{i:'⏳',t:'Un momento, le confirmo.'},{i:'🐶',t:'¿Cuál es el peso aproximado de su mascota?'},{i:'🚗',t:'Ya enviamos a recoger a su mascota.'}],
+    plantillas:[{i:'🐾',t:'Estimado cliente, lamentamos la pérdida de su mascota. Les acompañamos.'},{i:'📦',t:'Contamos con urnas y servicios de cremación individual o colectiva.'}]
   }
 };
-
 let cUser=null,isAdmin=false,cLId=null,cLead=null;
 let allLeads=[],openTabs=[],asgT=null,trLId=null;
 let filt='todos',bizF='all',sbMode='chat',rpT='rapidos',mobRpT='rapidos';
@@ -649,26 +575,21 @@ let pollTmr=null,empT=null,empMsgs={},editingQ=false;
 let customQR=null,mobMenuOpen=false,mobQOpen=false;
 
 function isMob(){return window.innerWidth<=768;}
-// ── BUBBLE SIDEBAR ────────────────────────────────────────────
+
+// ── BUBBLES ───────────────────────────────────────────────────
 function renderBubbles(){
-  if(!isMob()||!cLId)return;
-  let el=document.getElementById('bubble-bar');
-  if(!el){
-    el=document.createElement('div');
-    el.id='bubble-bar';
-    el.style.cssText='position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:150;display:flex;flex-direction:column;gap:8px;padding:8px 4px;';
-    document.body.appendChild(el);
-  }
+  const bar=document.getElementById('bubble-bar');
+  if(!bar)return;
+  if(!isMob()||!cLId){bar.innerHTML='';return;}
   const others=allLeads.filter(l=>l.id!==cLId&&(l.status==='New'||l.status==='activo'||l.status==='nuevo'||l.status==='In-Progress')).slice(0,6);
-  if(!others.length){el.innerHTML='';return;}
-  el.innerHTML=others.map(l=>{
+  if(!others.length){bar.innerHTML='';return;}
+  bar.innerHTML=others.map(l=>{
     const nm=(l.contact_name||'?')[0].toUpperCase();
     const isNew=l.status==='New'||l.status==='nuevo';
-    const color=isNew?'#3b82f6':'#22c55e';
-    const pulse=isNew?'animation:bpulse 1.5s infinite;':'';
-    return`<div onclick="openChat(${l.id})" style="width:42px;height:42px;border-radius:50%;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.25);${pulse}border:2px solid #fff;" title="${l.contact_name||'Cliente'}">${nm}</div>`;
+    return`<div class="bubble-item ${isNew?'bubble-new':'bubble-active'}" onclick="openChat(${l.id})" title="${escH(l.contact_name||'Cliente')}">${nm}</div>`;
   }).join('');
-}  
+}
+
 function loadCQR(){try{const s=localStorage.getItem('gu_qr');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DQR));}
 function saveCQR(){localStorage.setItem('gu_qr',JSON.stringify(customQR));}
 
@@ -679,8 +600,12 @@ function setUser(name,color,initial){
   localStorage.setItem('gu_user',name);
   document.getElementById('topuser').innerHTML=`<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:20px;height:20px;border-radius:50%;background:${color};color:#fff;font-size:.65rem;font-weight:800;display:inline-flex;align-items:center;justify-content:center">${initial}</span>${name}</span>`;
   document.getElementById('usersel').style.display='none';
-  ['tbcharts','tbvision','btnwr'].forEach(id=>document.getElementById(id).style.display=isAdmin?'':'none');
-  ['mm-charts','mm-vision','mm-btnwr'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isAdmin?'':'none';});
+  // Charts/Vision — admin only
+  ['tbcharts','tbvision'].forEach(id=>document.getElementById(id).style.display=isAdmin?'':'none');
+  ['mm-charts','mm-vision'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isAdmin?'':'none';});
+  // War Room — admin only (Soledad excluded)
+  const wr=document.getElementById('btnwr');if(wr)wr.style.display=isAdmin?'':'none';
+  const mmwr=document.getElementById('mm-btnwr');if(mmwr)mmwr.style.display=isAdmin?'':'none';
   loadData();startPoll();renderEmpLs();renderQL();renderMobQ();
   showToast('✅ Bienvenido, '+name);
 }
@@ -688,104 +613,55 @@ function doLogout(){
   localStorage.removeItem('gu_user');cUser=null;isAdmin=false;cLId=null;cLead=null;openTabs=[];
   document.getElementById('usersel').style.display='flex';
   ['tbcharts','tbvision','btnwr'].forEach(id=>document.getElementById(id).style.display='none');
-  closeChat();document.getElementById('ctabs').innerHTML='';
+  closeChat();document.getElementById('ctabs').innerHTML='';renderBubbles();
 }
 window.addEventListener('DOMContentLoaded',()=>{
   customQR=loadCQR();
   const s=localStorage.getItem('gu_user');
   if(s){const C={'Micheal Evans':'#1a1a1a','Papá':'#2563eb','Soledad':'#e91e8c'};const I={'Micheal Evans':'M','Papá':'P','Soledad':'S'};setUser(s,C[s]||'#f59e0b',I[s]||'E');}
   else{renderQL();renderMobQ();}
-  // Show mobile quick btn in input
-  const mqb=document.getElementById('mob-q-btn');
-  if(mqb)mqb.style.display=isMob()?'flex':'none';
-  const mb=document.getElementById('mob-back');
-  if(mb)mb.style.display=isMob()?'flex':'none';
+  const mqb=document.getElementById('mob-q-btn');if(mqb)mqb.style.display=isMob()?'flex':'none';
+  const mb=document.getElementById('mob-back');if(mb)mb.style.display=isMob()?'flex':'none';
 });
 
-// ── MOBILE MENU ───────────────────────────────────────────────
-function togMobMenu(){
-  mobMenuOpen=!mobMenuOpen;
-  document.getElementById('mob-menu').classList.toggle('open',mobMenuOpen);
-}
-function closeMobMenu(){
-  mobMenuOpen=false;
-  document.getElementById('mob-menu').classList.remove('open');
-}
-// Close menu when clicking outside
+function togMobMenu(){mobMenuOpen=!mobMenuOpen;document.getElementById('mob-menu').classList.toggle('open',mobMenuOpen);}
+function closeMobMenu(){mobMenuOpen=false;document.getElementById('mob-menu').classList.remove('open');}
 document.addEventListener('click',e=>{
-  const menu=document.getElementById('mob-menu');
-  const hbtn=document.getElementById('hbtn');
+  const menu=document.getElementById('mob-menu'),hbtn=document.getElementById('hbtn');
   if(mobMenuOpen&&!menu.contains(e.target)&&!hbtn.contains(e.target))closeMobMenu();
 });
 
-// ── MOBILE QUICK MESSAGES ─────────────────────────────────────
-function togMobQ(){
-  mobQOpen=!mobQOpen;
-  document.getElementById('mob-q-panel').classList.toggle('open',mobQOpen);
-  if(mobQOpen)renderMobQ();
-}
+function togMobQ(){mobQOpen=!mobQOpen;document.getElementById('mob-q-panel').classList.toggle('open',mobQOpen);if(mobQOpen)renderMobQ();}
 function closeMobQ(){mobQOpen=false;document.getElementById('mob-q-panel').classList.remove('open');}
 function setMobRpT(m,el){mobRpT=m;document.querySelectorAll('.mob-rptab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');renderMobQ();}
 function renderMobQ(){
   const k=getBK();const src=customQR||DQR;
   const items=(src[k]||DQR[k])[mobRpT]||(src[k]||DQR[k]).rapidos||[];
-  const el=document.getElementById('mob-q-list');
-  if(!el)return;
-el.innerHTML=items.map((m,i)=>`<div class="mob-qm" data-idx="${i}" ontouchend="event.preventDefault();event.stopPropagation();handleMobQ(${i})" onclick="handleMobQ(${i})"><span class="mob-qi">${m.i}</span>${escH(m.t)}</div>`).join('');
+  const el=document.getElementById('mob-q-list');if(!el)return;
+  el.innerHTML=items.map((m,i)=>`<div class="mob-qm" data-idx="${i}" ontouchend="event.preventDefault();event.stopPropagation();handleMobQ(${i})" onclick="handleMobQ(${i})"><span class="mob-qi">${m.i}</span>${escH(m.t)}</div>`).join('');
 }
-  function handleMobQ(idx){
-  const k=getBK();
-  const src=customQR||DQR;
+function handleMobQ(idx){
+  const k=getBK();const src=customQR||DQR;
   const items=(src[k]||DQR[k])[mobRpT]||(src[k]||DQR[k]).rapidos||[];
-  const item=items[idx];
-  if(!item)return;
+  const item=items[idx];if(!item)return;
   if(!cLId){showToast('⚠️ Abre un chat primero');return;}
-  closeMobQ();
-  setTimeout(()=>sendMsg(String(item.t)),350);
+  closeMobQ();setTimeout(()=>sendMsg(String(item.t)),350);
 }
-function useQMob(text){
-  if(!cLId){showToast('⚠️ Abre un chat primero');return;}
-  closeMobQ();
-  setTimeout(()=>{
-    sendMsg(String(text));
-  },350);
-}
+function useQMob(text){if(!cLId){showToast('⚠️ Abre un chat primero');return;}closeMobQ();setTimeout(()=>sendMsg(String(text)),350);}
 
-// ── GOOGLE MEET ───────────────────────────────────────────────
 function createMeet(){
-  // Generate a unique Meet link via Google Meet URL
-  // This opens Google Meet new meeting — works with any Google account
-  const meetUrl='https://meet.google.com/new';
-  const win=window.open(meetUrl,'_blank');
-  // Copy link instruction
-  showToast('📹 Google Meet abierto — copia el link y compártelo con tu equipo');
-  // Also send as message in employee chat if one is open
-  if(empT){
-    const link='https://meet.google.com/new';
-    if(!empMsgs[empT])empMsgs[empT]=[];
-    empMsgs[empT].push({
-      from:cUser||'Sistema',
-      t:`📹 Reunión Google Meet\nÚnete aquí: ${link}\nHaz click en el link para entrar`,
-      time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}),
-      isMeet:true
-    });
-    renderEmpMsgs(empT);
-  }
+  window.open('https://meet.google.com/new','_blank');
+  showToast('📹 Google Meet abierto — copia el link y compártelo');
+  if(empT){if(!empMsgs[empT])empMsgs[empT]=[];empMsgs[empT].push({from:cUser||'Sistema',t:'📹 Reunión Google Meet\nÚnete aquí: https://meet.google.com/new',time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}),isMeet:true});renderEmpMsgs(empT);}
 }
-function sendMeetToEmp(){
-  if(!empT){showToast('Selecciona un compañero primero');return;}
-  createMeet();
-}
+function sendMeetToEmp(){if(!empT){showToast('Selecciona un compañero primero');return;}createMeet();}
 
-// ── DATA ──────────────────────────────────────────────────────
 async function loadData(){
   if(!cUser)return;
   try{
-    const r=await fetch(`${API}/api/leads`);
-    if(!r.ok)throw new Error(r.status);
-    const d=await r.json();
-    allLeads=Array.isArray(d)?d:(d.leads||d.data||[]);
-    renderCvList();renderPfList();renderTabs();
+    const r=await fetch(`${API}/api/leads`);if(!r.ok)throw new Error(r.status);
+    const d=await r.json();allLeads=Array.isArray(d)?d:(d.leads||d.data||[]);
+    renderCvList();renderPfList();renderTabs();renderBubbles();
     if(document.getElementById('page-vision').classList.contains('show'))renderVision();
     if(document.getElementById('page-charts').classList.contains('show'))renderCharts();
   }catch(e){console.error('loadData:',e);}
@@ -795,7 +671,6 @@ function startPoll(){
   pollTmr=setInterval(async()=>{await loadData();if(cLId)loadMsgs(cLId,false);},15000);
 }
 
-// ── BIZ / FILTER / SIDEBAR ────────────────────────────────────
 function setBiz(b){bizF=b;document.getElementById('bt-alb').classList.toggle('on',b==='albalumen');document.getElementById('bt-hue').classList.toggle('on',b==='huellitas');renderCvList();renderPfList();renderQL();renderMobQ();}
 function setF(f,el){filt=f;document.querySelectorAll('.fp').forEach(p=>p.classList.remove('on'));if(el)el.classList.add('on');renderCvList();}
 function setSbM(m){
@@ -809,10 +684,8 @@ function setSbM(m){
 function goPerfiles(){setSbM('perfiles');showPage('chat');}
 function srchC(q){renderCvList(q);}function srchP(q){renderPfList(q);}
 
-// ── CONV LIST ─────────────────────────────────────────────────
 function renderCvList(q=''){
-  const el=document.getElementById('cvlist');
-  let ls=[...allLeads];
+  const el=document.getElementById('cvlist');let ls=[...allLeads];
   if(bizF==='albalumen')ls=ls.filter(l=>(l.business||'').toLowerCase().includes('alb')||(l.business||'')==='');
   if(bizF==='huellitas')ls=ls.filter(l=>(l.business||'').toLowerCase().includes('hue')||(l.business||'').toLowerCase().includes('mascot'));
   if(!isAdmin)ls=ls.filter(l=>(l.claimed_by||'').toLowerCase()===(cUser||'').toLowerCase());
@@ -822,12 +695,8 @@ function renderCvList(q=''){
   if(q){const v=q.toLowerCase();ls=ls.filter(l=>(l.contact_name||'').toLowerCase().includes(v)||(l.phone||'').includes(v));}
   if(!ls.length){el.innerHTML='<div style="padding:18px;text-align:center;font-size:.75rem;color:var(--tx2);opacity:.6">Sin conversaciones.</div>';return;}
   el.innerHTML=ls.map(l=>{
-    const nm=l.contact_name||'Sin nombre';
-    const biz=(l.business||'albalumen').toLowerCase();
-    const isH=biz.includes('hue')||biz.includes('mascot');
-    const st=l.status||'New';
-    const ag=l.claimed_by||'';
-    const t=l.updated_at?timeAgo(l.updated_at):'';
+    const nm=l.contact_name||'Sin nombre';const biz=(l.business||'albalumen').toLowerCase();
+    const isH=biz.includes('hue')||biz.includes('mascot');const st=l.status||'New';const ag=l.claimed_by||'';const t=l.updated_at?timeAgo(l.updated_at):'';
     const dc=st==='activo'||st==='In-Progress'||st==='active'?'var(--green)':st==='cerrado'||st==='Lost'||st==='perdido'?'var(--red)':'var(--blue)';
     return`<div class="ci${cLId===l.id?' on':''}" onclick="openChat(${l.id})">
       <div><span class="cbiz ${isH?'hue':'alb'}">${isH?'🐾 HUELLITAS':'🕊️ ALBALUMEN'}</span></div>
@@ -839,16 +708,12 @@ function renderCvList(q=''){
   }).join('');
 }
 
-// ── PERFILES ──────────────────────────────────────────────────
 function renderPfList(q=''){
-  const el=document.getElementById('pflist');
-  let ls=[...allLeads];
+  const el=document.getElementById('pflist');let ls=[...allLeads];
   if(q){const v=q.toLowerCase();ls=ls.filter(l=>(l.contact_name||'').toLowerCase().includes(v)||(l.phone||'').includes(v));}
   if(!ls.length){el.innerHTML='<div style="padding:18px;text-align:center;font-size:.75rem;color:var(--tx2);opacity:.6">Sin perfiles.</div>';return;}
   el.innerHTML=ls.map(l=>{
-    const nm=l.contact_name||'Sin nombre';
-    const ag=l.claimed_by;
-    const canT=isAdmin||CAN_TR.includes((cUser||'').toLowerCase());
+    const nm=l.contact_name||'Sin nombre';const ag=l.claimed_by;const canT=isAdmin||CAN_TR.includes((cUser||'').toLowerCase());
     return`<div class="pfi">
       <div class="pfnm">${escH(nm)}</div>
       <div class="pfph">📱 ${l.phone||'—'} · <span class="cist ${l.status||'New'}" style="display:inline-block">${l.status||'New'}</span></div>
@@ -863,170 +728,114 @@ function renderPfList(q=''){
   }).join('');
 }
 
-// ── TABS ──────────────────────────────────────────────────────
 function renderTabs(){
   if(isMob())return;
   openTabs=openTabs.filter(id=>allLeads.some(l=>l.id===id));
   if(cLId&&!openTabs.includes(cLId))openTabs.push(cLId);
-  const bar=document.getElementById('ctabs');
-  if(!openTabs.length){bar.innerHTML='';return;}
+  const bar=document.getElementById('ctabs');if(!openTabs.length){bar.innerHTML='';return;}
   bar.innerHTML=openTabs.map(id=>{
     const l=allLeads.find(x=>x.id===id);if(!l)return'';
-    return`<div class="ctab${cLId===id?' on':''}" onclick="openChat(${id})">
-      ${escH(l.contact_name||id)} <span class="ow">${l.claimed_by||'—'}</span>
-      <button class="cx" onclick="event.stopPropagation();closeTab(${id})">—</button>
-    </div>`;
+    return`<div class="ctab${cLId===id?' on':''}" onclick="openChat(${id})">${escH(l.contact_name||id)} <span class="ow">${l.claimed_by||'—'}</span><button class="cx" onclick="event.stopPropagation();closeTab(${id})">—</button></div>`;
   }).join('');
 }
 function closeTab(id){openTabs=openTabs.filter(x=>x!==id);if(cLId===id)closeChat();else renderTabs();}
 
-// ── OPEN / CLOSE CHAT ─────────────────────────────────────────
 async function openChat(id){
   if(!cUser){showToast('Selecciona tu perfil');return;}
-  closeMobMenu();
-  cLId=id;cLead=allLeads.find(l=>l.id===id)||null;
+  closeMobMenu();cLId=id;cLead=allLeads.find(l=>l.id===id)||null;
   if(!openTabs.includes(id))openTabs.push(id);
   renderTabs();renderCvList();
-  // Show right panel only for chat
-  document.getElementById('rpanel').style.display='';
-  showPage('chat');
-  document.getElementById('cempty').style.display='none';
-  document.getElementById('cmain').style.display='flex';
-  const nm=cLead?.contact_name||'Cliente';
-  const st=cLead?.status||'New';
-  const ph=cLead?.phone||'';
-  const src=cLead?.service_type||cLead?.source||'';
-  const ag=cLead?.claimed_by||'';
+  document.getElementById('rpanel').style.display='';showPage('chat');
+  document.getElementById('cempty').style.display='none';document.getElementById('cmain').style.display='flex';
+  const nm=cLead?.contact_name||'Cliente',st=cLead?.status||'New',ph=cLead?.phone||'',src=cLead?.service_type||cLead?.source||'',ag=cLead?.claimed_by||'';
   document.getElementById('chnm').textContent=nm;
   document.getElementById('chsb').textContent=`${ph}${src?' · '+src:''} · ${st}${ag?' · 👤 '+ag:''}`;
   document.getElementById('chtr').style.display='none';
   const canSeeT=isAdmin||CAN_TR.includes((cUser||'').toLowerCase());
   document.getElementById('btntrnc').style.display=canSeeT?'':'none';
-  // Mobile
   document.body.classList.add('chatopen');
   const mqb=document.getElementById('mob-q-btn');if(mqb)mqb.style.display=isMob()?'flex':'none';
   const mb=document.getElementById('mob-back');if(mb)mb.style.display=isMob()?'flex':'none';
-  renderQL();renderMobQ();
+  renderQL();renderMobQ();renderBubbles();
   await loadMsgs(id,true);
 }
 function closeChat(){
   cLId=null;cLead=null;
-  document.getElementById('cempty').style.display='flex';
-  document.getElementById('cmain').style.display='none';
-  document.body.classList.remove('chatopen');
-  closeMobQ();
+  document.getElementById('cempty').style.display='flex';document.getElementById('cmain').style.display='none';
+  document.body.classList.remove('chatopen');closeMobQ();
   const mqb=document.getElementById('mob-q-btn');if(mqb)mqb.style.display='none';
-  renderCvList();renderTabs();
+  renderCvList();renderTabs();renderBubbles();
 }
 function goCht(id){setSbM('chat');showPage('chat');setTimeout(()=>openChat(id),80);}
 
-// ── MESSAGES ──────────────────────────────────────────────────
 async function loadMsgs(id,scroll=true){
   const wrap=document.getElementById('msgs');
   if(scroll)wrap.innerHTML='<div style="padding:18px;text-align:center;font-size:.75rem;color:var(--tx2)">Cargando...</div>';
   try{
     const r=await fetch(`${API}/api/leads/${id}/messages`);
-    const ct=r.headers.get('content-type')||'';
-    if(!ct.includes('application/json'))throw new Error('Backend no responde JSON');
+    const ct=r.headers.get('content-type')||'';if(!ct.includes('application/json'))throw new Error('Backend no responde JSON');
     if(!r.ok){const d=await r.json();throw new Error(d.error||`HTTP ${r.status}`);}
-    const d=await r.json();
-    renderMsgs(Array.isArray(d)?d:(d.messages||[]),scroll);
-  }catch(e){
-    wrap.innerHTML=`<div class="mempty"><div style="font-size:1.4rem">💬</div><div style="font-size:.77rem;color:var(--red)">${escH(e.message)}</div></div>`;
-  }
+    const d=await r.json();renderMsgs(Array.isArray(d)?d:(d.messages||[]),scroll);
+  }catch(e){wrap.innerHTML=`<div class="mempty"><div style="font-size:1.4rem">💬</div><div style="font-size:.77rem;color:var(--red)">${escH(e.message)}</div></div>`;}
 }
 function renderMsgs(msgs,scroll=true){
   const wrap=document.getElementById('msgs');
   if(!msgs.length){wrap.innerHTML='<div class="mempty"><div style="font-size:1.7rem">👋</div>Sin mensajes aún.</div>';return;}
   wrap.innerHTML=msgs.map(m=>{
-    const body=m.body||m.message||m.message_text||'';
-    const d=m.direction||(m.sent_by?'out':'in');
-    const isO=d==='outgoing'||d==='out';
-    const isS=d==='system';
-    const cls=isS?'sys':(isO?'out':'in');
-    const t=m.created_at?new Date(m.created_at).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}):'';
-    const snd=m.sent_by||'';
+    const body=m.body||m.message||m.message_text||'';const d=m.direction||(m.sent_by?'out':'in');
+    const isO=d==='outgoing'||d==='out';const isS=d==='system';const cls=isS?'sys':(isO?'out':'in');
+    const t=m.created_at?new Date(m.created_at).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}):'';const snd=m.sent_by||'';
     return`<div class="msg ${cls}"><div class="bub">${escH(body)}</div><div class="mmeta">${snd?snd+' · ':''}${t}</div></div>`;
   }).join('');
   if(scroll)wrap.scrollTop=wrap.scrollHeight;
 }
 async function sendMsg(forceTxt){
-  const inp=document.getElementById('msginp');
-  const txt=forceTxt||inp.value.trim();
-  if(!txt){showToast('Escribe un mensaje');return;}
-  if(!cLId){showToast('Selecciona un chat');return;}
-  if(!cUser){showToast('Selecciona tu perfil');return;}
-  const btn=document.getElementById('sendbtn');
-  btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
-  const wrap=document.getElementById('msgs');
-  const tid='tmp'+Date.now();
+  const inp=document.getElementById('msginp');const txt=forceTxt||inp.value.trim();
+  if(!txt){showToast('Escribe un mensaje');return;}if(!cLId){showToast('Selecciona un chat');return;}if(!cUser){showToast('Selecciona tu perfil');return;}
+  const btn=document.getElementById('sendbtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
+  const wrap=document.getElementById('msgs');const tid='tmp'+Date.now();
   wrap.innerHTML+=`<div class="msg out" id="${tid}"><div class="bub">${escH(txt)}</div><div class="mmeta">${cUser} · ahora</div></div>`;
-  wrap.scrollTop=wrap.scrollHeight;
-  inp.value='';inp.style.height='auto';
+  wrap.scrollTop=wrap.scrollHeight;inp.value='';inp.style.height='auto';
   try{
-    const r=await fetch(`${API}/api/leads/send-message`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({lead_id:cLId,message:txt,sent_by:cUser})
-    });
-    const ct=r.headers.get('content-type')||'';
-    if(!ct.includes('application/json'))throw new Error('Backend devolvió HTML');
-    const d=await r.json();
-    if(!r.ok)throw new Error(d.error||d.message||`HTTP ${r.status}`);
-    document.getElementById(tid)?.remove();
-    await loadMsgs(cLId);renderCvList();showToast('✅ Enviado');
+    const r=await fetch(`${API}/api/leads/send-message`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lead_id:cLId,message:txt,sent_by:cUser})});
+    const ct=r.headers.get('content-type')||'';if(!ct.includes('application/json'))throw new Error('Backend devolvió HTML');
+    const d=await r.json();if(!r.ok)throw new Error(d.error||d.message||`HTTP ${r.status}`);
+    document.getElementById(tid)?.remove();await loadMsgs(cLId);renderCvList();showToast('✅ Enviado');
   }catch(e){
-    showToast('❌ '+e.message);
-    const te=document.getElementById(tid);
+    showToast('❌ '+e.message);const te=document.getElementById(tid);
     if(te){te.style.opacity='.4';te.querySelector('.bub').style.border='1.5px solid var(--red)';}
   }finally{btn.disabled=false;btn.innerHTML='ENVIAR ▶';}
 }
 
-// ── useQ (DESKTOP) ────────────────────────────────────────────
 function useQ(text){
   if(!cLId){showToast('⚠️ Primero abre un chat');return;}
-  const inp=document.getElementById('msginp');
-  if(inp){inp.value=String(text);autoR(inp);}
-  // Pass text directly to sendMsg — guaranteed delivery
+  const inp=document.getElementById('msginp');if(inp){inp.value=String(text);autoR(inp);}
   sendMsg(String(text));
 }
 
-// ── QUICK MESSAGES (desktop right panel) ──────────────────────
 function getBK(){const biz=(cLead?.business||'albalumen').toLowerCase();return(biz.includes('hue')||biz.includes('mascot'))?'HUELLITAS':'ALBALUMEN';}
 function getItems(tab){const k=getBK();const src=customQR||DQR;return(src[k]||DQR[k])[tab]||(src[k]||DQR[k]).rapidos||[];}
 function renderQL(){
-  const items=getItems(rpT);
-  const ql=document.getElementById('qlist');
- if(ql){ql.innerHTML="";items.forEach(m=>{const d=document.createElement("div");d.className="qm";d.setAttribute("data-txt",m.t);d.innerHTML=`<span class="qi">${m.i}</span>${escH(m.t)}`;ql.appendChild(d);});}
+  const items=getItems(rpT);const ql=document.getElementById('qlist');
+  if(ql){ql.innerHTML='';items.forEach(m=>{const d=document.createElement('div');d.className='qm';d.setAttribute('data-txt',m.t);d.innerHTML=`<span class="qi">${m.i}</span>${escH(m.t)}`;ql.appendChild(d);});}
 }
 function setRpT(m,el){rpT=m;document.querySelectorAll('.rptab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');if(editingQ)renderEditQ();else renderQL();}
 function togEditQ(){
-  editingQ=!editingQ;
-  document.getElementById('qlist').style.display=editingQ?'none':'flex';
-  const ep=document.getElementById('editqpanel');
-  if(editingQ){ep.classList.add('show');renderEditQ();}else ep.classList.remove('show');
+  editingQ=!editingQ;document.getElementById('qlist').style.display=editingQ?'none':'flex';
+  const ep=document.getElementById('editqpanel');if(editingQ){ep.classList.add('show');renderEditQ();}else ep.classList.remove('show');
 }
 function renderEditQ(){
-  const k=getBK();
-  if(!customQR[k])customQR[k]=JSON.parse(JSON.stringify(DQR[k]));
-  if(!customQR[k][rpT])customQR[k][rpT]=[];
-  document.getElementById('eqlist').innerHTML=customQR[k][rpT].map((m,i)=>`<div class="eqi">
-    <span class="qi">${m.i}</span>
-    <textarea rows="2" oninput="customQR['${k}']['${rpT}'][${i}].t=this.value">${escH(m.t)}</textarea>
-    <button class="del" onclick="delEditQ('${k}',${i})">🗑</button>
-  </div>`).join('');
+  const k=getBK();if(!customQR[k])customQR[k]=JSON.parse(JSON.stringify(DQR[k]));if(!customQR[k][rpT])customQR[k][rpT]=[];
+  document.getElementById('eqlist').innerHTML=customQR[k][rpT].map((m,i)=>`<div class="eqi"><span class="qi">${m.i}</span><textarea rows="2" oninput="customQR['${k}']['${rpT}'][${i}].t=this.value">${escH(m.t)}</textarea><button class="del" onclick="delEditQ('${k}',${i})">🗑</button></div>`).join('');
 }
 function delEditQ(k,i){customQR[k][rpT].splice(i,1);renderEditQ();}
 function addEditQ(){const k=getBK();if(!customQR[k])customQR[k]=JSON.parse(JSON.stringify(DQR[k]));if(!customQR[k][rpT])customQR[k][rpT]=[];customQR[k][rpT].push({i:'💬',t:'Nuevo mensaje'});renderEditQ();}
 function saveEditQ(){saveCQR();togEditQ();renderQL();showToast('✅ Mensajes guardados');}
 
-// ── API HELPER ────────────────────────────────────────────────
 async function apiCall(url,body){
   const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  const ct=r.headers.get('content-type')||'';
-  if(!ct.includes('application/json'))throw new Error('Ruta no encontrada en backend');
-  const d=await r.json();
-  if(!r.ok)throw new Error(d.error||d.message||`HTTP ${r.status}`);
-  return d;
+  const ct=r.headers.get('content-type')||'';if(!ct.includes('application/json'))throw new Error('Ruta no encontrada en backend');
+  const d=await r.json();if(!r.ok)throw new Error(d.error||d.message||`HTTP ${r.status}`);return d;
 }
 async function claimLead(id){if(!cUser){showToast('Selecciona tu perfil');return;}try{await apiCall(`${API}/api/leads/${id}/claim`,{staff_name:cUser});showToast('✅ Reclamado');await loadData();openChat(id);}catch(e){showToast('❌ '+e.message);}}
 async function claimCur(){if(cLId)await claimLead(cLId);}
@@ -1036,15 +845,14 @@ function openTrC(){if(!cLId)return;trLId=cLId;openModal('modal-transfer');}
 function openTrG(){trLId=cLId;openModal('modal-transfer');}
 function openTrP(id){trLId=id;openModal('modal-transfer');}
 async function confirmTr(){
-  const to=document.getElementById('trto').value;const note=document.getElementById('trnote').value.trim();
-  if(!to){showToast('Selecciona a quién transferir');return;}
+  const to=document.getElementById('trto').value;const note=document.getElementById('trnote').value.trim();if(!to){showToast('Selecciona a quién transferir');return;}
   try{await apiCall(`${API}/api/leads/${trLId}/transfer`,{transferred_to:to,transferred_by:cUser,note});showToast(`✅ Transferido a ${to}`);closeModal('modal-transfer');await loadData();if(cLId===trLId){const te=document.getElementById('chtr');te.style.display='';te.textContent=`↗ Transferido a: ${to}`;}}catch(e){showToast('❌ '+e.message);}
 }
 function openLost(){if(!cLId){showToast('Selecciona un chat');return;}openModal('modal-lost');}
 function togLostO(){document.getElementById('lostod').style.display=document.getElementById('lostr').value==='Otro'?'':'none';}
 async function confirmLost(){
   const sel=document.getElementById('lostr').value;const oth=document.getElementById('losto').value.trim();const reason=sel==='Otro'?(oth||'Sin especificar'):sel;
-  try{await apiCall(`${API}/api/leads/${cLId}/lost`,{reason_lost:reason,closed_by:cUser});const l=allLeads.find(x=>x.id===cLId);if(l)l.status='cerrado';showToast('❌ Marcado como perdido → Cerrados');closeModal('modal-lost');closeChat();renderCvList();}catch(e){showToast('❌ '+e.message);}
+  try{await apiCall(`${API}/api/leads/${cLId}/lost`,{reason_lost:reason,closed_by:cUser});const l=allLeads.find(x=>x.id===cLId);if(l)l.status='cerrado';showToast('❌ Marcado como perdido');closeModal('modal-lost');closeChat();renderCvList();}catch(e){showToast('❌ '+e.message);}
 }
 function openNewLead(){openModal('modal-newlead');}
 async function createLead(){
@@ -1055,146 +863,70 @@ async function createLead(){
 function doWA(){if(!cLead?.phone){showToast('Sin teléfono');return;}window.open('https://wa.me/'+cLead.phone.replace(/\D/g,''),'_blank');}
 function openWarRoom(){window.open('https://guerreroai.com','_blank');}
 
-// ── CHARTS ────────────────────────────────────────────────────
 function renderCharts(){
   if(!isAdmin)return;
-  const ls=allLeads;
-  const tot=ls.length,act=ls.filter(l=>l.status==='activo'||l.status==='In-Progress').length;
-  const nw=ls.filter(l=>!l.status||l.status==='New'||l.status==='nuevo').length;
-  const cl=ls.filter(l=>l.status==='cerrado'||l.status==='Lost'||l.status==='perdido').length;
-  const rt=tot?Math.round(cl/tot*100):0;
-  const src={};ls.forEach(l=>{const s=l.source||'Desconocido';src[s]=(src[s]||0)+1;});
-  const sM=Math.max(...Object.values(src),1);
-  const ags={};ls.forEach(l=>{const a=l.claimed_by||'Sin asignar';ags[a]=(ags[a]||0)+1;});
-  const aM=Math.max(...Object.values(ags),1);
+  const ls=allLeads;const tot=ls.length,act=ls.filter(l=>l.status==='activo'||l.status==='In-Progress').length;
+  const nw=ls.filter(l=>!l.status||l.status==='New'||l.status==='nuevo').length;const cl=ls.filter(l=>l.status==='cerrado'||l.status==='Lost'||l.status==='perdido').length;
+  const rt=tot?Math.round(cl/tot*100):0;const src={};ls.forEach(l=>{const s=l.source||'Desconocido';src[s]=(src[s]||0)+1;});const sM=Math.max(...Object.values(src),1);
+  const ags={};ls.forEach(l=>{const a=l.claimed_by||'Sin asignar';ags[a]=(ags[a]||0)+1;});const aM=Math.max(...Object.values(ags),1);
   const lr={};ls.filter(l=>l.reason_lost).forEach(l=>{lr[l.reason_lost]=(lr[l.reason_lost]||0)+1;});
-  // Avg response time (mock — needs created_at vs first_message)
   document.getElementById('chgrid').innerHTML=`
-  <div class="cc"><h3>📈 Resumen General</h3><div class="strow">
-    <div class="stb"><div class="stn">${tot}</div><div class="stl">Total leads</div></div>
-    <div class="stb"><div class="stn">${act}</div><div class="stl">En atención</div></div>
-    <div class="stb"><div class="stn yl">${nw}</div><div class="stl">Sin atender</div></div>
-    <div class="stb"><div class="stn rd">${cl}</div><div class="stl">Cerrados</div></div>
-  </div><div class="note">💡 Responder en menos de 5 minutos aumenta conversión hasta 3x</div></div>
-
-  <div class="cc"><h3>📊 Fuentes de Leads</h3><div class="brls">
-    ${Object.entries(src).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`<div class="brow"><span class="blb">${s}</span><div class="btr"><div class="bfl pk" style="width:${Math.round(n/sM*100)}%"></div></div><span class="bvl">${n}</span></div>`).join('')||'<span style="font-size:.73rem;color:var(--tx3)">Sin datos aún</span>'}
-  </div><div class="note">💡 Invierte más en la fuente con mayor volumen de leads calificados</div></div>
-
-  <div class="cc"><h3>👥 Rendimiento de Agentes</h3><div class="brls">
-    ${Object.entries(ags).sort((a,b)=>b[1]-a[1]).map(([a,n])=>`<div class="brow"><span class="blb">${a}</span><div class="btr"><div class="bfl bl" style="width:${Math.round(n/aM*100)}%"></div></div><span class="bvl">${n}</span></div>`).join('')||'<span style="font-size:.73rem;color:var(--tx3)">Sin datos aún</span>'}
-  </div><div class="note">💡 Balancear carga entre agentes mejora tiempo de atención</div></div>
-
-  <div class="cc"><h3>⚡ Sales Funnel</h3>
-    <div class="fnrow"><span>Leads totales</span><span class="fnvl">${tot}</span></div>
-    <div class="fnrow"><span>En atención activa</span><span class="fnvl">${act}</span></div>
-    <div class="fnrow"><span>Sin atender (riesgo)</span><span class="fnvl">${nw}</span></div>
-    <div class="fnrow"><span>Cerrados/Perdidos</span><span class="fnvl">${cl}</span></div>
-    <div class="fnrow"><span>📈 Tasa de cierre</span><span class="fnvl">${rt}%</span></div>
-  </div>
-
-  <div class="cc"><h3>🔻 Razones de Pérdida</h3>
-    ${Object.keys(lr).length?Object.entries(lr).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div class="fnrow"><span>${r}</span><span class="fnvl">${n}</span></div>`).join(''):'<div style="font-size:.74rem;color:var(--tx3);padding:7px 0">Sin pérdidas registradas ✅</div>'}
-    <div class="note">💡 La razón más frecuente de pérdida indica dónde mejorar el proceso</div>
-  </div>
-
-  <div class="cc"><h3>🏆 Indicadores Clave</h3>
-    <div class="fnrow"><span>Pipeline activo</span><span class="fnvl">${act} leads</span></div>
-    <div class="fnrow"><span>Conversión estimada</span><span class="fnvl">${rt}%</span></div>
-    <div class="fnrow"><span>Leads en riesgo</span><span class="fnvl" style="color:var(--red)">${nw}</span></div>
-    <div class="fnrow"><span>Agentes activos</span><span class="fnvl">${Object.keys(ags).filter(a=>a!=='Sin asignar').length}</span></div>
-  </div>`;
-
-  const top=Object.entries(src).sort((a,b)=>b[1]-a[1])[0];
-  const topAg=Object.entries(ags).sort((a,b)=>b[1]-a[1])[0];
-  document.getElementById('aitxt').textContent=
-    `Con ${tot} leads totales${top?`, la fuente "${top[0]}" lidera con ${top[1]} leads — considera invertir más ahí`:''}.${topAg?` El agente más activo es "${topAg[0]}" con ${topAg[1]} leads.`:''} ${nw} clientes sin atender representan riesgo de abandono — responder en menos de 5 minutos puede triplicar la conversión. Tasa de cierre actual: ${rt}%.`;
+  <div class="cc"><h3>📈 Resumen General</h3><div class="strow"><div class="stb"><div class="stn">${tot}</div><div class="stl">Total leads</div></div><div class="stb"><div class="stn">${act}</div><div class="stl">En atención</div></div><div class="stb"><div class="stn yl">${nw}</div><div class="stl">Sin atender</div></div><div class="stb"><div class="stn rd">${cl}</div><div class="stl">Cerrados</div></div></div><div class="note">💡 Responder en menos de 5 minutos aumenta conversión hasta 3x</div></div>
+  <div class="cc"><h3>📊 Fuentes de Leads</h3><div class="brls">${Object.entries(src).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`<div class="brow"><span class="blb">${s}</span><div class="btr"><div class="bfl pk" style="width:${Math.round(n/sM*100)}%"></div></div><span class="bvl">${n}</span></div>`).join('')||'<span style="font-size:.73rem;color:var(--tx3)">Sin datos aún</span>'}</div></div>
+  <div class="cc"><h3>👥 Rendimiento de Agentes</h3><div class="brls">${Object.entries(ags).sort((a,b)=>b[1]-a[1]).map(([a,n])=>`<div class="brow"><span class="blb">${a}</span><div class="btr"><div class="bfl bl" style="width:${Math.round(n/aM*100)}%"></div></div><span class="bvl">${n}</span></div>`).join('')||'<span style="font-size:.73rem;color:var(--tx3)">Sin datos aún</span>'}</div></div>
+  <div class="cc"><h3>⚡ Sales Funnel</h3><div class="fnrow"><span>Leads totales</span><span class="fnvl">${tot}</span></div><div class="fnrow"><span>En atención</span><span class="fnvl">${act}</span></div><div class="fnrow"><span>Sin atender</span><span class="fnvl">${nw}</span></div><div class="fnrow"><span>Cerrados</span><span class="fnvl">${cl}</span></div><div class="fnrow"><span>📈 Tasa de cierre</span><span class="fnvl">${rt}%</span></div></div>
+  <div class="cc"><h3>🔻 Razones de Pérdida</h3>${Object.keys(lr).length?Object.entries(lr).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div class="fnrow"><span>${r}</span><span class="fnvl">${n}</span></div>`).join(''):'<div style="font-size:.74rem;color:var(--tx3);padding:7px 0">Sin pérdidas registradas ✅</div>'}</div>`;
+  const top=Object.entries(src).sort((a,b)=>b[1]-a[1])[0];const topAg=Object.entries(ags).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('aitxt').textContent=`Con ${tot} leads totales${top?`, la fuente "${top[0]}" lidera con ${top[1]} leads`:''}.${topAg?` El agente más activo es "${topAg[0]}" con ${topAg[1]} leads.`:''} ${nw} sin atender representan riesgo. Tasa de cierre: ${rt}%.`;
 }
 function submitCQ(){
   const q=document.getElementById('chq').value.trim();if(!q)return;
   closeModal('modal-chartsask');document.getElementById('aitxt').textContent='🤖 Analizando...';
-  setTimeout(()=>{
-    const top=Object.entries(allLeads.reduce((a,l)=>{a[l.source||'?']=(a[l.source||'?']||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1])[0];
-    document.getElementById('aitxt').textContent=`Análisis: "${q}" — ${allLeads.length} leads en sistema. ${top?`Fuente principal: "${top[0]}" (${top[1]}).`:''} Prioriza seguimiento a nuevos leads en primeras 24h. Considera aumentar capacidad de atención en horario pico.`;
-  },1200);
+  setTimeout(()=>{const top=Object.entries(allLeads.reduce((a,l)=>{a[l.source||'?']=(a[l.source||'?']||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1])[0];document.getElementById('aitxt').textContent=`Análisis: "${q}" — ${allLeads.length} leads. ${top?`Fuente principal: "${top[0]}" (${top[1]}).`:''} Prioriza seguimiento a nuevos leads en primeras 24h.`;},1200);
 }
 
-// ── VISION ────────────────────────────────────────────────────
 function renderVision(){
   if(!isAdmin)return;
   const agM={};allLeads.forEach(l=>{const a=l.claimed_by;if(!a)return;if(!agM[a])agM[a]=[];agM[a].push(l);});
   document.getElementById('visgrid').innerHTML=EMPLOYEES.map(ag=>{
     const cs=agM[ag]||[];
-    return`<div class="vac${!cs.length?' off':''}">
-      <div class="vachd"><div class="vav">${ag[0]}</div><div><div class="vnm">${ag}</div><div class="vrl">${cs.length?'🟢 Activo':'⚫ Sin clientes'}</div></div><div class="vcnt">${cs.length}</div></div>
-      ${cs.map(c=>`<div class="vcl"><div><strong style="font-size:.75rem">${c.contact_name||'—'}</strong><br><span style="font-size:.66rem;color:var(--tx2)">${c.phone||''}</span></div><span class="cist ${c.status||'New'}">${c.status||'New'}</span></div>`).join('')}
-      ${!cs.length?'<div style="font-size:.72rem;color:var(--tx3);padding:4px 0">Sin clientes asignados</div>':''}
-    </div>`;
+    return`<div class="vac${!cs.length?' off':''}"><div class="vachd"><div class="vav">${ag[0]}</div><div><div class="vnm">${ag}</div><div class="vrl">${cs.length?'🟢 Activo':'⚫ Sin clientes'}</div></div><div class="vcnt">${cs.length}</div></div>${cs.map(c=>`<div class="vcl"><div><strong style="font-size:.75rem">${c.contact_name||'—'}</strong><br><span style="font-size:.66rem;color:var(--tx2)">${c.phone||''}</span></div><span class="cist ${c.status||'New'}">${c.status||'New'}</span></div>`).join('')}${!cs.length?'<div style="font-size:.72rem;color:var(--tx3);padding:4px 0">Sin clientes asignados</div>':''}</div>`;
   }).join('');
 }
 
-// ── EMPLOYEES CHAT ────────────────────────────────────────────
-function renderEmpLs(){
-  if(!cUser)return;
-  document.getElementById('empls').innerHTML=EMPLOYEES.filter(e=>e.toLowerCase()!==(cUser||'').toLowerCase()).map(e=>`<div class="empit${empT===e?' on':''}" onclick="openEmpCht('${e}')"><div class="en">${e}</div><div class="es">🟢 Disponible</div></div>`).join('');
-}
-function openEmpCht(name){
-  empT=name;renderEmpLs();
-  document.getElementById('empchd').textContent='💬 '+name;
-  const meetBtn=document.getElementById('meet-emp-btn');
-  if(meetBtn)meetBtn.style.display='flex';
-  if(!empMsgs[name])empMsgs[name]=[];renderEmpMsgs(name);
-}
+function renderEmpLs(){if(!cUser)return;document.getElementById('empls').innerHTML=EMPLOYEES.filter(e=>e.toLowerCase()!==(cUser||'').toLowerCase()).map(e=>`<div class="empit${empT===e?' on':''}" onclick="openEmpCht('${e}')"><div class="en">${e}</div><div class="es">🟢 Disponible</div></div>`).join('');}
+function openEmpCht(name){empT=name;renderEmpLs();document.getElementById('empchd').textContent='💬 '+name;const meetBtn=document.getElementById('meet-emp-btn');if(meetBtn)meetBtn.style.display='flex';if(!empMsgs[name])empMsgs[name]=[];renderEmpMsgs(name);}
 function renderEmpMsgs(name){
   const wrap=document.getElementById('empms');const msgs=empMsgs[name]||[];
   if(!msgs.length){wrap.innerHTML=`<div style="text-align:center;opacity:.4;font-size:.76rem;margin-top:30px;padding:20px"><div style="font-size:1.5rem;margin-bottom:8px">💬</div>Inicio de chat con ${name}</div>`;return;}
   wrap.innerHTML=msgs.map(m=>{
-    if(m.isMeet){
-      return`<div class="msg sys"><div class="meet-msg"><div class="meet-ttl">📹 Reunión Google Meet</div><div>Únete aquí: <a href="https://meet.google.com/new" target="_blank">meet.google.com/new</a></div><div style="font-size:.72rem;margin-top:4px;opacity:.8">Toca el link para entrar</div></div><div class="mmeta">${m.from} · ${m.time}</div></div>`;
-    }
+    if(m.isMeet)return`<div class="msg sys"><div class="meet-msg"><div class="meet-ttl">📹 Reunión Google Meet</div><div>Únete aquí: <a href="https://meet.google.com/new" target="_blank">meet.google.com/new</a></div></div><div class="mmeta">${m.from} · ${m.time}</div></div>`;
     return`<div class="msg ${m.from===cUser?'out':'in'}"><div class="bub">${escH(m.t)}</div><div class="mmeta">${m.from} · ${m.time}</div></div>`;
-  }).join('');
-  wrap.scrollTop=wrap.scrollHeight;
+  }).join('');wrap.scrollTop=wrap.scrollHeight;
 }
 function sendEmp(){
-  const inp=document.getElementById('empinp');const txt=inp.value.trim();
-  if(!txt||!empT||!cUser)return;
-  if(!empMsgs[empT])empMsgs[empT]=[];
-  empMsgs[empT].push({from:cUser,t:txt,time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})});
+  const inp=document.getElementById('empinp');const txt=inp.value.trim();if(!txt||!empT||!cUser)return;
+  if(!empMsgs[empT])empMsgs[empT]=[];empMsgs[empT].push({from:cUser,t:txt,time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})});
   inp.value='';renderEmpMsgs(empT);showToast('✅ Mensaje enviado');
 }
 
-// ── PAGE SWITCHING ────────────────────────────────────────────
 const PAGES=['charts','vision','employees','facebook'];
 function showPage(p){
-  closeMobMenu();
-  // Hide right panel by default, show only for chat
-  const rp=document.getElementById('rpanel');
+  closeMobMenu();const rp=document.getElementById('rpanel');
   PAGES.forEach(pg=>{const el=document.getElementById('page-'+pg);if(el){el.style.display='none';el.classList.remove('show');}});
   document.getElementById('carea').style.display='none';
-
-  if(p==='chat'){
-    document.getElementById('carea').style.display='flex';
-    if(rp)rp.style.display=''; // Show right panel only in chat
-  } else {
+  if(p==='chat'){document.getElementById('carea').style.display='flex';if(rp)rp.style.display='';}
+  else{
     if((p==='charts'||p==='vision')&&!isAdmin){showToast('Acceso VIP — solo Micheal y Papá');document.getElementById('carea').style.display='flex';return;}
-    const el=document.getElementById('page-'+p);
-    if(el){el.style.display='flex';el.classList.add('show');}
-    if(rp)rp.style.display='none'; // Hide right panel in other pages
-    if(p==='charts')renderCharts();
-    if(p==='vision')renderVision();
-    if(p==='employees')renderEmpLs();
+    const el=document.getElementById('page-'+p);if(el){el.style.display='flex';el.classList.add('show');}
+    if(rp)rp.style.display='none';
+    if(p==='charts')renderCharts();if(p==='vision')renderVision();if(p==='employees')renderEmpLs();
   }
 }
-// Init
 document.getElementById('carea').style.display='flex';
-
-// ── MODALS ────────────────────────────────────────────────────
 function openModal(id){document.getElementById(id).classList.add('show');}
 function closeModal(id){document.getElementById(id).classList.remove('show');}
 document.querySelectorAll('.ov').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)closeModal(el.id);});});
-
-// ── UTILS ─────────────────────────────────────────────────────
 function showToast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
 function autoR(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
