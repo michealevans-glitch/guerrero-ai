@@ -788,12 +788,7 @@ function renderMsgs(msgs,scroll=true,leadId){
     const t=m.created_at?new Date(m.created_at).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}):'';const snd=m.sent_by||'';
     return`<div class="msg ${cls}"><div class="bub">${escH(body)}</div><div class="mmeta">${snd?snd+' · ':''}${t}</div></div>`;
   }).join('');
-if(scroll){
-    setTimeout(()=>{
-      wrap.scrollTop=wrap.scrollHeight;
-      wrap.scrollIntoView&&wrap.lastElementChild?.scrollIntoView({behavior:'smooth',block:'end'});
-    },120);
-  }
+if(scroll)wrap.scrollTop=wrap.scrollHeight;
 }
 async function sendMsg(forceTxt){
   const inp=document.getElementById('msginp');const txt=forceTxt||inp.value.trim();
