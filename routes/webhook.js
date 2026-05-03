@@ -146,35 +146,38 @@ async function detectarPeticionLlamada(phone, text) {
     console.error('detectarPeticionLlamada error:', e.message);
   }
 }
-async function transcribirAudio(mediaId) {
-  try {
-    if (!mediaId) return '[Mensaje de voz]';
-    // Obtener URL del audio
-    const mediaRes = await fetch(`https://graph.facebook.com/v18.0/${mediaId}`, {
-      headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}` }
+const https = require('https');
+    const FormData = require('form-data');
+    const form = new FormData();
+    form.append('file', audioBlob, { 
+      filename: 'audio.ogg', 
+      contentType: 'audio/ogg',
+      knownLength: audioBlob.length
     });
-    const mediaData = await mediaRes.json();
-    const audioUrl = mediaData.url;
-    // Descargar el audio
-    const audioRes = await fetch(audioUrl, {
-      headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}` }
-    });
-    const audioBuffer = await audioRes.arrayBuffer();
-    const audioBlob = Buffer.from(audioBuffer);
-    // Transcribir con Whisper
-const { OpenAI } = require('openai');
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const file = new File([audioBlob], 'audio.ogg', { type: 'audio/ogg' });
-    const transcription = await openai.audio.transcriptions.create({
-      file: file,
-      model: 'whisper-1',
+    form.append('model', 'whisper-1');
+    
+    const transcription = await new Promise((resolve, reject) => {
+      const options = {
+        hostname: 'api.openai.com',
+        path: '/v1/audio/transcriptions',
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          ...form.getHeaders()
+        }
+      };
+      const req = https.request(options, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try { resolve(JSON.parse(data)); } 
+          catch(e) { reject(e); }
+        });
+      });
+      req.on('error', reject);
+      form.pipe(req);
     });
     console.log(`🎤 Transcripción: ${transcription.text}`);
     return transcription.text || '[Mensaje de voz]';
-  } catch (e) {
-    console.error('transcribirAudio error:', e.message);
-    return '[Mensaje de voz]';
-  }
-}
 
 module.exports = router;
