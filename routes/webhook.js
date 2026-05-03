@@ -96,15 +96,47 @@ await llamarEquipo(name);
 });
 async function detectarPeticionLlamada(phone, text) {
   try {
-    const palabras = ['llamar', 'llamada', 'hablar', 'teléfono', 'telefono', 'call', 'comunicarme', 'contactar'];
-    const quiereLlamar = palabras.some(p => text.toLowerCase().includes(p));
+    const palabrasSi = ['sí', 'si', 'yes', 'claro', 'ok', 'okay', 'adelante', 'puede', 'ahora'];
+    const palabrasLlamar = ['llamar', 'llamada', 'hablar', 'teléfono', 'telefono', 'call', 'comunicarme', 'contactar'];
+    
+    // Si el cliente dice "sí" después de que le ofrecimos llamarle
+    const quiereSi = palabrasSi.some(p => text.toLowerCase().trim() === p || text.toLowerCase().includes(p));
+    const existing = await pool.query(
+      `SELECT notes FROM leads WHERE phone LIKE $1 ORDER BY created_at DESC LIMIT 1`,
+      [`%${phone.slice(-8)}%`]
+    );
+    const notes = existing.rows[0]?.notes || '';
+    
+    if (quiereSi && notes.includes('LLAMADA_OFRECIDA')) {
+      // Llamar al cliente
+      const twilio = require('twilio');
+      const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+      await client.calls.create({
+        twiml: `<Response><Say language="es-MX">Hola, le llamamos de Guerrero AI. Un agente le atenderá en un momento. Por favor espere.</Say></Response>`,
+        to: '+' + phone,
+        from: process.env.TWILIO_PHONE
+      });
+      await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messaging_product: 'whatsapp', to: phone, type: 'text', text: { body: 'Estamos llamándole ahora. Por favor conteste su teléfono.' } })
+      });
+      await pool.query(`UPDATE leads SET notes = notes || ' LLAMADA_REALIZADA' WHERE phone LIKE $1`, [`%${phone.slice(-8)}%`]);
+      console.log(`📞 Llamada realizada al cliente ${phone}`);
+      return;
+    }
+
+    // Detectar si pide llamada
+    const quiereLlamar = palabrasLlamar.some(p => text.toLowerCase().includes(p));
     if (!quiereLlamar) return;
+    
     const respuesta = 'Entendemos que prefiere hablar con alguien. Un agente le llamará en los próximos minutos. ¿Es conveniente que le llamemos ahora?';
     await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ messaging_product: 'whatsapp', to: phone, type: 'text', text: { body: respuesta } })
     });
+    await pool.query(`UPDATE leads SET notes = notes || ' LLAMADA_OFRECIDA' WHERE phone LIKE $1`, [`%${phone.slice(-8)}%`]);
     console.log(`📞 Cliente ${phone} pidió llamada — respuesta automática enviada`);
   } catch (e) {
     console.error('detectarPeticionLlamada error:', e.message);
