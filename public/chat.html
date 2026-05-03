@@ -659,6 +659,8 @@ function setUser(name,color,initial){
   const mmwr=document.getElementById('mm-btnwr');if(mmwr)mmwr.style.display=isAdmin?'':'none';
   loadData();startPoll();renderEmpLs();renderQL();renderMobQ();
   showToast('✅ Bienvenido, '+name);
+  // Registrar Service Worker y suscripción push
+  registerPush(name);
 }
 function doLogout(){
   localStorage.removeItem('gu_user');cUser=null;isAdmin=false;cLId=null;cLead=null;openTabs=[];
