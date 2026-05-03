@@ -749,7 +749,15 @@ async function loadData(){
 }
 function startPoll(){
   if(pollTmr)clearInterval(pollTmr);
-  pollTmr=setInterval(async()=>{await loadData();if(cLId)loadMsgs(cLId,false);},15000);
+  pollTmr=setInterval(async()=>{
+  await loadData();
+  if(cLId)loadMsgs(cLId,false);
+  else{
+    for(const id of Object.keys(lastMsgIds)){
+      loadMsgs(parseInt(id),false);
+    }
+  }
+},15000);
 }
 
 function setBiz(b){bizF=b;document.getElementById('bt-alb').classList.toggle('on',b==='albalumen');document.getElementById('bt-hue').classList.toggle('on',b==='huellitas');renderCvList();renderPfList();renderQL();renderMobQ();}
