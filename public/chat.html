@@ -1007,6 +1007,43 @@ function showToast(msg,dur=3500){const t=document.getElementById('toast');t.text
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
 function autoR(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
 function timeAgo(d){const m=Math.floor((Date.now()-new Date(d).getTime())/60000);if(m<1)return'ahora';if(m<60)return m+'m';const h=Math.floor(m/60);if(h<24)return h+'h';return Math.floor(h/24)+'d';}
+function registerPush(userName){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window))return;
+  const VAPID_PUBLIC='BI8k4hFZDfthXL2QXZdkzWSRdKy7W_bBArreprpggLyK_nvamF_r9uJEwICNztkm5G1h6FKddBu5MtQ4NmAoMms';
+  navigator.serviceWorker.register('/sw.js').then(reg=>{
+    return Notification.requestPermission().then(perm=>{
+      if(perm!=='granted')return;
+      return reg.pushManager.subscribe({
+        userVisibleOnly:true,
+        applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC)
+      });
+    }).then(sub=>{
+      if(!sub)return;
+      return fetch('/api/push/subscribe',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({subscription:sub,userName})
+      });
+    });
+  }).catch(e=>console.warn('Push:',e));
+}
+
+function urlBase64ToUint8Array(b){
+  const p='='.repeat((4-b.length%4)%4);
+  const s=(b+p).replace(/-/g,'+').replace(/_/g,'/');
+  const r=window.atob(s);
+  const o=new Uint8Array(r.length);
+  for(let i=0;i<r.length;++i)o[i]=r.charCodeAt(i);
+  return o;
+}
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.addEventListener('message',event=>{
+    if(event.data?.type==='OPEN_LEAD'&&event.data.leadId){
+      openChat(event.data.leadId);
+    }
+  });
+}  
 </script>
 </body>
 </html>
