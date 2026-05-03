@@ -52,6 +52,8 @@ return res.sendStatus(200);
     const result = await pool.query(`INSERT INTO leads (contact_name, phone, service_type, source, notes, status) VALUES ($1,$2,'Consulta WhatsApp','whatsapp-api',$3,'New') RETURNING *`, [name, phone, text]);
     const lead = result.rows[0];
     await sendLeadAlert(lead);
+    const { sendPushToAll } = require('./push');
+await sendPushToAll({ title: '⚔️ NUEVO — ' + name, body: text, leadId: lead.id, tag: 'lead-' + lead.id });
     await pool.query(
       `INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,'incoming',$3,'text')`,
       [lead.id, text, name]
