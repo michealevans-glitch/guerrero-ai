@@ -8,7 +8,7 @@ async function llamarEquipo(clienteName) {
     const hora = parseInt(new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/Costa_Rica', hour: 'numeric', hour12: false
     }).format(new Date()));
-    if (hora >= 6 && hora < 22) return; // Solo de noche
+  // Alertar siempre — día y noche
     const twilio = require('twilio');
     const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
     const numeros = ['+50685281312', '+50670147700'];
