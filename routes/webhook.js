@@ -146,5 +146,41 @@ async function detectarPeticionLlamada(phone, text) {
     console.error('detectarPeticionLlamada error:', e.message);
   }
 }
+async function transcribirAudio(mediaId) {
+  try {
+    if (!mediaId) return '[Mensaje de voz]';
+    // Obtener URL del audio
+    const mediaRes = await fetch(`https://graph.facebook.com/v18.0/${mediaId}`, {
+      headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}` }
+    });
+    const mediaData = await mediaRes.json();
+    const audioUrl = mediaData.url;
+    // Descargar el audio
+    const audioRes = await fetch(audioUrl, {
+      headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}` }
+    });
+    const audioBuffer = await audioRes.arrayBuffer();
+    const audioBlob = Buffer.from(audioBuffer);
+    // Transcribir con Whisper
+    const FormData = require('form-data');
+    const form = new FormData();
+    form.append('file', audioBlob, { filename: 'audio.ogg', contentType: 'audio/ogg' });
+    form.append('model', 'whisper-1');
+    const whisperRes = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        ...form.getHeaders()
+      },
+      body: form
+    });
+    const whisperData = await whisperRes.json();
+    console.log(`🎤 Transcripción: ${whisperData.text}`);
+    return whisperData.text || '[Mensaje de voz]';
+  } catch (e) {
+    console.error('transcribirAudio error:', e.message);
+    return '[Mensaje de voz]';
+  }
+}
 
 module.exports = router;
