@@ -2,7 +2,29 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/database');
 const { sendLeadAlert } = require('../controllers/emailController');
-const twilio = require('twilio');
+
+async function llamarEquipo(clienteName) {
+  try {
+    const hora = parseInt(new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Costa_Rica', hour: 'numeric', hour12: false
+    }).format(new Date()));
+    if (hora >= 6 && hora < 22) return; // Solo de noche
+    const twilio = require('twilio');
+    const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+    const numeros = ['+50685281312', '+50670147700'];
+    const mensaje = `<Response><Say language="es-MX">Tienes un cliente nuevo en Guerrero AI. Por favor revisa la aplicación.</Say></Response>`;
+    for (const numero of numeros) {
+      await client.calls.create({
+        twiml: mensaje,
+        to: numero,
+        from: process.env.TWILIO_PHONE
+      });
+    }
+    console.log('📞 Llamadas enviadas al equipo');
+  } catch (e) {
+    console.error('llamarEquipo error:', e.message);
+  }
+}
 
 router.get('/whatsapp', (req, res) => {
   const mode = req.query['hub.mode'];
@@ -44,17 +66,16 @@ router.post('/whatsapp', async (req, res) => {
         `INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,'incoming',$3,'text')`,
         [existing.rows[0].id, text, name]
       );
-await pool.query(`UPDATE leads SET updated_at = NOW() WHERE id = $1`, [existing.rows[0].id]);
-// Push notification
-const { sendPushToAll } = require('./push');
-await sendPushToAll({ title: '⚔️ ' + name, body: text, leadId: existing.rows[0].id, tag: 'lead-' + existing.rows[0].id });
-return res.sendStatus(200);
+      await pool.query(`UPDATE leads SET updated_at = NOW() WHERE id = $1`, [existing.rows[0].id]);
+      try { const { sendPushToAll } = require('./push'); await sendPushToAll({ title: '⚔️ ' + name, body: text, leadId: existing.rows[0].id, tag: 'lead-' + existing.rows[0].id }); } catch(e) {}
+      await llamarEquipo(name);
+      return res.sendStatus(200);
     }
     const result = await pool.query(`INSERT INTO leads (contact_name, phone, service_type, source, notes, status) VALUES ($1,$2,'Consulta WhatsApp','whatsapp-api',$3,'New') RETURNING *`, [name, phone, text]);
     const lead = result.rows[0];
     await sendLeadAlert(lead);
-    const { sendPushToAll } = require('./push');
-await sendPushToAll({ title: '⚔️ NUEVO — ' + name, body: text, leadId: lead.id, tag: 'lead-' + lead.id });
+    try { const { sendPushToAll } = require('./push'); await sendPushToAll({ title: '⚔️ NUEVO — ' + name, body: text, leadId: lead.id, tag: 'lead-' + lead.id }); } catch(e) {}
+    await llamarEquipo(name);
     await pool.query(
       `INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,'incoming',$3,'text')`,
       [lead.id, text, name]
