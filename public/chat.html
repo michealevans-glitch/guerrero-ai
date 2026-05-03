@@ -1010,7 +1010,7 @@ function autoR(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeig
 function timeAgo(d){const m=Math.floor((Date.now()-new Date(d).getTime())/60000);if(m<1)return'ahora';if(m<60)return m+'m';const h=Math.floor(m/60);if(h<24)return h+'h';return Math.floor(h/24)+'d';}
 function registerPush(userName){
   if(!('serviceWorker' in navigator)||!('PushManager' in window))return;
-  const VAPID_PUBLIC='BI8k4hFZDfthXL2QXZdkzWSRdKy7W_bBArreprpggLyK_nvamF_r9uJEwICNztkm5G1h6FKddBu5MtQ4NmAoMms';
+const VAPID_PUBLIC='BDlJSFjneDf_h92fhwOlB15Lo2mO2SEWZeNeON2d2dOKgPiBpnCvHouhyf4lPZH9LbDxg14AcGYa3WCUvvz10yk';
   navigator.serviceWorker.register('/sw.js').then(reg=>{
     return Notification.requestPermission().then(perm=>{
       if(perm!=='granted')return;
