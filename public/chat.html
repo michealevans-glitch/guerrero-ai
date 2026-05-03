@@ -658,6 +658,7 @@ function setUser(name,color,initial){
   const wr=document.getElementById('btnwr');if(wr)wr.style.display=isAdmin?'':'none';
   const mmwr=document.getElementById('mm-btnwr');if(mmwr)mmwr.style.display=isAdmin?'':'none';
   loadData();startPoll();renderEmpLs();renderQL();renderMobQ();
+  registerPush(name);
   showToast('✅ Bienvenido, '+name);
   // Registrar Service Worker y suscripción push
   registerPush(name);
