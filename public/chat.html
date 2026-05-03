@@ -623,7 +623,7 @@ function checkNewMsgs(msgs,leadId){
   const dir=last.direction||(last.sent_by?'out':'in');
   const isIn=dir==='in'||dir==='inbound';
   if(isIn){
-    playAlert();
+    playBeep();
     if('Notification' in window&&Notification.permission==='granted'){
       const lead=allLeads.find(l=>l.id===leadId);
       const nm=lead?.contact_name||'Cliente';
