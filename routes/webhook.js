@@ -176,7 +176,8 @@ async function transcribirAudio(mediaId) {
     });
     const whisperData = await whisperRes.json();
     console.log(`🎤 Transcripción: ${whisperData.text}`);
-    return whisperData.text || '[Mensaje de voz]';
+console.log('Whisper response:', JSON.stringify(whisperData));
+return whisperData.text || whisperData.transcript || '[Mensaje de voz]';
   } catch (e) {
     console.error('transcribirAudio error:', e.message);
     return '[Mensaje de voz]';
