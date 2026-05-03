@@ -162,22 +162,17 @@ async function transcribirAudio(mediaId) {
     const audioBuffer = await audioRes.arrayBuffer();
     const audioBlob = Buffer.from(audioBuffer);
     // Transcribir con Whisper
-    const FormData = require('form-data');
-    const form = new FormData();
-    form.append('file', audioBlob, { filename: 'audio.ogg', contentType: 'audio/ogg' });
-    form.append('model', 'whisper-1');
-    const whisperRes = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        ...form.getHeaders()
-      },
-      body: form
+const { OpenAI } = require('openai');
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const { Readable } = require('stream');
+    const stream = Readable.from(audioBlob);
+    stream.path = 'audio.ogg';
+    const transcription = await openai.audio.transcriptions.create({
+      file: stream,
+      model: 'whisper-1',
     });
-    const whisperData = await whisperRes.json();
-    console.log(`🎤 Transcripción: ${whisperData.text}`);
-console.log('Whisper response:', JSON.stringify(whisperData));
-return whisperData.text || whisperData.transcript || '[Mensaje de voz]';
+    console.log(`🎤 Transcripción: ${transcription.text}`);
+    return transcription.text || '[Mensaje de voz]';
   } catch (e) {
     console.error('transcribirAudio error:', e.message);
     return '[Mensaje de voz]';
