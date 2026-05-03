@@ -169,7 +169,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 .mob-qm{padding:13px 16px;border-radius:12px;background:var(--bg3);border:1.5px solid var(--bd);font-size:.86rem;color:var(--tx);cursor:pointer;transition:all .12s;line-height:1.5;display:flex;align-items:flex-start;gap:12px;-webkit-tap-highlight-color:transparent;}
 .mob-qm:active{background:#f0fdf4;border-color:var(--green);transform:scale(.98);}
 .mob-qi{flex-shrink:0;font-size:1.2rem;}
-/* BUBBLE SIDEBAR */
 #bubble-bar{display:none;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:150;flex-direction:column;gap:8px;padding:8px 4px;}
 .bubble-item{width:44px;height:44px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.3);border:2.5px solid #fff;transition:transform .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
 .bubble-item:active{transform:scale(.88);}
@@ -553,7 +552,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
 </div>
 
 <script>
-// GUERRERO AI v5.7 — Bubbles + Scroll buttons + Soledad no War Room
+// GUERRERO AI v5.8 — Login fix + sound fix + scroll fix
 const API='';
 const ADMINS=['micheal evans','micheal','papa','papá'];
 const CAN_TR=['micheal evans','micheal','papa','papá','soledad'];
@@ -573,13 +572,67 @@ let allLeads=[],openTabs=[],asgT=null,trLId=null;
 let filt='todos',bizF='all',sbMode='chat',rpT='rapidos',mobRpT='rapidos';
 let pollTmr=null,empT=null,empMsgs={},editingQ=false;
 let customQR=null,mobMenuOpen=false,mobQOpen=false;
+let lastMsgIds={},audioCtx=null,soundEnabled=true;
 
 function isMob(){return window.innerWidth<=768;}
 
+// ── SOUND ─────────────────────────────────────────────────────
+function getACtx(){
+  if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
+  if(audioCtx.state==='suspended')audioCtx.resume();
+  return audioCtx;
+}
+function isNight(){const h=new Date().getHours();return h>=22||h<6;}
+function playBing(){
+  const ctx=getACtx();if(!ctx)return;
+  const vol=isNight()?0.7:0.35;
+  const notes=isNight()?[[523,0,0.15],[659,0.15,0.32],[784,0.32,0.52]]:[[1200,0,0.5]];
+  notes.forEach(([freq,start,end])=>{
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type='sine';o.frequency.setValueAtTime(freq,ctx.currentTime+start);
+    g.gain.setValueAtTime(0,ctx.currentTime+start);
+    g.gain.linearRampToValueAtTime(vol,ctx.currentTime+start+0.03);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+end+0.4);
+    o.start(ctx.currentTime+start);o.stop(ctx.currentTime+end+0.45);
+  });
+}
+function playAlert(){if(!soundEnabled)return;try{playBing();}catch(e){}}
+document.addEventListener('touchstart',()=>getACtx(),{once:true});
+document.addEventListener('click',()=>getACtx(),{once:true});
+
+function checkNewMsgs(msgs,leadId){
+  if(!msgs||!msgs.length)return;
+  const last=msgs[msgs.length-1];
+  const lastId=last.id||last.created_at||last.body;
+  if(!lastMsgIds[leadId]){lastMsgIds[leadId]=lastId;return;}
+  if(lastMsgIds[leadId]===lastId)return;
+  const dir=last.direction||(last.sent_by?'out':'in');
+  const isIn=dir==='in'||dir==='inbound';
+  if(isIn){
+    playAlert();
+    if('Notification' in window&&Notification.permission==='granted'){
+      const lead=allLeads.find(l=>l.id===leadId);
+      const nm=lead?.contact_name||'Cliente';
+      const body=last.body||last.message||last.message_text||'Nuevo mensaje';
+      const n=new Notification('⚔️ Guerrero AI — '+nm,{body,tag:'g-'+leadId,requireInteraction:isNight()});
+      n.onclick=()=>{window.focus();openChat(leadId);n.close();};
+      if(!isNight())setTimeout(()=>n.close(),8000);
+    }
+  }
+  lastMsgIds[leadId]=lastId;
+}
+function togSound(){
+  soundEnabled=!soundEnabled;
+  document.querySelectorAll('.snd-btn-ico').forEach(b=>b.textContent=soundEnabled?'🔔':'🔕');
+  showToast(soundEnabled?'🔔 Sonido ON':'🔕 Silenciado');
+  localStorage.setItem('gu_sound',soundEnabled?'1':'0');
+}
+setTimeout(()=>{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();},3000);
+
 // ── BUBBLES ───────────────────────────────────────────────────
 function renderBubbles(){
-  const bar=document.getElementById('bubble-bar');
-  if(!bar)return;
+  const bar=document.getElementById('bubble-bar');if(!bar)return;
   if(!isMob()||!cLId){bar.innerHTML='';return;}
   const others=allLeads.filter(l=>l.id!==cLId&&(l.status==='New'||l.status==='activo'||l.status==='nuevo'||l.status==='In-Progress')).slice(0,6);
   if(!others.length){bar.innerHTML='';return;}
@@ -600,10 +653,8 @@ function setUser(name,color,initial){
   localStorage.setItem('gu_user',name);
   document.getElementById('topuser').innerHTML=`<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:20px;height:20px;border-radius:50%;background:${color};color:#fff;font-size:.65rem;font-weight:800;display:inline-flex;align-items:center;justify-content:center">${initial}</span>${name}</span>`;
   document.getElementById('usersel').style.display='none';
-  // Charts/Vision — admin only
   ['tbcharts','tbvision'].forEach(id=>document.getElementById(id).style.display=isAdmin?'':'none');
   ['mm-charts','mm-vision'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isAdmin?'':'none';});
-  // War Room — admin only (Soledad excluded)
   const wr=document.getElementById('btnwr');if(wr)wr.style.display=isAdmin?'':'none';
   const mmwr=document.getElementById('mm-btnwr');if(mmwr)mmwr.style.display=isAdmin?'':'none';
   loadData();startPoll();renderEmpLs();renderQL();renderMobQ();
@@ -617,6 +668,23 @@ function doLogout(){
 }
 window.addEventListener('DOMContentLoaded',()=>{
   customQR=loadCQR();
+  const sv=localStorage.getItem('gu_sound');if(sv==='0')soundEnabled=false;
+  // Sound button in topbar
+  const topbtns=document.getElementById('topbtns');
+  if(topbtns){
+    const b=document.createElement('button');b.className='tb';
+    b.innerHTML=`<span class="snd-btn-ico">${soundEnabled?'🔔':'🔕'}</span>`;
+    b.title='Sonido';b.onclick=togSound;
+    topbtns.insertBefore(b,topbtns.firstChild);
+  }
+  // Sound button in mobile menu
+  const mmenu=document.getElementById('mob-menu');
+  if(mmenu){
+    const mb=document.createElement('button');mb.className='mm-btn';
+    mb.innerHTML=`<span class="mm-icon snd-btn-ico">${soundEnabled?'🔔':'🔕'}</span> Sonido`;
+    mb.onclick=togSound;
+    mmenu.insertBefore(mb,mmenu.lastElementChild);
+  }
   const s=localStorage.getItem('gu_user');
   if(s){const C={'Micheal Evans':'#1a1a1a','Papá':'#2563eb','Soledad':'#e91e8c'};const I={'Micheal Evans':'M','Papá':'P','Soledad':'S'};setUser(s,C[s]||'#f59e0b',I[s]||'E');}
   else{renderQL();renderMobQ();}
@@ -638,7 +706,7 @@ function renderMobQ(){
   const k=getBK();const src=customQR||DQR;
   const items=(src[k]||DQR[k])[mobRpT]||(src[k]||DQR[k]).rapidos||[];
   const el=document.getElementById('mob-q-list');if(!el)return;
-  el.innerHTML=items.map((m,i)=>`<div class="mob-qm" data-idx="${i}" ontouchend="event.preventDefault();event.stopPropagation();handleMobQ(${i})" onclick="handleMobQ(${i})"><span class="mob-qi">${m.i}</span>${escH(m.t)}</div>`).join('');
+  el.innerHTML=items.map((m,i)=>`<div class="mob-qm" ontouchend="event.preventDefault();event.stopPropagation();handleMobQ(${i})" onclick="handleMobQ(${i})"><span class="mob-qi">${m.i}</span>${escH(m.t)}</div>`).join('');
 }
 function handleMobQ(idx){
   const k=getBK();const src=customQR||DQR;
@@ -647,12 +715,11 @@ function handleMobQ(idx){
   if(!cLId){showToast('⚠️ Abre un chat primero');return;}
   closeMobQ();setTimeout(()=>sendMsg(String(item.t)),350);
 }
-function useQMob(text){if(!cLId){showToast('⚠️ Abre un chat primero');return;}closeMobQ();setTimeout(()=>sendMsg(String(text)),350);}
 
 function createMeet(){
   window.open('https://meet.google.com/new','_blank');
-  showToast('📹 Google Meet abierto — copia el link y compártelo');
-  if(empT){if(!empMsgs[empT])empMsgs[empT]=[];empMsgs[empT].push({from:cUser||'Sistema',t:'📹 Reunión Google Meet\nÚnete aquí: https://meet.google.com/new',time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}),isMeet:true});renderEmpMsgs(empT);}
+  showToast('📹 Google Meet abierto — copia el link');
+  if(empT){if(!empMsgs[empT])empMsgs[empT]=[];empMsgs[empT].push({from:cUser||'Sistema',t:'📹 Meet: https://meet.google.com/new',time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}),isMeet:true});renderEmpMsgs(empT);}
 }
 function sendMeetToEmp(){if(!empT){showToast('Selecciona un compañero primero');return;}createMeet();}
 
@@ -788,7 +855,13 @@ function renderMsgs(msgs,scroll=true,leadId){
     const t=m.created_at?new Date(m.created_at).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}):'';const snd=m.sent_by||'';
     return`<div class="msg ${cls}"><div class="bub">${escH(body)}</div><div class="mmeta">${snd?snd+' · ':''}${t}</div></div>`;
   }).join('');
-if(scroll)wrap.scrollTop=wrap.scrollHeight;
+  if(scroll){
+    // Doble timeout para iOS que necesita que el DOM se pinte
+    requestAnimationFrame(()=>{
+      wrap.scrollTop=wrap.scrollHeight;
+      setTimeout(()=>{wrap.scrollTop=wrap.scrollHeight;},80);
+    });
+  }
 }
 async function sendMsg(forceTxt){
   const inp=document.getElementById('msginp');const txt=forceTxt||inp.value.trim();
@@ -872,18 +945,18 @@ function renderCharts(){
   const ags={};ls.forEach(l=>{const a=l.claimed_by||'Sin asignar';ags[a]=(ags[a]||0)+1;});const aM=Math.max(...Object.values(ags),1);
   const lr={};ls.filter(l=>l.reason_lost).forEach(l=>{lr[l.reason_lost]=(lr[l.reason_lost]||0)+1;});
   document.getElementById('chgrid').innerHTML=`
-  <div class="cc"><h3>📈 Resumen General</h3><div class="strow"><div class="stb"><div class="stn">${tot}</div><div class="stl">Total leads</div></div><div class="stb"><div class="stn">${act}</div><div class="stl">En atención</div></div><div class="stb"><div class="stn yl">${nw}</div><div class="stl">Sin atender</div></div><div class="stb"><div class="stn rd">${cl}</div><div class="stl">Cerrados</div></div></div><div class="note">💡 Responder en menos de 5 minutos aumenta conversión hasta 3x</div></div>
-  <div class="cc"><h3>📊 Fuentes de Leads</h3><div class="brls">${Object.entries(src).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`<div class="brow"><span class="blb">${s}</span><div class="btr"><div class="bfl pk" style="width:${Math.round(n/sM*100)}%"></div></div><span class="bvl">${n}</span></div>`).join('')||'<span style="font-size:.73rem;color:var(--tx3)">Sin datos aún</span>'}</div></div>
-  <div class="cc"><h3>👥 Rendimiento de Agentes</h3><div class="brls">${Object.entries(ags).sort((a,b)=>b[1]-a[1]).map(([a,n])=>`<div class="brow"><span class="blb">${a}</span><div class="btr"><div class="bfl bl" style="width:${Math.round(n/aM*100)}%"></div></div><span class="bvl">${n}</span></div>`).join('')||'<span style="font-size:.73rem;color:var(--tx3)">Sin datos aún</span>'}</div></div>
-  <div class="cc"><h3>⚡ Sales Funnel</h3><div class="fnrow"><span>Leads totales</span><span class="fnvl">${tot}</span></div><div class="fnrow"><span>En atención</span><span class="fnvl">${act}</span></div><div class="fnrow"><span>Sin atender</span><span class="fnvl">${nw}</span></div><div class="fnrow"><span>Cerrados</span><span class="fnvl">${cl}</span></div><div class="fnrow"><span>📈 Tasa de cierre</span><span class="fnvl">${rt}%</span></div></div>
-  <div class="cc"><h3>🔻 Razones de Pérdida</h3>${Object.keys(lr).length?Object.entries(lr).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div class="fnrow"><span>${r}</span><span class="fnvl">${n}</span></div>`).join(''):'<div style="font-size:.74rem;color:var(--tx3);padding:7px 0">Sin pérdidas registradas ✅</div>'}</div>`;
+  <div class="cc"><h3>📈 Resumen</h3><div class="strow"><div class="stb"><div class="stn">${tot}</div><div class="stl">Total</div></div><div class="stb"><div class="stn">${act}</div><div class="stl">Atención</div></div><div class="stb"><div class="stn yl">${nw}</div><div class="stl">Sin atender</div></div><div class="stb"><div class="stn rd">${cl}</div><div class="stl">Cerrados</div></div></div></div>
+  <div class="cc"><h3>📊 Fuentes</h3><div class="brls">${Object.entries(src).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`<div class="brow"><span class="blb">${s}</span><div class="btr"><div class="bfl pk" style="width:${Math.round(n/sM*100)}%"></div></div><span class="bvl">${n}</span></div>`).join('')||'Sin datos'}</div></div>
+  <div class="cc"><h3>👥 Agentes</h3><div class="brls">${Object.entries(ags).sort((a,b)=>b[1]-a[1]).map(([a,n])=>`<div class="brow"><span class="blb">${a}</span><div class="btr"><div class="bfl bl" style="width:${Math.round(n/aM*100)}%"></div></div><span class="bvl">${n}</span></div>`).join('')||'Sin datos'}</div></div>
+  <div class="cc"><h3>⚡ Funnel</h3><div class="fnrow"><span>Total</span><span class="fnvl">${tot}</span></div><div class="fnrow"><span>Activos</span><span class="fnvl">${act}</span></div><div class="fnrow"><span>Sin atender</span><span class="fnvl">${nw}</span></div><div class="fnrow"><span>Cierre</span><span class="fnvl">${rt}%</span></div></div>
+  <div class="cc"><h3>🔻 Pérdidas</h3>${Object.keys(lr).length?Object.entries(lr).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div class="fnrow"><span>${r}</span><span class="fnvl">${n}</span></div>`).join(''):'Sin pérdidas ✅'}</div>`;
   const top=Object.entries(src).sort((a,b)=>b[1]-a[1])[0];const topAg=Object.entries(ags).sort((a,b)=>b[1]-a[1])[0];
-  document.getElementById('aitxt').textContent=`Con ${tot} leads totales${top?`, la fuente "${top[0]}" lidera con ${top[1]} leads`:''}.${topAg?` El agente más activo es "${topAg[0]}" con ${topAg[1]} leads.`:''} ${nw} sin atender representan riesgo. Tasa de cierre: ${rt}%.`;
+  document.getElementById('aitxt').textContent=`${tot} leads totales.${top?` Fuente líder: "${top[0]}" (${top[1]}).`:''}${topAg?` Agente top: "${topAg[0]}" (${topAg[1]}).`:''} ${nw} sin atender. Cierre: ${rt}%.`;
 }
 function submitCQ(){
   const q=document.getElementById('chq').value.trim();if(!q)return;
   closeModal('modal-chartsask');document.getElementById('aitxt').textContent='🤖 Analizando...';
-  setTimeout(()=>{const top=Object.entries(allLeads.reduce((a,l)=>{a[l.source||'?']=(a[l.source||'?']||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1])[0];document.getElementById('aitxt').textContent=`Análisis: "${q}" — ${allLeads.length} leads. ${top?`Fuente principal: "${top[0]}" (${top[1]}).`:''} Prioriza seguimiento a nuevos leads en primeras 24h.`;},1200);
+  setTimeout(()=>{const top=Object.entries(allLeads.reduce((a,l)=>{a[l.source||'?']=(a[l.source||'?']||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1])[0];document.getElementById('aitxt').textContent=`"${q}" — ${allLeads.length} leads. ${top?`Fuente principal: "${top[0]}".`:''} Prioriza seguimiento en primeras 24h.`;},1200);
 }
 
 function renderVision(){
@@ -891,7 +964,7 @@ function renderVision(){
   const agM={};allLeads.forEach(l=>{const a=l.claimed_by;if(!a)return;if(!agM[a])agM[a]=[];agM[a].push(l);});
   document.getElementById('visgrid').innerHTML=EMPLOYEES.map(ag=>{
     const cs=agM[ag]||[];
-    return`<div class="vac${!cs.length?' off':''}"><div class="vachd"><div class="vav">${ag[0]}</div><div><div class="vnm">${ag}</div><div class="vrl">${cs.length?'🟢 Activo':'⚫ Sin clientes'}</div></div><div class="vcnt">${cs.length}</div></div>${cs.map(c=>`<div class="vcl"><div><strong style="font-size:.75rem">${c.contact_name||'—'}</strong><br><span style="font-size:.66rem;color:var(--tx2)">${c.phone||''}</span></div><span class="cist ${c.status||'New'}">${c.status||'New'}</span></div>`).join('')}${!cs.length?'<div style="font-size:.72rem;color:var(--tx3);padding:4px 0">Sin clientes asignados</div>':''}</div>`;
+    return`<div class="vac${!cs.length?' off':''}"><div class="vachd"><div class="vav">${ag[0]}</div><div><div class="vnm">${ag}</div><div class="vrl">${cs.length?'🟢 Activo':'⚫ Sin clientes'}</div></div><div class="vcnt">${cs.length}</div></div>${cs.map(c=>`<div class="vcl"><div><strong style="font-size:.75rem">${c.contact_name||'—'}</strong><br><span style="font-size:.66rem;color:var(--tx2)">${c.phone||''}</span></div><span class="cist ${c.status||'New'}">${c.status||'New'}</span></div>`).join('')}${!cs.length?'<div style="font-size:.72rem;color:var(--tx3)">Sin clientes</div>':''}</div>`;
   }).join('');
 }
 
@@ -901,7 +974,7 @@ function renderEmpMsgs(name){
   const wrap=document.getElementById('empms');const msgs=empMsgs[name]||[];
   if(!msgs.length){wrap.innerHTML=`<div style="text-align:center;opacity:.4;font-size:.76rem;margin-top:30px;padding:20px"><div style="font-size:1.5rem;margin-bottom:8px">💬</div>Inicio de chat con ${name}</div>`;return;}
   wrap.innerHTML=msgs.map(m=>{
-    if(m.isMeet)return`<div class="msg sys"><div class="meet-msg"><div class="meet-ttl">📹 Reunión Google Meet</div><div>Únete aquí: <a href="https://meet.google.com/new" target="_blank">meet.google.com/new</a></div></div><div class="mmeta">${m.from} · ${m.time}</div></div>`;
+    if(m.isMeet)return`<div class="msg sys"><div class="meet-msg"><div class="meet-ttl">📹 Google Meet</div><div><a href="https://meet.google.com/new" target="_blank">meet.google.com/new</a></div></div><div class="mmeta">${m.from} · ${m.time}</div></div>`;
     return`<div class="msg ${m.from===cUser?'out':'in'}"><div class="bub">${escH(m.t)}</div><div class="mmeta">${m.from} · ${m.time}</div></div>`;
   }).join('');wrap.scrollTop=wrap.scrollHeight;
 }
@@ -932,141 +1005,6 @@ function showToast(msg,dur=3500){const t=document.getElementById('toast');t.text
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
 function autoR(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
 function timeAgo(d){const m=Math.floor((Date.now()-new Date(d).getTime())/60000);if(m<1)return'ahora';if(m<60)return m+'m';const h=Math.floor(m/60);if(h<24)return h+'h';return Math.floor(h/24)+'d';}
-
-// ── SOUND NOTIFICATIONS ───────────────────────────────────────
-let lastMsgIds={};   // track last seen msg id per lead
-let audioCtx=null;
-let soundEnabled=true;
-
-function getACtx(){
-  if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
-  if(audioCtx.state==='suspended')audioCtx.resume();
-  return audioCtx;
-}
-
-function isNight(){const h=new Date().getHours();return h>=22||h<6;}
-
-function playDay(){
-  const ctx=getACtx();if(!ctx)return;
-  const o=ctx.createOscillator(),g=ctx.createGain();
-  o.connect(g);g.connect(ctx.destination);
-  o.type='sine';o.frequency.setValueAtTime(1200,ctx.currentTime);
-  g.gain.setValueAtTime(0.3,ctx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
-  o.start(ctx.currentTime);o.stop(ctx.currentTime+0.65);
-}
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.type='sine';o.frequency.setValueAtTime(freq,ctx.currentTime+start);
-    g.gain.setValueAtTime(0,ctx.currentTime+start);
-    g.gain.linearRampToValueAtTime(vol,ctx.currentTime+start+0.02);
-    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+end+0.3);
-    o.start(ctx.currentTime+start);o.stop(ctx.currentTime+end+0.35);
-  });
-}
-
-function playNight(){
-  // Warmer, more persistent 3-note chime — pleasant but cuts through sleep
-  const ctx=getACtx();if(!ctx)return;
-  const vol=0.65;
-  [[523,0,0.12],[659,0.12,0.26],[784,0.26,0.45]].forEach(([freq,start,end])=>{
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    // Add slight warmth with a second harmonic
-    const o2=ctx.createOscillator(),g2=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o2.connect(g2);g2.connect(ctx.destination);
-    o.type='sine';o.frequency.setValueAtTime(freq,ctx.currentTime+start);
-    o2.type='sine';o2.frequency.setValueAtTime(freq*2,ctx.currentTime+start);
-    g.gain.setValueAtTime(0,ctx.currentTime+start);
-    g.gain.linearRampToValueAtTime(vol,ctx.currentTime+start+0.03);
-    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+end+0.55);
-    g2.gain.setValueAtTime(0,ctx.currentTime+start);
-    g2.gain.linearRampToValueAtTime(vol*0.2,ctx.currentTime+start+0.03);
-    g2.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+end+0.4);
-    o.start(ctx.currentTime+start);o.stop(ctx.currentTime+end+0.6);
-    o2.start(ctx.currentTime+start);o2.stop(ctx.currentTime+end+0.45);
-  });
-}
-
-function playAlert(){
-  if(!soundEnabled)return;
-  try{isNight()?playNight():playDay();}catch(e){console.warn('Sound error:',e);}
-}
-
-// Unlock audio context on first user interaction
-function unlockAudio(){
-  getACtx();document.removeEventListener('touchstart',unlockAudio);document.removeEventListener('click',unlockAudio);
-}
-document.addEventListener('touchstart',unlockAudio,{once:true});
-document.addEventListener('click',unlockAudio,{once:true});
-
-// Called after loadMsgs — detect new incoming messages
-function checkNewMsgs(msgs,leadId){
-  if(!msgs||!msgs.length)return;
-  const last=msgs[msgs.length-1];
-  const lastId=last.id||last.created_at||last.body;
-  if(!lastMsgIds[leadId]){lastMsgIds[leadId]=lastId;return;} // first load, just store
-  if(lastMsgIds[leadId]===lastId)return; // nothing new
-  // New message arrived — check if it's incoming (not sent by us)
-  const dir=last.direction||(last.sent_by?'out':'in');
-  const isIncoming=dir==='in'||dir==='inbound';
-  if(isIncoming){
-    // Only alert if this lead isn't the currently focused chat, or if page is hidden
-if(true){
-      playAlert();
-      // Also show browser notification if permitted
-      showBrowserNotif(last,leadId);
-    }
-  }
-  lastMsgIds[leadId]=lastId;
-}
-
-function showBrowserNotif(msg,leadId){
-  if(!('Notification' in window)||Notification.permission!=='granted')return;
-  const lead=allLeads.find(l=>l.id===leadId);
-  const nm=lead?.contact_name||'Cliente';
-  const body=msg.body||msg.message||msg.message_text||'Nuevo mensaje';
-  const n=new Notification('⚔️ Guerrero AI — '+nm,{body,icon:'/favicon.ico',tag:'guerrero-msg-'+leadId,requireInteraction:isNight()});
-  n.onclick=()=>{window.focus();openChat(leadId);n.close();};
-  if(!isNight())setTimeout(()=>n.close(),8000);
-}
-
-// Request notification permission on load (silently)
-function reqNotifPerm(){
-  if('Notification' in window&&Notification.permission==='default'){
-    Notification.requestPermission();
-  }
-}
-setTimeout(reqNotifPerm,3000);
-
-// Sound toggle button — inject into topbar area
-function togSound(){
-  soundEnabled=!soundEnabled;
-  const btn=document.getElementById('snd-btn');
-  if(btn)btn.textContent=soundEnabled?'🔔':'🔕';
-  showToast(soundEnabled?'🔔 Sonido activado':'🔕 Sonido silenciado');
-  localStorage.setItem('gu_sound',soundEnabled?'1':'0');
-}
-window.addEventListener('DOMContentLoaded',()=>{
-  // Restore sound preference
-  const sv=localStorage.getItem('gu_sound');if(sv==='0')soundEnabled=false;
-  // Inject sound toggle button into topbar
-  const topbtns=document.getElementById('topbtns');
-  if(topbtns){
-    const b=document.createElement('button');b.className='tb';b.id='snd-btn';
-    b.textContent=soundEnabled?'🔔':'🔕';b.title='Silenciar / Activar sonido';
-    b.onclick=togSound;topbtns.insertBefore(b,topbtns.firstChild);
-  }
-  // Also add to mobile menu
-  const mmenu=document.getElementById('mob-menu');
-  if(mmenu){
-    const mb=document.createElement('button');mb.className='mm-btn';mb.id='snd-mm-btn';
-    mb.innerHTML=`<span class="mm-icon">${soundEnabled?'🔔':'🔕'}</span> <span id="snd-mm-lbl">${soundEnabled?'Sonido ON':'Sonido OFF'}</span>`;
-    mb.onclick=()=>{togSound();const lbl=document.getElementById('snd-mm-lbl');if(lbl)lbl.textContent=soundEnabled?'Sonido ON':'Sonido OFF';const ico=mb.querySelector('.mm-icon');if(ico)ico.textContent=soundEnabled?'🔔':'🔕';};
-    // Insert before last button (Salir)
-    mmenu.insertBefore(mb,mmenu.lastElementChild);
-  }
-});
 </script>
 </body>
 </html>
