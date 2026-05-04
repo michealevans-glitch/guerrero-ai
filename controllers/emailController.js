@@ -99,8 +99,8 @@ const send3MinuteAlert = async (lead) => {
     console.error('❌ 3min email error:', err.message);
   }
 
-  await sendWhatsAppAlert(msg);
-  await sendVoiceAlert(lead);
+await sendWhatsAppAlert(msg);
+  // await sendVoiceAlert(lead);
 };
 
 const testEmail = async (req, res) => {
