@@ -7,7 +7,13 @@ async function llamarEquipo(clienteName) {
   try {
     const twilio = require('twilio');
     const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-    const numeros = ['+50685281312', '+50670147700'];
+const esOutreach = await pool.query(
+      `SELECT id FROM external_leads_pool WHERE phone LIKE $1 LIMIT 1`,
+      [`%${clienteName ? clienteName.slice(-8) : '0'}%`]
+    );
+    const numeros = esOutreach.rows.length > 0 
+      ? ['+13214237076']
+      : ['+50685281312', '+50670147700'];
     const mensaje = `<Response><Say language="es-MX">Tienes un cliente nuevo en Guerrero AI. Por favor revisa la aplicación.</Say></Response>`;
     for (const numero of numeros) {
       await client.calls.create({
