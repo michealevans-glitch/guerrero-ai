@@ -589,14 +589,19 @@ function getACtx(){
 function playBeep(){
   try{
     const a=new(window.AudioContext||window.webkitAudioContext)();
-    const o=a.createOscillator();
-    const g=a.createGain();
-    o.connect(g);g.connect(a.destination);
-    o.frequency.value=isNight()?660:1200;
-    g.gain.setValueAtTime(isNight()?0.6:0.3,a.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.8);
-    o.start(a.currentTime);
-    o.stop(a.currentTime+0.85);
+    if(a.state==='suspended')a.resume();
+    const vol=isNight()?0.9:0.7;
+    [[440,0,0.3],[880,0.3,0.6],[440,0.6,0.9],[880,0.9,1.5]].forEach(([freq,start,end])=>{
+      const o=a.createOscillator(),g=a.createGain();
+      o.connect(g);g.connect(a.destination);
+      o.type='square';
+      o.frequency.value=freq;
+      g.gain.setValueAtTime(0,a.currentTime+start);
+      g.gain.linearRampToValueAtTime(vol,a.currentTime+start+0.05);
+      g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+end);
+      o.start(a.currentTime+start);
+      o.stop(a.currentTime+end+0.1);
+    });
   }catch(e){console.warn('beep error:',e);}
 }
 function isNight(){const h=new Date().getHours();return h>=22||h<6;}
