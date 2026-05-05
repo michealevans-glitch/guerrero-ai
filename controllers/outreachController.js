@@ -73,8 +73,8 @@ const handleStop = async (req, res) => {
 const getOutreachStats = async (req, res) => {
   try {
     const total = await pool.query('SELECT COUNT(*) FROM external_leads_pool WHERE excluded = false');
-    const contacted = await pool.query('SELECT COUNT(*) FROM external_leads_pool WHERE status = \'contacted\' AND excluded = false');
-    const pending = await pool.query('SELECT COUNT(*) FROM external_leads_pool WHERE status = \'new\' AND excluded = false');
+    const contacted = await pool.query("SELECT COUNT(*) FROM external_leads_pool WHERE status = 'contacted' AND excluded = false");
+    const pending = await pool.query("SELECT COUNT(*) FROM external_leads_pool WHERE status = 'new' AND excluded = false");
     const excluded = await pool.query('SELECT COUNT(*) FROM external_leads_pool WHERE excluded = true');
     const byNiche = await pool.query(`
       SELECT niche, COUNT(*) as total,
@@ -100,6 +100,69 @@ const getOutreachStats = async (req, res) => {
   } catch(err) { res.status(500).json({ error: err.message }); }
 };
 
+const WHATSAPP_NUMBER = 'whatsapp:+13213215583';
+
+const messages = {
+  huellitas: `Hola {name},
+Somos Crematorio Huellitas al Cielo. Sabemos que perder a una mascota es uno de los momentos más difíciles que puede vivir una familia.
+Estamos aquí para acompañarle con dignidad, respeto y mucho cariño. 🐾
+
+━━━━━━━━━━━━━━━━━━━━━━━
+🐾 NUESTROS SERVICIOS
+━━━━━━━━━━━━━━━━━━━━━━━
+📦 CREMACIÓN PELUDITOS — ₡40,000
+Mascotas de 0 a 15 kg
+✅ Cremación
+✅ Certificado de Cremación
+✅ Urna personalizada
+✅ Esquela digital
+⚠️ No incluye traslado
+
+📦 CREMACIÓN HUELLITA — ₡59,000
+Mascotas de 16 a 30 kg
+✅ Cremación
+✅ Certificado de Cremación
+✅ Urna personalizada
+✅ Esquela digital
+⚠️ No incluye traslado
+
+━━━━━━━━━━━━━━━━━━━━━━━
+🎁 TAMBIÉN OFRECEMOS
+━━━━━━━━━━━━━━━━━━━━━━━
+• Llaveritos y recuerdos personalizados
+• Eutanasia compasiva
+• Plan Preventivo: 18 cuotas de ₡4,900
+• Obituario especial en Facebook en memoria de su peludo
+
+📲 WhatsApp: +1 321-321-5583
+📘 Facebook: Crematorio Huellitas al Cielo
+
+Para no recibir más mensajes responda STOP.`,
+
+  albalumen: `Hola {name},
+Somos Albalumen, crematorio y funeraria ubicados en San José, a 150 metros oeste de la Clínica Bíblica. Atención 24/7 los 7 días.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+⚱️ CREMACIONES
+━━━━━━━━━━━━━━━━━━━━━━━
+🔹 CREMACIÓN DIRECTA — ₡210,000 +IVA
+🔹 PAQUETE EMERGENCIAS — ₡350,000 +IVA
+🔹 PAQUETE COMPLETO — ₡650,000 +IVA
+💳 Cuotas desde ₡13,000 quincenal
+
+━━━━━━━━━━━━━━━━━━━━━━━
+⚰️ SEPULTURA — ₡400,000 +IVA
+🏛️ COLUMBARIOS — ₡910,000 pago único
+━━━━━━━━━━━━━━━━━━━━━━━
+
+📲 WhatsApp: +1 321-321-5583
+📧 info@albalumen.com
+🕐 Abiertos 24/7
+📍 San José, Costa Rica
+
+Para no recibir más mensajes responda STOP.`
+};
+
 const sendWhatsAppOutreach = async (req, res) => {
   if (!isCRBusinessHours()) return res.status(400).json({ error: 'Fuera de horario. Solo 8am-7pm CR.' });
   try {
@@ -122,14 +185,7 @@ const sendWhatsAppOutreach = async (req, res) => {
 
     const prospects = await pool.query(query, params);
     const delayMs = parseInt(settings.delay_ms || 2000);
-
-    const messages = {
-      huellitas: `Estimados colegas de {name}, somos Huellitas al Cielo, crematorio certificado de mascotas en San José. 🐾\n\nCremación 0-15kg: ₡40,000 | 16-30kg: ₡59,000\nPlan Preventivo: 18 cuotas ₡4,900\n\n📞 +506 7046 9290\n\nPara no recibir más mensajes responda STOP.`,
-      alba_funeraria: `Estimados colegas de {name}, somos Albalumen, crematorio y funeraria en San José, atención 24/7. ⚰️\n\nPaquete Emergencias: ₡350,000+IVA\nPaquete Completo: ₡650,000+IVA\n\n📞 +506 8528 1312\ninfo@albalumen.com\n\nPara no recibir más mensajes responda STOP.`,
-      alba_hospital: `Estimados profesionales de {name}, somos Albalumen, crematorio y funeraria en San José, disponibles 24/7. ⚰️\n\nEstamos aquí para apoyarles cuando sus pacientes y familias lo necesiten.\n\n📞 +506 8528 1312\n\nPara no recibir más mensajes responda STOP.`
-    };
-
-    const msgKey = business === 'huellitas' ? 'huellitas' : niche === 'funeraria' ? 'alba_funeraria' : 'alba_hospital';
+    const msgKey = business === 'huellitas' ? 'huellitas' : 'albalumen';
 
     let sent = 0, failed = 0, skipped = 0;
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -139,7 +195,7 @@ const sendWhatsAppOutreach = async (req, res) => {
         if (!isCRBusinessHours()) { skipped++; continue; }
         const cleanPhone = prospect.phone.replace(/\D/g, '');
         const fullPhone = cleanPhone.length === 8 ? `506${cleanPhone}` : cleanPhone;
-        const msgText = messages[msgKey].replace('{name}', prospect.business_name);
+        const msgText = messages[msgKey].replace('{name}', prospect.business_name || 'cliente');
 
         const response = await fetch(`https://graph.facebook.com/v18.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
           method: 'POST',
@@ -186,8 +242,8 @@ const sendSMSOutreach = async (req, res) => {
         const cleanPhone = prospect.phone.replace(/\D/g, '');
         const fullPhone = `+506${cleanPhone.slice(-8)}`;
         const msgText = business === 'huellitas'
-          ? `Huellitas al Cielo: Cremación mascotas San José. 0-15kg ₡40,000. Info: +506 7046 9290. STOP para no recibir.`
-          : `Albalumen: Servicios funerarios 24/7 San José. Desde ₡350,000. Info: +506 8528 1312. STOP para no recibir.`;
+          ? `Huellitas al Cielo: Cremación mascotas San José. 0-15kg ₡40,000. WhatsApp: +1 321-321-5583. STOP para no recibir.`
+          : `Albalumen: Crematorio y funeraria 24/7 San José. Desde ₡210,000. WhatsApp: +1 321-321-5583. STOP para no recibir.`;
 
         await twilioClient.messages.create({
           body: msgText,
@@ -244,7 +300,7 @@ const sendEmailOutreach = async (req, res) => {
                 <li>📋 Plan Preventivo: 18 cuotas de <strong>₡4,900</strong></li>
                 <li>💉 Servicio de Eutanasia disponible</li>
               </ul>
-              <p><strong>WhatsApp: +506 7046 9290</strong></p>
+              <p><strong>WhatsApp: +1 321-321-5583</strong></p>
               <p style="font-size:11px;color:#888;margin-top:20px;">Para no recibir más mensajes, responda con la palabra STOP.</p>
             </div>` : `
             <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#F4F9F6;border-radius:12px;">
@@ -253,12 +309,13 @@ const sendEmailOutreach = async (req, res) => {
               <p>Somos <strong>Albalumen</strong>, crematorio y funeraria en San José, Costa Rica. Atención 24/7, 365 días.</p>
               <h3 style="color:#2D6A4F;">Nuestros servicios:</h3>
               <ul>
+                <li>🔥 Cremación Directa: <strong>₡210,000+IVA</strong></li>
                 <li>🕊️ Paquete Emergencias: <strong>₡350,000+IVA</strong></li>
                 <li>🕊️ Paquete Completo: <strong>₡650,000+IVA</strong> (cuotas ₡13,000 quincenal)</li>
                 <li>⚰️ Sepultura: <strong>₡400,000+IVA</strong></li>
                 <li>🏛️ Columbarios: <strong>₡910,000</strong> pago único</li>
               </ul>
-              <p><strong>Email: info@albalumen.com | WhatsApp: +506 8528 1312</strong></p>
+              <p><strong>WhatsApp: +1 321-321-5583 | Email: info@albalumen.com</strong></p>
               <p style="font-size:11px;color:#888;margin-top:20px;">Para no recibir más mensajes, responda con la palabra STOP.</p>
             </div>`
         });
