@@ -20,21 +20,24 @@ router.post('/webhook', async (req, res) => {
     if (body.object !== 'page') return res.sendStatus(404);
     for (const entry of body.entry || []) {
       for (const event of entry.messaging || []) {
-if (!event.message) continue;
-const isEcho = event.message.is_echo;
-        const senderId = event.sender.id;
-        const text = event.message.text || 'Mensaje Facebook';
-        console.log(`📘 Facebook message from ${senderId}: ${text}`);
+        if (!event.message) continue;
+        const isEcho = event.message.is_echo;
+        const senderId = isEcho ? event.recipient.id : event.sender.id;
+        const text = event.message.text || '';
+        if (!text) continue;
+        const direction = isEcho ? 'outgoing' : 'incoming';
+        console.log(`📘 Facebook ${isEcho ? 'echo' : 'message'} from ${senderId}: ${text}`);
         const existing = await pool.query(
           `SELECT id FROM leads WHERE phone = $1 LIMIT 1`, [senderId]
         );
         if (existing.rows.length > 0) {
           await pool.query(
-            `INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,'incoming','Facebook','text')`,
-            [existing.rows[0].id, text]
+            `INSERT INTO messages (lead_id, message_text, body, direction, sent_by, message_type) VALUES ($1,$2,$2,$3,'Facebook','text')`,
+            [existing.rows[0].id, text, direction]
           );
           await pool.query(`UPDATE leads SET updated_at = NOW() WHERE id = $1`, [existing.rows[0].id]);
         } else {
+          if (isEcho) continue;
           const newLead = await pool.query(
             `INSERT INTO leads (contact_name, phone, service_type, source, notes, status) VALUES ($1,$2,'Consulta Facebook','facebook',$3,'New') RETURNING *`,
             ['Cliente Facebook', senderId, text]
