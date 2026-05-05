@@ -20,7 +20,8 @@ router.post('/webhook', async (req, res) => {
     if (body.object !== 'page') return res.sendStatus(404);
     for (const entry of body.entry || []) {
       for (const event of entry.messaging || []) {
-        if (!event.message) continue;
+if (!event.message) continue;
+const isEcho = event.message.is_echo;
         const senderId = event.sender.id;
         const text = event.message.text || 'Mensaje Facebook';
         console.log(`📘 Facebook message from ${senderId}: ${text}`);
