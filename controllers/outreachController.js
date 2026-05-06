@@ -100,8 +100,6 @@ const getOutreachStats = async (req, res) => {
   } catch(err) { res.status(500).json({ error: err.message }); }
 };
 
-const WHATSAPP_NUMBER = 'whatsapp:+13213215583';
-
 const messages = {
   huellitas: `Hola {name},
 Somos Crematorio Huellitas al Cielo. Sabemos que perder a una mascota es uno de los momentos más difíciles que puede vivir una familia.
@@ -161,6 +159,25 @@ Somos Albalumen, crematorio y funeraria ubicados en San José, a 150 metros oest
 📍 San José, Costa Rica
 
 Para no recibir más mensajes responda STOP.`
+};
+
+const callMessages = {
+  huellitas: `<Response>
+    <Say language="es-MX" voice="woman">
+      Hola, le llamamos de Crematorio Huellitas al Cielo en San José, Costa Rica.
+      Ofrecemos servicios de cremación de mascotas desde cuarenta mil colones.
+      Para más información, escríbanos al WhatsApp más uno, tres dos uno, tres dos uno, cinco cinco ocho tres.
+      Gracias y que tenga un excelente día.
+    </Say>
+  </Response>`,
+  albalumen: `<Response>
+    <Say language="es-MX" voice="woman">
+      Hola, le llamamos de Crematorio Albalumen en San José, Costa Rica.
+      Ofrecemos servicios funerarios y de cremación desde doscientos diez mil colones, con atención las veinticuatro horas.
+      Para más información, escríbanos al WhatsApp más uno, tres dos uno, tres dos uno, cinco cinco ocho tres.
+      Gracias y que tenga un excelente día.
+    </Say>
+  </Response>`
 };
 
 const sendWhatsAppOutreach = async (req, res) => {
@@ -262,6 +279,53 @@ const sendSMSOutreach = async (req, res) => {
   } catch(err) { res.status(500).json({ error: err.message }); }
 };
 
+const sendCallOutreach = async (req, res) => {
+  if (!isCRBusinessHours()) return res.status(400).json({ error: 'Fuera de horario. Solo 8am-7pm CR.' });
+  try {
+    const settings = await getSettings();
+    if (settings.calls_active !== 'true') return res.status(400).json({ error: 'Llamadas outreach desactivadas.' });
+
+    const { business, limit } = req.body;
+    const dailyLimit = parseInt(limit || 20);
+
+    const todayCount = await pool.query(`SELECT COUNT(*) FROM outreach_log WHERE channel = 'call' AND sent_at > NOW() - INTERVAL '24 hours'`);
+    if (parseInt(todayCount.rows[0].count) >= dailyLimit) {
+      return res.status(400).json({ error: `Límite diario de ${dailyLimit} llamadas alcanzado.` });
+    }
+
+    const prospects = await pool.query(`
+      SELECT * FROM external_leads_pool 
+      WHERE excluded = false AND phone IS NOT NULL
+      AND (last_call_at IS NULL OR last_call_at < NOW() - INTERVAL '30 days')
+      LIMIT ${dailyLimit}
+    `);
+
+    const msgKey = business === 'huellitas' ? 'huellitas' : 'albalumen';
+    const twiml = callMessages[msgKey];
+    let sent = 0, failed = 0;
+
+    for (const prospect of prospects.rows) {
+      try {
+        const cleanPhone = prospect.phone.replace(/\D/g, '');
+        const fullPhone = `+506${cleanPhone.slice(-8)}`;
+
+        await twilioClient.calls.create({
+          twiml,
+          to: fullPhone,
+          from: process.env.TWILIO_PHONE
+        });
+
+        await pool.query(`UPDATE external_leads_pool SET last_call_at = NOW(), outreach_attempts = outreach_attempts + 1, last_contact_at = NOW(), total_contacts = total_contacts + 1 WHERE id = $1`, [prospect.id]);
+        await pool.query(`INSERT INTO outreach_log (prospect_id, channel, message_text, status) VALUES ($1, 'call', $2, 'sent')`, [prospect.id, `Llamada automatizada - ${msgKey}`]);
+        sent++;
+        await delay(5000);
+      } catch(e) { failed++; console.log('Call error:', e.message); }
+    }
+
+    res.json({ success: true, sent, failed, total: prospects.rows.length });
+  } catch(err) { res.status(500).json({ error: err.message }); }
+};
+
 const sendEmailOutreach = async (req, res) => {
   if (!isCRBusinessHours()) return res.status(400).json({ error: 'Fuera de horario. Solo 8am-7pm CR.' });
   try {
@@ -350,4 +414,4 @@ const importCSV = async (req, res) => {
   } catch(err) { res.status(500).json({ error: err.message }); }
 };
 
-module.exports = { markContacted, handleStop, getOutreachStats, getSettingsAPI, updateSetting, sendWhatsAppOutreach, sendSMSOutreach, sendEmailOutreach, importCSV };
+module.exports = { markContacted, handleStop, getOutreachStats, getSettingsAPI, updateSetting, sendWhatsAppOutreach, sendSMSOutreach, sendEmailOutreach, sendCallOutreach, importCSV };
